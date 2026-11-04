@@ -4,11 +4,19 @@ import { NextResponse, type NextRequest } from "next/server";
 import { getPublicEnv, hasPublicEnv } from "@/lib/env";
 import type { Database } from "@/types/database.types";
 
-/** Rutas que exigen sesión. Se amplía en el Prompt 2. */
-const PROTECTED_PREFIXES = ["/perfil/editar", "/publicar", "/mis-"];
+/** Rutas que exigen sesión. */
+const PROTECTED_PREFIXES = ["/perfil/editar", "/publicar", "/mis-", "/mensajes", "/admin"];
+const PROTECTED_EXACT = ["/perfil"];
+
+/** Rutas solo para visitantes sin sesión. */
+const GUEST_ONLY = ["/entrar", "/registro"];
 
 export function isProtectedPath(pathname: string): boolean {
-  return PROTECTED_PREFIXES.some((prefix) => pathname.startsWith(prefix));
+  return PROTECTED_EXACT.includes(pathname) || PROTECTED_PREFIXES.some((prefix) => pathname.startsWith(prefix));
+}
+
+export function isGuestOnlyPath(pathname: string): boolean {
+  return GUEST_ONLY.includes(pathname);
 }
 
 /**
@@ -55,14 +63,36 @@ export async function updateSession(request: NextRequest) {
   const { data } = await supabase.auth.getClaims();
   const user = data?.claims;
 
-  if (!user && isProtectedPath(request.nextUrl.pathname)) {
-    const url = request.nextUrl.clone();
-    url.pathname = "/entrar";
-    url.searchParams.set("next", request.nextUrl.pathname);
-    return NextResponse.redirect(url);
+  const { pathname, search } = request.nextUrl;
+
+  if (!user && isProtectedPath(pathname)) {
+    return redirectKeepingCookies(request, response, "/entrar", { next: pathname + search });
+  }
+
+  if (user && isGuestOnlyPath(pathname)) {
+    const next = request.nextUrl.searchParams.get("next");
+    const safe = next && next.startsWith("/") && !next.startsWith("//") ? next : "/";
+    return redirectKeepingCookies(request, response, safe);
   }
 
   // Devuelve SIEMPRE `response` (con sus cookies). Si creas otra respuesta,
   // copia sus cookies o la sesión se desincronizará.
   return response;
+}
+
+/** Redirige conservando las cookies de sesión que haya podido refrescar Supabase. */
+function redirectKeepingCookies(
+  request: NextRequest,
+  response: NextResponse,
+  pathname: string,
+  params: Record<string, string> = {},
+) {
+  const url = request.nextUrl.clone();
+  const [path, query] = pathname.split("?");
+  url.pathname = path;
+  url.search = query ? `?${query}` : "";
+  for (const [key, value] of Object.entries(params)) url.searchParams.set(key, value);
+  const redirect = NextResponse.redirect(url);
+  response.cookies.getAll().forEach((cookie) => redirect.cookies.set(cookie));
+  return redirect;
 }
