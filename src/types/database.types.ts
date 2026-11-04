@@ -280,7 +280,7 @@ export type Database = {
       profiles: {
         Row: {
           age_range: Database["public"]["Enums"]["age_range"] | null;
-          avatar_url: string | null;
+          avatar_path: string | null;
           bio: string | null;
           city: string | null;
           created_at: string;
@@ -297,7 +297,7 @@ export type Database = {
         ComputedFields: never;
         Insert: {
           age_range?: Database["public"]["Enums"]["age_range"] | null;
-          avatar_url?: string | null;
+          avatar_path?: string | null;
           bio?: string | null;
           city?: string | null;
           created_at?: string;
@@ -313,7 +313,7 @@ export type Database = {
         };
         Update: {
           age_range?: Database["public"]["Enums"]["age_range"] | null;
-          avatar_url?: string | null;
+          avatar_path?: string | null;
           bio?: string | null;
           city?: string | null;
           created_at?: string;

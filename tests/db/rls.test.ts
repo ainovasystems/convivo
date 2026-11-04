@@ -344,3 +344,28 @@ describe("storage listing-photos", () => {
     await expect(upload(`foto-suelta.webp`)).rejects.toThrow(/row-level security/);
   });
 });
+
+describe("avatares", () => {
+  it("avatar_path solo puede apuntar a la carpeta propia", async () => {
+    const u = await createUser(db, "Quim");
+    const other = await createUser(db, "Raquel");
+    await as(db, u, (tx) => tx.query("update public.profiles set avatar_path = $2 where id = $1", [u, `${u}/avatar-1.webp`]));
+    await expect(
+      as(db, u, (tx) => tx.query("update public.profiles set avatar_path = $2 where id = $1", [u, `${other}/avatar.webp`])),
+    ).rejects.toThrow(/profiles_avatar_path_own_folder/);
+    await expect(
+      as(db, u, (tx) =>
+        tx.query("update public.profiles set avatar_path = $2 where id = $1", [u, "https://tracker.example/pixel.gif"]),
+      ),
+    ).rejects.toThrow(/profiles_avatar_path_own_folder/);
+  });
+
+  it("solo se sube a la carpeta propia del bucket avatars", async () => {
+    const u = await createUser(db, "Sara");
+    const other = await createUser(db, "Tomás");
+    const upload = (path: string) =>
+      as(db, u, (tx) => tx.query("insert into storage.objects (bucket_id, name, owner) values ('avatars', $1, $2)", [path, u]));
+    await upload(`${u}/avatar.webp`);
+    await expect(upload(`${other}/avatar.webp`)).rejects.toThrow(/row-level security/);
+  });
+});
