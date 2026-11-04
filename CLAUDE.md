@@ -69,6 +69,29 @@ tests/
 
 Antes de cada commit: `npm run lint && npm run typecheck && npm test && npm run build`.
 
+## Auth y perfiles
+
+- **Rutas:** `/registro`, `/entrar` (contraseña o magic link), `/auth/callback` (destino de los enlaces de email: acepta `?code=` en PKCE y `?token_hash=&type=`), `/perfil` (redirige al tuyo), `/perfil/[id]` (público) y `/perfil/editar`.
+- **Server Actions:** `src/app/(auth)/actions.ts` y `src/app/perfil/editar/actions.ts`. Siempre: validar con Zod y devolver un `FormState` (`src/lib/forms.ts`) con errores por campo.
+- **Validación doble:** los esquemas de `src/lib/validation/*` se usan en cliente (`useClientValidation`, para dar respuesta inmediata) y en servidor (la que manda).
+- **Identidad en servidor:** `getCurrentUser()` (`src/lib/auth.ts`, usa `getClaims()` y se cachea por petición).
+- **Redirecciones:** `next` siempre pasa por `safeNextPath()` (evita redirecciones abiertas). Si un usuario con sesión entra en `/entrar` o `/registro`, el middleware lo redirige.
+- **Errores de auth genéricos** ("Email o contraseña incorrectos"; el magic link responde igual exista o no la cuenta) para no permitir enumerar usuarios.
+- **Avatares:** se suben por Server Action. Zod comprueba tamaño (≤ 2 MB) y tipo declarado, y además se mira el tipo real por *magic bytes* (`sniffImageType`). El bucket `avatars` vuelve a imponer 2 MB y el tipo MIME. En BD se guarda `avatar_path` (ruta dentro del bucket, atada por CHECK a la carpeta del usuario), nunca una URL libre.
+- **Verificación:** email verificado se sincroniza desde Auth con un trigger. **Teléfono: TODO**, el campo `phone_verified` existe pero no hay flujo, y el número irá en una tabla privada aparte. **Nunca se pide ni se guarda el DNI.**
+- **Configuración de Auth en producción** (panel de Supabase → Authentication): activar "Confirm email", Site URL = dominio real, Redirect URLs = `https://<dominio>/auth/callback`, y SMTP propio (el de Supabase tiene un límite muy bajo). En local, `supabase/config.toml` lleva las confirmaciones desactivadas.
+
+## Desarrollo local con Supabase
+
+```bash
+npx supabase start            # Postgres 17 + Auth + Storage + Mailpit; aplica migraciones y seed
+npx supabase status -o env    # claves para .env.local (API_URL, ANON_KEY, SERVICE_ROLE_KEY)
+npx supabase db reset         # recrea la BD desde cero (migraciones + seed)
+```
+
+Si la descarga de imágenes desde `public.ecr.aws` está bloqueada (sesiones en la nube), usa `SUPABASE_INTERNAL_IMAGE_REGISTRY=docker.io npx supabase start -x studio,imgproxy,vector,logflare,edge-runtime,supavisor,postgres-meta`.
+Los e2e que tocan datos (`tests/e2e/*`) se saltan solos si no hay `NEXT_PUBLIC_SUPABASE_URL`. Playwright carga `.env.local`. Haz `npm run build` antes de `npm run test:e2e`.
+
 ## Variables de entorno
 
 Plantilla en `.env.example`. Los valores reales van en `.env.local` (ignorado por git) o en los ajustes del entorno de la nube o de Vercel. **Nunca** en el chat ni en el repo.
@@ -76,6 +99,7 @@ Plantilla en `.env.example`. Los valores reales van en `.env.local` (ignorado po
 - `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`: públicas, llegan al navegador.
 - `SUPABASE_SERVICE_ROLE_KEY`: **solo servidor**. Nunca con prefijo `NEXT_PUBLIC_`.
 - `SUPABASE_PROJECT_REF`: solo para `typegen`.
+- `NEXT_PUBLIC_SITE_URL`: URL pública para los enlaces de los emails (en local se deduce de la cabecera Host).
 
 ## Base de datos
 
@@ -172,3 +196,7 @@ RPC (`supabase.rpc(...)`): `confirm_stay`, `cancel_stay`, `end_stay`, `add_stay_
 18. **Denuncias con claves foráneas reales** por tipo de objetivo y CHECK de "exactamente uno".
 19. **Borrado de cuenta en cascada por ahora.** El trigger impide borrar reseñas directamente, pero deja pasar la cascada. TODO (Prompt 6): anonimizar en vez de borrar.
 20. Bucket `listing-photos` público (máximo 5 MB, jpeg/png/webp), con escritura solo en `{user_id}/…`.
+21. **Avatar como ruta (`avatar_path`), no como URL**, con un CHECK que la ata a la carpeta del usuario.
+22. **Magic link solo para cuentas existentes** (`shouldCreateUser: false`). El registro siempre pasa por `/registro`, con nombre y aceptación de condiciones.
+23. **Next.js 15 limita el cuerpo de las Server Actions a 1 MB**: se sube a 3 MB en `next.config.ts` para los avatares.
+24. Componentes de formulario accesibles en `src/components/ui/` (label, `aria-invalid`, `aria-describedby`, avisos con `role=alert/status`).
