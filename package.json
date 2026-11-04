@@ -13,7 +13,9 @@
     "test:e2e": "playwright test",
     "typegen": "supabase gen types --lang typescript --remote=$SUPABASE_PROJECT_REF --schema public > src/types/database.types.ts",
     "typegen:local": "supabase gen types --lang typescript --schema public > src/types/database.types.ts",
-    "db:push": "supabase db push"
+    "db:push": "supabase db push",
+    "typegen:db": "supabase gen types --lang typescript --schema public --remote=\"$SUPABASE_DB_URL\" > src/types/database.types.ts && oxfmt src/types/database.types.ts",
+    "test:db": "vitest run tests/db"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",
@@ -25,6 +27,7 @@
     "zod": "^4.6.7"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "^0.5.15",
     "@eslint/eslintrc": "^3",
     "@playwright/test": "^1.63.0",
     "@tailwindcss/postcss": "^4",
@@ -34,6 +37,7 @@
     "@vitest/coverage-v8": "^5.1.0",
     "eslint": "^9",
     "eslint-config-next": "15.5.29",
+    "oxfmt": "^0.76.0",
     "supabase": "^3.0.0",
     "tailwindcss": "^4",
     "typescript": "^5",

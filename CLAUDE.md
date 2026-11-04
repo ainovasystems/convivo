@@ -44,7 +44,12 @@ src/
 supabase/
   config.toml
   migrations/             migraciones SQL (orden por timestamp)
-tests/unit, tests/e2e
+  seed.sql                datos de ejemplo SOLO para desarrollo
+tests/
+  unit/                   Vitest puro
+  db/                     Vitest + PGlite: migraciones, RLS y reglas de negocio
+    supabase-shim.sql     roles/auth/storage mínimos de Supabase para los tests
+  e2e/                    Playwright
 ```
 
 ## Comandos
@@ -54,10 +59,12 @@ tests/unit, tests/e2e
 | `npm run dev` | servidor de desarrollo |
 | `npm run build` / `npm start` | build y servidor de producción |
 | `npm run lint` / `npm run typecheck` | ESLint y `tsc --noEmit` |
-| `npm test` | Vitest |
+| `npm test` | Vitest (unitarios + tests de base de datos) |
+| `npm run test:db` | solo los tests de base de datos (PGlite, sin Docker) |
 | `npm run test:e2e` | Playwright (hace falta `npm run build` antes; levanta `next start`) |
 | `npm run typegen` | genera los tipos desde el proyecto remoto (necesita `SUPABASE_PROJECT_REF` y `supabase login` o `SUPABASE_ACCESS_TOKEN`) |
 | `npm run typegen:local` | lo mismo contra el Supabase local (necesita Docker) |
+| `npm run typegen:db` | lo mismo contra cualquier Postgres con las migraciones aplicadas (`SUPABASE_DB_URL`, añade `?sslmode=disable` si es local) |
 | `npm run db:push` | aplica las migraciones al proyecto enlazado (`supabase link --project-ref …` antes) |
 
 Antes de cada commit: `npm run lint && npm run typecheck && npm test && npm run build`.
@@ -69,6 +76,67 @@ Plantilla en `.env.example`. Los valores reales van en `.env.local` (ignorado po
 - `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`: públicas, llegan al navegador.
 - `SUPABASE_SERVICE_ROLE_KEY`: **solo servidor**. Nunca con prefijo `NEXT_PUBLIC_`.
 - `SUPABASE_PROJECT_REF`: solo para `typegen`.
+
+## Base de datos
+
+### Aplicar las migraciones a tu proyecto de Supabase
+
+**Opción A, CLI (recomendada):**
+
+```bash
+npx supabase login                      # una vez; abre el navegador
+npx supabase link --project-ref <ref>   # <ref> = la parte xxxx de https://xxxx.supabase.co
+npm run db:push                         # aplica supabase/migrations/ en orden
+SUPABASE_PROJECT_REF=<ref> npm run typegen
+```
+
+**Opción B, editor SQL del panel:** pega y ejecuta cada fichero de `supabase/migrations/` **en orden** (por el nombre). No mezcles A y B en el mismo proyecto: la CLI lleva un registro de las migraciones aplicadas y no sabría de las pegadas a mano.
+
+**Datos de ejemplo (solo desarrollo o staging, NUNCA producción):** pega `supabase/seed.sql` en el editor SQL. Crea 8 usuarios `@convivo.test` con la contraseña `convivo-dev-1234`.
+
+**Nombrar a un admin:** `insert into public.admin_users (user_id) values ('<uuid del usuario>');`
+
+### Mapa del esquema
+
+| Tabla | Para qué | Quién lee | Quién escribe |
+|---|---|---|---|
+| `profiles` | perfil público (1:1 con `auth.users`, creado por un trigger) | todos | el dueño, solo columnas editables |
+| `blocks` | A bloquea a B | quien bloquea | quien bloquea |
+| `listings` | anuncios room/flat/seeking | todos si `active`; el dueño, todos los suyos | el dueño (solo borra borradores) |
+| `listing_addresses` | dirección exacta | el dueño e interesados `accepted` | el dueño |
+| `interests` | "me interesa" + máquina de estados | las dos partes | interesado (alta/retirar), anunciante (aceptar/rechazar) |
+| `messages` | chat por interés | las dos partes | las dos partes, si `pending` o `accepted`; no se editan |
+| `stays` | estancia host + guest | miembros | alta directa; cambios solo por RPC |
+| `stay_participants` | compañeros de la estancia | miembros | solo por RPC |
+| `reviews` | reseñas | publicadas: todos; el autor, la suya | alta por el autor; inmutables |
+| `reports` | denuncias | quien denuncia y admins | quien denuncia (alta); admin (resolver) |
+| `admin_users` | administradores | nadie (vía `private.is_admin()`) | SQL a mano |
+
+RPC (`supabase.rpc(...)`): `confirm_stay`, `cancel_stay`, `end_stay`, `add_stay_participant`, `confirm_stay_participation`, `decline_stay_participation`, `get_review_window`, `delete_review`, `profile_review_stats`, `listing_review_stats`, `review_criteria_for`, `am_i_admin`.
+
+### Reglas de reseñas tal como están implementadas
+
+- **Elegibilidad (a):** trigger `private.reviews_before_insert`. Exige una estancia `active` o `ended` con las dos confirmaciones y un autor que sea host, guest o compañero confirmado. Relaciones válidas: guest→inmueble, guest→host, host→guest y guest/compañero↔guest/compañero. La columna `relationship` la calcula el trigger, no el cliente.
+- **Ventana:** hay hasta dos aperturas. La primera llega a los 30 días de `start_date` y la segunda al llegar `end_date`; ninguna es anterior a la doble confirmación. Cada ventana dura 30 días. Como solo hay una reseña por estancia y sujeto, quien reseña en la primera ya no lo hace en la segunda. Las inserciones de sistema (sin JWT: seed o service_role) se saltan la comprobación de ventana.
+- **Doble ciego (b):** `published_at` es la fecha **programada** de publicación: apertura de la ventana + 14 días, o `now()` para las dos reseñas en cuanto la contraparte reseña. Los pares se cuentan por personas: la reseña del guest sobre el inmueble cuenta como dirigida al host. Para leer: `published_at <= now()`. No hay cron.
+- **Inmutabilidad (c):** sin `UPDATE`/`DELETE` para usuarios, y un trigger que bloquea la edición del contenido para cualquier rol, también service_role. El borrado es `delete_review(id, motivo)`: deja fecha, motivo y autor del borrado, y vacía nota, criterios y texto. Las reseñas borradas siguen apareciendo como constancia.
+- **Criterios** (todos de 1 a 5 y obligatorios, consultables con `review_criteria_for`):
+  - inmueble: `cleanliness`, `accuracy`, `area`, `condition`, `value`
+  - propietario: `communication`, `treatment`, `compliance`, `deposit`
+  - inquilino: `payment_punctuality`, `home_care`, `coexistence`, `communication`
+  - compañero: `coexistence`, `cleanliness`, `noise`, `respect`
+
+### Tests de base de datos
+
+`tests/db/` levanta un Postgres en memoria (PGlite, WASM) con `supabase-shim.sql` y aplica las migraciones reales. Simula usuarios con `SET ROLE authenticated` y claims JWT, como hace la API. Ver `as()` en `tests/db/helpers.ts`. **Toda regla nueva de RLS o de negocio lleva su test aquí.** Limitación: PGlite es Postgres 18 y Supabase usa 15 o 17, así que no hay que usar sintaxis exclusiva de la 18. Las migraciones también se verificaron aplicándolas sobre un Postgres 16 real.
+
+### Convenciones SQL
+
+- `public`: tablas y RPC expuestas por la API. `private`: helpers de triggers y RLS, no expuestos por la API.
+- Toda función `security definer` lleva `set search_path = ''` y nombres cualificados (`public.x`, `auth.uid()`).
+- RLS activada en todas las tablas, con `revoke all` y después `grant` mínimo, incluidos permisos por columna.
+- En las políticas se usa `(select auth.uid())`, que se evalúa una sola vez por consulta y no por fila.
+- Mensajes de error de los triggers en español: la app puede mostrarlos tal cual.
 
 ## Convenciones
 
@@ -93,3 +161,14 @@ Plantilla en `.env.example`. Los valores reales van en `.env.local` (ignorado po
 7. La CLI de Supabase va como devDependency (`npx supabase …`), no hace falta instalarla global.
 8. `@playwright/test` está fijado a 1.63.0 para que coincida con el Chromium preinstalado en la sesión en la nube. En local: `npx playwright install chromium`.
 9. Rango de edad en lugar de fecha de nacimiento (minimización de datos, RGPD).
+10. **Columnas de BD en inglés** (`city`, `monthly_rent`…); los textos de interfaz, en español.
+11. **Dirección exacta en una tabla aparte** (`listing_addresses`), porque RLS filtra filas y no columnas.
+12. **Hábitos y reglas en jsonb con claves cerradas**, validadas con CHECK: no se pueden guardar ni filtrar criterios discriminatorios.
+13. **Borradores incompletos permitidos.** Los CHECK de campos obligatorios por tipo solo se aplican a partir de `status <> 'draft'`.
+14. **Estancias retroactivas** (sin interés previo y con inicio en el pasado), con doble confirmación igualmente, para resolver el arranque en frío de la reputación.
+15. **Los cambios de estado de las estancias van por RPC** (`confirm_stay`…), nunca con UPDATE directo.
+16. **Doble ciego sin cron:** `published_at` guarda la fecha programada de publicación.
+17. **Estadísticas mediante funciones `security definer`** con filtro explícito de "publicada", en lugar de vistas (que se saltarían RLS o contarían reseñas pendientes).
+18. **Denuncias con claves foráneas reales** por tipo de objetivo y CHECK de "exactamente uno".
+19. **Borrado de cuenta en cascada por ahora.** El trigger impide borrar reseñas directamente, pero deja pasar la cascada. TODO (Prompt 6): anonimizar en vez de borrar.
+20. Bucket `listing-photos` público (máximo 5 MB, jpeg/png/webp), con escritura solo en `{user_id}/…`.
