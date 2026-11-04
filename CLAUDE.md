@@ -81,6 +81,17 @@ Antes de cada commit: `npm run lint && npm run typecheck && npm test && npm run 
 - **Verificación:** email verificado se sincroniza desde Auth con un trigger. **Teléfono: TODO**, el campo `phone_verified` existe pero no hay flujo, y el número irá en una tabla privada aparte. **Nunca se pide ni se guarda el DNI.**
 - **Configuración de Auth en producción** (panel de Supabase → Authentication): activar "Confirm email", Site URL = dominio real, Redirect URLs = `https://<dominio>/auth/callback`, y SMTP propio (el de Supabase tiene un límite muy bajo). En local, `supabase/config.toml` lleva las confirmaciones desactivadas.
 
+## Anuncios
+
+- **Rutas:** `/publicar` (paso 1: tipo; crea el borrador), `/publicar/[id]?paso=datos|fotos|revision` (asistente; sirve también para editar), `/anuncios` (búsqueda), `/anuncios/[id]` (ficha) y `/mis-anuncios` (editar, pausar, reactivar, cerrar, duplicar y borrar borradores).
+- **Esquemas** en `src/lib/listings/schema.ts`: `listingDraftSchema` (todo opcional, para el autoguardado) y `publishErrors()` (lo obligatorio para publicar según el tipo, igual que el CHECK de la BD). `toListingRow()` pone a `null` los campos que no aplican al tipo.
+- **Autoguardado** solo en borradores (1 s después de dejar de escribir). Un anuncio publicado o pausado se guarda a mano y exige los datos completos.
+- **Fotos:** se comprimen en el navegador (lado mayor ≤ 1600 px, WebP, sin EXIF/GPS) y se suben directamente a Storage con el cliente del navegador. RLS limita la escritura a `{user_id}/…` y la ruta usada es `{user_id}/{listing_id}/{uuid}.webp`. El orden se guarda con `updatePhotos()`, que comprueba que cada ruta pertenezca a ese anuncio y borra del bucket las fotos quitadas. Máximo 8.
+- **Filtros en la URL** (`src/lib/listings/filters.ts`): `tipo, provincia, ciudad, precio_min, precio_max, desde, amueblado, gastos, mascotas, fumadores, orden, pagina`. `parseFilters` ignora los valores inválidos (nunca rompe), `serializeFilters` genera la URL canónica y `applyListingFilters` construye la consulta (con tests unitarios sobre un builder falso). El formulario es un `<form method="get">`: funciona sin JavaScript. Con `tipo=seeking`, el precio filtra y ordena por `max_budget`. Paginación por páginas de 12, con desempate por `id`.
+- **Dirección exacta:** la pide `/anuncios/[id]` sin más; RLS solo devuelve la fila al dueño y a los interesados aceptados. Los demás ven barrio, ciudad y provincia.
+- **Estados:** `active ↔ paused`, `active|paused → closed` (definitivo; se puede duplicar). Solo se borran borradores.
+- **Duplicar** copia los datos, la dirección y las fotos (copia física en Storage) a un borrador nuevo.
+
 ## Desarrollo local con Supabase
 
 ```bash
@@ -200,3 +211,6 @@ RPC (`supabase.rpc(...)`): `confirm_stay`, `cancel_stay`, `end_stay`, `add_stay_
 22. **Magic link solo para cuentas existentes** (`shouldCreateUser: false`). El registro siempre pasa por `/registro`, con nombre y aceptación de condiciones.
 23. **Next.js 15 limita el cuerpo de las Server Actions a 1 MB**: se sube a 3 MB en `next.config.ts` para los avatares.
 24. Componentes de formulario accesibles en `src/components/ui/` (label, `aria-invalid`, `aria-describedby`, avisos con `role=alert/status`).
+25. **Asistente de publicación en una sola página de cliente**, con el paso en `?paso=`: recarga y Atrás funcionan, y el borrador vive en la BD (no en el navegador).
+26. **Subida directa de fotos a Storage desde el navegador** (no por Server Action): evita el límite de cuerpo de Next y la doble transferencia. La seguridad la ponen RLS de Storage y la validación de rutas en `updatePhotos`.
+27. **Mapa: no se muestra** de momento. Solo texto de barrio/zona, para no revelar la ubicación exacta ni depender de un proveedor de mapas.
