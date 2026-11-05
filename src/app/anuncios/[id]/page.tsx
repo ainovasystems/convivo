@@ -3,12 +3,15 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { z } from "zod";
 
+import { InterestForm } from "@/components/conversations/interest-form";
 import { Gallery } from "@/components/listings/gallery";
 import { Avatar } from "@/components/profile/avatar";
 import { ReviewCard } from "@/components/profile/review-card";
 import { Chip } from "@/components/ui/chip";
 import { Rating } from "@/components/ui/rating";
 import { getCurrentUser } from "@/lib/auth";
+import { getMyInterestForListing } from "@/lib/conversations/queries";
+import { INTEREST_STATUS_LABELS } from "@/lib/conversations/state";
 import {
   formatEuros,
   formatShortDate,
@@ -46,6 +49,8 @@ export default async function ListingPage({ params, searchParams }: Props) {
   if (!idSchema.safeParse(id).success) notFound();
   const [detail, viewer, sp] = await Promise.all([getListingDetail(id), getCurrentUser(), searchParams]);
   if (!detail) notFound();
+  const myInterest =
+    viewer && viewer.id !== detail.listing.owner_id ? await getMyInterestForListing(id, viewer.id) : null;
 
   const { listing: l, address, stats, reviews, ownerStats } = detail;
   const isOwner = viewer?.id === l.owner_id;
@@ -227,9 +232,22 @@ export default async function ListingPage({ params, searchParams }: Props) {
                   Ir a mis anuncios
                 </Link>
               </>
+            ) : viewer && myInterest ? (
+              <>
+                <p className="text-sm">
+                  Ya mostraste interés (<strong>{INTEREST_STATUS_LABELS[myInterest.status].toLowerCase()}</strong>).
+                </p>
+                <Link
+                  href={`/mensajes/${myInterest.id}`}
+                  className="block rounded-md bg-brand px-4 py-2.5 text-center font-medium text-brand-foreground hover:opacity-90"
+                >
+                  Ir a la conversación
+                </Link>
+              </>
+            ) : viewer && l.status === "active" ? (
+              <InterestForm listingId={l.id} ownerName={owner?.display_name.split(" ")[0] ?? "el anunciante"} />
             ) : viewer ? (
-              // TODO(Prompt 4): botón «Me interesa» con mensaje inicial.
-              <p className="text-sm text-muted">Pronto podrás mostrar interés y escribir al anunciante desde aquí.</p>
+              <p className="text-sm text-muted">Este anuncio no admite contactos ahora mismo.</p>
             ) : (
               <Link
                 href={`/entrar?next=/anuncios/${l.id}`}
