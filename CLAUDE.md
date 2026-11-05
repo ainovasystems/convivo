@@ -117,6 +117,11 @@ Antes de cada commit: `npm run lint && npm run typecheck && npm test && npm run 
 - **Avisos de ventana:** `GET /api/cron/review-windows` (Vercel Cron, diario a las 08:17 UTC, en `vercel.json`, protegido con `Authorization: Bearer CRON_SECRET`). Avisa por email y en la app cuando se abre la ventana y 3 días antes de que se cierre. Es idempotente gracias a `review_window_notices`. **Segundo uso acotado de service_role.**
 - **Patrón de UI tras Server Actions en la misma página:** devolver el resultado y hacer `router.refresh()` en el cliente, mostrando ya lo confirmado por el servidor (respuesta publicada, cambio de estado recibido por Realtime). Revalidar la propia página desde la acción podía dejar el formulario «pendiente» para siempre.
 
+## Diagnóstico y errores
+
+- **`/estado`**: página de diagnóstico para quien despliega. Dice si existen las variables (nunca su valor), si la base de datos responde, si la instalación SQL está completa (comprueba objetos de la última migración) y si funciona el login. Tiene `noindex`.
+- **`error.tsx`, `global-error.tsx` y `not-found.tsx`**: pantallas de error con la marca, botón de reintentar y el código del error (digest), que sirve para buscarlo en los logs de Vercel.
+
 ## Desarrollo local con Supabase
 
 ```bash
@@ -134,7 +139,7 @@ Plantilla en `.env.example`. Los valores reales van en `.env.local` (ignorado po
 
 - `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`: públicas, llegan al navegador. La segunda admite la *publishable key* nueva (`sb_publishable_…`) o la «anon» clásica; las dos están probadas con toda la suite e2e.
 - `SUPABASE_SERVICE_ROLE_KEY`: **solo servidor**. Nunca con prefijo `NEXT_PUBLIC_`. Admite la *secret key* nueva (`sb_secret_…`) o la «service_role» clásica.
-- **Nombres alternativos aceptados** (el proyecto de Vercel los usa): `projecturl` = `NEXT_PUBLIC_SUPABASE_URL`, `publickey` = `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `secretkey` = `SUPABASE_SERVICE_ROLE_KEY`, `cronsecret` = `CRON_SECRET`, `signalsecret` = `SIGNAL_SECRET`. Las dos públicas se copian a `NEXT_PUBLIC_*` en `next.config.ts` (`env`), así que llegan al navegador. Ojo: Vercel Cron solo envía el secreto si la variable se llama exactamente `CRON_SECRET`.
+- **Nombres alternativos aceptados** (el proyecto de Vercel los usa): `projecturl` = `NEXT_PUBLIC_SUPABASE_URL`, `publickey` = `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `secretkey` = `SUPABASE_SERVICE_ROLE_KEY`, `cronsecret` = `CRON_SECRET`, `signalsecret` = `SIGNAL_SECRET`, `siteurl` = `NEXT_PUBLIC_SITE_URL`. Las dos públicas se copian a `NEXT_PUBLIC_*` en `next.config.ts` (`env`), así que llegan al navegador. Ojo: Vercel Cron solo envía el secreto si la variable se llama exactamente `CRON_SECRET`.
 - `SUPABASE_PROJECT_REF`: solo para `typegen`.
 - `NEXT_PUBLIC_SITE_URL`: URL pública para los enlaces de los emails (en local se deduce de la cabecera Host).
 - `RESEND_API_KEY`, `EMAIL_FROM`: email transaccional en producción. `MAILPIT_URL`: buzón local (`npx supabase status`).
