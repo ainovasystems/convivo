@@ -53,6 +53,40 @@ export type Database = {
           },
         ];
       };
+      conversation_reads: {
+        Row: {
+          interest_id: string;
+          last_read_at: string;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          interest_id: string;
+          last_read_at?: string;
+          user_id: string;
+        };
+        Update: {
+          interest_id?: string;
+          last_read_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "conversation_reads_interest_id_fkey";
+            columns: ["interest_id"];
+            isOneToOne: false;
+            referencedRelation: "interests";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "conversation_reads_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       interests: {
         Row: {
           created_at: string;
@@ -794,6 +828,14 @@ export type Database = {
           avg_rating: number;
           criteria_avg: Json;
           review_count: number;
+        }[];
+      };
+      mark_conversation_read: { Args: { p_interest_id: string }; Returns: undefined };
+      my_unread_counts: {
+        Args: Record<PropertyKey, never>;
+        Returns: {
+          interest_id: string;
+          unread: number;
         }[];
       };
       profile_review_stats: {

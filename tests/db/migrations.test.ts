@@ -11,6 +11,7 @@ describe("migraciones", () => {
     expect(rows.map((r) => r.tablename)).toEqual([
       "admin_users",
       "blocks",
+      "conversation_reads",
       "interests",
       "listing_addresses",
       "listings",
