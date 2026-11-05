@@ -28,8 +28,10 @@ Tiempo: unos 20-30 minutos. No hace falta instalar nada en tu ordenador.
    - Crea 8 usuarios de prueba. Todos tienen la contraseña `convivo-dev-1234`, por ejemplo `ana@convivo.test` o `brais@convivo.test`.
    - ⚠️ Úsalo solo en este proyecto de pruebas, nunca en el definitivo.
 5. **Permite registrarse sin confirmar el email** (solo mientras pruebas):
-   - Ve a **Authentication → Sign In / Providers → Email** (o *Providers → Email*).
-   - Desactiva **Confirm email** y guarda.
+   - Ve a **Authentication → Sign In / Providers** (en algunas versiones, *Sign In / Up*).
+   - En el apartado **User Signups**, desactiva **Confirm email** y deja **activado** *Allow new users to sign up*. Guarda.
+   - Si no aparece ahí, pulsa el proveedor **Email** en la lista de proveedores: el mismo interruptor está en ese panel.
+   - ⚠️ No lo busques en **Authentication → Emails**: esa página solo tiene las plantillas de los correos.
    - Así puedes crear cuentas al momento. Antes de abrir la app al público lo volverás a activar.
 6. **Copia las claves.** Ve a **Project Settings → API** (o *API Keys*) y apunta en una nota estos tres valores:
    - **Project URL**: algo como `https://abcd1234.supabase.co`.
