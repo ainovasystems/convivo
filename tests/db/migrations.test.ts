@@ -16,11 +16,15 @@ describe("migraciones", () => {
       "listing_addresses",
       "listings",
       "messages",
+      "notifications",
       "profiles",
       "reports",
+      "review_responses",
+      "review_window_notices",
       "reviews",
       "stay_participants",
       "stays",
+      "user_signals",
     ]);
     // RLS activada en TODAS las tablas públicas.
     expect(rows.every((r) => r.rowsecurity)).toBe(true);

@@ -311,6 +311,48 @@ export type Database = {
           },
         ];
       };
+      notifications: {
+        Row: {
+          body: string | null;
+          created_at: string;
+          id: string;
+          kind: string;
+          read_at: string | null;
+          title: string;
+          url: string | null;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          body?: string | null;
+          created_at?: string;
+          id?: string;
+          kind: string;
+          read_at?: string | null;
+          title: string;
+          url?: string | null;
+          user_id: string;
+        };
+        Update: {
+          body?: string | null;
+          created_at?: string;
+          id?: string;
+          kind?: string;
+          read_at?: string | null;
+          title?: string;
+          url?: string | null;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "notifications_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       profiles: {
         Row: {
           age_range: Database["public"]["Enums"]["age_range"] | null;
@@ -449,6 +491,83 @@ export type Database = {
           {
             foreignKeyName: "reports_target_user_id_fkey";
             columns: ["target_user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      review_responses: {
+        Row: {
+          author_id: string;
+          body: string;
+          created_at: string;
+          review_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          author_id: string;
+          body: string;
+          created_at?: string;
+          review_id: string;
+        };
+        Update: {
+          author_id?: string;
+          body?: string;
+          created_at?: string;
+          review_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "review_responses_author_id_fkey";
+            columns: ["author_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "review_responses_review_id_fkey";
+            columns: ["review_id"];
+            isOneToOne: true;
+            referencedRelation: "reviews";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      review_window_notices: {
+        Row: {
+          kind: string;
+          opens_at: string;
+          sent_at: string;
+          stay_id: string;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          kind: string;
+          opens_at: string;
+          sent_at?: string;
+          stay_id: string;
+          user_id: string;
+        };
+        Update: {
+          kind?: string;
+          opens_at?: string;
+          sent_at?: string;
+          stay_id?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "review_window_notices_stay_id_fkey";
+            columns: ["stay_id"];
+            isOneToOne: false;
+            referencedRelation: "stays";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "review_window_notices_user_id_fkey";
+            columns: ["user_id"];
             isOneToOne: false;
             referencedRelation: "profiles";
             referencedColumns: ["id"];
@@ -690,6 +809,39 @@ export type Database = {
           },
         ];
       };
+      user_signals: {
+        Row: {
+          first_seen_at: string;
+          ip_hash: string;
+          last_seen_at: string;
+          ua_hash: string;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          first_seen_at?: string;
+          ip_hash: string;
+          last_seen_at?: string;
+          ua_hash: string;
+          user_id: string;
+        };
+        Update: {
+          first_seen_at?: string;
+          ip_hash?: string;
+          last_seen_at?: string;
+          ua_hash?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "user_signals_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
     };
     Views: {
       [_ in never]: never;
@@ -710,6 +862,16 @@ export type Database = {
           isOneToOne: true;
           isSetofReturn: false;
         };
+      };
+      admin_review_flags: {
+        Args: Record<PropertyKey, never>;
+        Returns: {
+          author_id: string;
+          review_id: string;
+          shared_device: boolean;
+          shared_ip: boolean;
+          subject_user_id: string;
+        }[];
       };
       am_i_admin: { Args: Record<PropertyKey, never>; Returns: boolean };
       cancel_stay: {
@@ -847,9 +1009,21 @@ export type Database = {
           review_count: number;
         }[];
       };
+      record_signal: { Args: { p_ip_hash: string; p_ua_hash: string }; Returns: undefined };
       review_criteria_for: {
         Args: { p_relationship: Database["public"]["Enums"]["review_relationship"] };
         Returns: string[];
+      };
+      review_window_notices_due: {
+        Args: Record<PropertyKey, never>;
+        Returns: {
+          closes_at: string;
+          kind: string;
+          listing_title: string;
+          opens_at: string;
+          stay_id: string;
+          user_id: string;
+        }[];
       };
     };
     Enums: {
