@@ -16,7 +16,9 @@ import { createAdminClient } from "@/lib/supabase/admin";
 export const dynamic = "force-dynamic";
 
 export async function GET(request: NextRequest) {
-  const secret = process.env.CRON_SECRET;
+  // Vercel Cron solo envía el secreto automáticamente si la variable se llama CRON_SECRET;
+  // `cronsecret` se acepta para lanzarla a mano.
+  const secret = process.env.CRON_SECRET ?? process.env.cronsecret;
   if (!secret || request.headers.get("authorization") !== `Bearer ${secret}`) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
   }
