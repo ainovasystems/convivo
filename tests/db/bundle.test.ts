@@ -5,7 +5,6 @@ import { PGlite } from "@electric-sql/pglite";
 import { pgcrypto } from "@electric-sql/pglite/contrib/pgcrypto";
 import { describe, expect, it } from "vitest";
 
-// @ts-expect-error módulo JS sin tipos
 import { buildBundle } from "../../scripts/bundle-sql.mjs";
 
 const ROOT = join(__dirname, "..", "..");
