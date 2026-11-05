@@ -65,6 +65,7 @@ tests/
 | `npm run typegen` | genera los tipos desde el proyecto remoto (necesita `SUPABASE_PROJECT_REF` y `supabase login` o `SUPABASE_ACCESS_TOKEN`) |
 | `npm run typegen:local` | lo mismo contra el Supabase local (necesita Docker) |
 | `npm run typegen:db` | lo mismo contra cualquier Postgres con las migraciones aplicadas (`SUPABASE_DB_URL`, añade `?sslmode=disable` si es local) |
+| `npm run db:bundle` | regenera `supabase/instalar-base-de-datos.sql` (todas las migraciones en un fichero) |
 | `npm run db:push` | aplica las migraciones al proyecto enlazado (`supabase link --project-ref …` antes) |
 
 Antes de cada commit: `npm run lint && npm run typecheck && npm test && npm run build`.
@@ -151,7 +152,7 @@ npm run db:push                         # aplica supabase/migrations/ en orden
 SUPABASE_PROJECT_REF=<ref> npm run typegen
 ```
 
-**Opción B, editor SQL del panel:** pega y ejecuta cada fichero de `supabase/migrations/` **en orden** (por el nombre). No mezcles A y B en el mismo proyecto: la CLI lleva un registro de las migraciones aplicadas y no sabría de las pegadas a mano.
+**Opción B, editor SQL del panel (proyecto nuevo):** pega y ejecuta `supabase/instalar-base-de-datos.sql`, que son todas las migraciones en un solo fichero. Se regenera con `npm run db:bundle`, y un test avisa si se queda desfasado. Guía para no técnicos en `docs/VER-EN-EL-MOVIL.md`. No mezcles A y B en el mismo proyecto: la CLI lleva un registro de las migraciones aplicadas y no sabría de las pegadas a mano.
 
 **Datos de ejemplo (solo desarrollo o staging, NUNCA producción):** pega `supabase/seed.sql` en el editor SQL. Crea 8 usuarios `@convivo.test` con la contraseña `convivo-dev-1234`.
 
