@@ -1,6 +1,5 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
 import { getCurrentUser } from "@/lib/auth";
@@ -42,7 +41,6 @@ export async function dismissReport(_prev: FormState, formData: FormData): Promi
     .eq("id", parsed.data.reportId)
     .eq("status", "open");
   if (error) return { status: "error", message: "No se ha podido descartar la denuncia." };
-  revalidatePath("/admin");
   return { status: "success", message: "Denuncia descartada." };
 }
 
@@ -76,6 +74,5 @@ export async function removeReview(_prev: FormState, formData: FormData): Promis
     })
     .eq("target_review_id", parsed.data.reviewId)
     .eq("status", "open");
-  revalidatePath("/admin");
   return { status: "success", message: "Reseña eliminada y denuncias cerradas." };
 }

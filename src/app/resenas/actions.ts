@@ -68,9 +68,9 @@ export async function respondToReview(_prev: FormState, formData: FormData): Pro
     .from("review_responses")
     .insert({ review_id: parsed.data.reviewId, author_id: user.id, body: parsed.data.body });
   if (error) return { status: "error", message: dbErrorMessage(error) };
-
-  const path = formData.get("path");
-  if (typeof path === "string" && path.startsWith("/")) revalidatePath(path);
+  // Sin revalidatePath: el cliente hace router.refresh() al recibir el éxito.
+  // Revalidar aquí desmontaba el propio formulario mientras llegaba la
+  // respuesta y, a veces, la acción se quedaba "pendiente" para siempre.
   return { status: "success", message: "Respuesta publicada." };
 }
 
@@ -93,8 +93,9 @@ export async function reportReview(_prev: FormState, formData: FormData): Promis
   });
   if (error) return { status: "error", message: dbErrorMessage(error) };
 
-  const path = formData.get("path");
-  if (typeof path === "string" && path.startsWith("/")) revalidatePath(path);
+  // No revalidamos la página: si la denuncia oculta la reseña, la tarjeta
+  // desaparecería y la persona no vería la confirmación. Se oculta en la
+  // siguiente carga (y para el resto de visitantes, ya mismo: lo decide RLS).
   return {
     status: "success",
     message:

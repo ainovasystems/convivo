@@ -1,6 +1,7 @@
 "use client";
 
-import { useActionState } from "react";
+import { useRouter } from "next/navigation";
+import { useActionState, useEffect } from "react";
 
 import { dismissReport, removeReview } from "@/app/admin/actions";
 import { FormAlert } from "@/components/ui/form-alert";
@@ -11,6 +12,10 @@ export function ModerationForms({ reportId, reviewId }: { reportId: string; revi
   const [dismissState, dismiss] = useActionState(dismissReport, initialFormState);
   const [removeState, remove] = useActionState(removeReview, initialFormState);
   const state = removeState.message ? removeState : dismissState;
+  const router = useRouter();
+  useEffect(() => {
+    if (state.status === "success") router.refresh();
+  }, [state, router]);
   if (state.status === "success") return <FormAlert state={state} />;
 
   return (

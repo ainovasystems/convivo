@@ -1,17 +1,35 @@
 "use client";
 
-import { useActionState } from "react";
+import { useRouter } from "next/navigation";
+import { useActionState, useEffect, useState } from "react";
 
 import { reportReview, respondToReview } from "@/app/resenas/actions";
 import { SelectField, TextAreaField } from "@/components/ui/field";
 import { FormAlert } from "@/components/ui/form-alert";
 import { SubmitButton } from "@/components/ui/submit-button";
-import { initialFormState } from "@/lib/forms";
+import { initialFormState, type FormState } from "@/lib/forms";
 import { REPORT_REASONS } from "@/lib/reviews/schema";
 
 export function RespondForm({ reviewId, path }: { reviewId: string; path: string }) {
-  const [state, action] = useActionState(respondToReview, initialFormState);
-  if (state.status === "success") return <FormAlert state={state} />;
+  const [submitted, setSubmitted] = useState("");
+  const [state, action] = useActionState(async (prev: FormState, fd: FormData) => {
+    setSubmitted(String(fd.get("body") ?? "").trim());
+    return respondToReview(prev, fd);
+  }, initialFormState);
+  const router = useRouter();
+  useEffect(() => {
+    if (state.status === "success") router.refresh();
+  }, [state, router]);
+
+  // Confirmada por el servidor: se muestra ya, sin esperar a recargar la página.
+  if (state.status === "success") {
+    return (
+      <div className="ml-4 border-l-2 border-brand/40 pl-3 text-sm" role="status">
+        <p className="font-medium">Respuesta de la persona reseñada</p>
+        <p className="whitespace-pre-line text-muted">{submitted}</p>
+      </div>
+    );
+  }
   return (
     <details className="text-sm">
       <summary className="cursor-pointer font-medium text-brand">Responder públicamente</summary>
