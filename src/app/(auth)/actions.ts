@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 
 import type { FormState } from "@/lib/forms";
 import { getSiteUrl } from "@/lib/site-url";
+import { recordSignal } from "@/lib/signals";
 import { createClient } from "@/lib/supabase/server";
 import { magicLinkSchema, safeNextPath, signInSchema, signUpSchema } from "@/lib/validation/auth";
 import { fieldErrors } from "@/lib/validation/profile";
@@ -30,6 +31,7 @@ export async function signInWithPassword(_prev: FormState, formData: FormData): 
     return { status: "error", message: "Email o contraseña incorrectos." };
   }
 
+  await recordSignal();
   redirect(safeNextPath(formData.get("next")));
 }
 
@@ -94,6 +96,7 @@ export async function signUp(_prev: FormState, formData: FormData): Promise<Form
 
   // Con la confirmación de email desactivada (local) ya hay sesión.
   if (data.session) {
+    await recordSignal();
     redirect("/perfil/editar?bienvenida=1");
   }
   return {

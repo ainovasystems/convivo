@@ -1,11 +1,14 @@
 import Link from "next/link";
 
 import { Avatar } from "@/components/profile/avatar";
+import { ReportForm, RespondForm } from "@/components/reviews/review-interactions";
 import { Rating } from "@/components/ui/rating";
 import type { ReceivedReview } from "@/lib/profile/queries";
 import { CRITERIA_LABELS, formatDate } from "@/lib/reviews/labels";
 
-export function ReviewCard({ review }: { review: ReceivedReview }) {
+type Viewer = { viewerId: string | null; respondentId: string; path: string };
+
+export function ReviewCard({ review, viewer }: { review: ReceivedReview; viewer?: Viewer }) {
   if (review.deleted_at) {
     return (
       <li className="rounded-lg border border-dashed border-border p-4 text-sm text-muted">
@@ -49,6 +52,20 @@ export function ReviewCard({ review }: { review: ReceivedReview }) {
               </div>
             ))}
           </dl>
+        ) : null}
+        {review.response ? (
+          <div className="ml-4 border-l-2 border-brand/40 pl-3 text-sm">
+            <p className="font-medium">Respuesta de la persona reseñada</p>
+            <p className="whitespace-pre-line text-muted">{review.response.body}</p>
+          </div>
+        ) : null}
+        {viewer?.viewerId ? (
+          <div className="flex flex-col gap-2">
+            {viewer.viewerId === viewer.respondentId && !review.response ? (
+              <RespondForm reviewId={review.id} path={viewer.path} />
+            ) : null}
+            {viewer.viewerId !== review.author?.id ? <ReportForm reviewId={review.id} path={viewer.path} /> : null}
+          </div>
         ) : null}
       </article>
     </li>

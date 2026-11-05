@@ -5,7 +5,7 @@ import { getPublicEnv, hasPublicEnv } from "@/lib/env";
 import type { Database } from "@/types/database.types";
 
 /** Rutas que exigen sesión. */
-const PROTECTED_PREFIXES = ["/perfil/editar", "/publicar", "/mis-", "/mensajes", "/admin"];
+const PROTECTED_PREFIXES = ["/perfil/editar", "/publicar", "/mis-", "/mensajes", "/admin", "/resenas"];
 const PROTECTED_EXACT = ["/perfil"];
 
 /** Rutas solo para visitantes sin sesión. */

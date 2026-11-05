@@ -65,6 +65,14 @@ export default async function ProfilePage({ params }: Props) {
             </h1>
             {isOwn ? (
               <Link
+                href="/mis-resenas"
+                className="rounded-md border border-border px-3 py-1.5 text-sm font-medium hover:border-brand focus-visible:outline-2"
+              >
+                Mis reseñas
+              </Link>
+            ) : null}
+            {isOwn ? (
+              <Link
                 href="/perfil/editar"
                 className="rounded-md border border-border px-3 py-1.5 text-sm font-medium hover:border-brand focus-visible:outline-2"
               >
@@ -177,7 +185,7 @@ export default async function ProfilePage({ params }: Props) {
               {groupReviews.length ? (
                 <ul className="space-y-3">
                   {groupReviews.map((r) => (
-                    <ReviewCard key={r.id} review={r} />
+                    <ReviewCard key={r.id} review={r} viewer={{ viewerId: viewer?.id ?? null, respondentId: profile.id, path: `/perfil/${profile.id}` }} />
                   ))}
                 </ul>
               ) : (

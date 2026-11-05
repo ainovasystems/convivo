@@ -47,7 +47,7 @@ export async function getReceivedReviews(id: string) {
   const { data, error } = await supabase
     .from("reviews")
     .select(
-      "id, relationship, rating, criteria, body, published_at, deleted_at, deletion_reason, author:profiles!reviews_author_id_fkey(id, display_name, avatar_path)",
+      "id, relationship, rating, criteria, body, published_at, deleted_at, deletion_reason, author:profiles!reviews_author_id_fkey(id, display_name, avatar_path), response:review_responses(body, created_at)",
     )
     .eq("subject_type", "user")
     .eq("subject_user_id", id)

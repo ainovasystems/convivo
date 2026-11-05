@@ -181,7 +181,7 @@ export default async function ListingPage({ params, searchParams }: Props) {
               {reviews.length ? (
                 <ul className="space-y-3">
                   {reviews.map((r) => (
-                    <ReviewCard key={r.id} review={r} />
+                    <ReviewCard key={r.id} review={r} viewer={{ viewerId: viewer?.id ?? null, respondentId: l.owner_id, path: `/anuncios/${l.id}` }} />
                   ))}
                 </ul>
               ) : (
