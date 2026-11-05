@@ -92,6 +92,18 @@ Antes de cada commit: `npm run lint && npm run typecheck && npm test && npm run 
 - **Estados:** `active ↔ paused`, `active|paused → closed` (definitivo; se puede duplicar). Solo se borran borradores.
 - **Duplicar** copia los datos, la dirección y las fotos (copia física en Storage) a un borrador nuevo.
 
+## Interés, mensajes y estancias
+
+- **Flujo:** «Me interesa» en la ficha (mensaje de 20 a 500 caracteres) → conversación en `/mensajes/[id]` → el anunciante acepta o rechaza (aceptar desbloquea la dirección por RLS) → cualquiera de los dos propone la estancia → la otra parte la confirma → `active`. En habitaciones, host o guest pueden añadir compañeros (pegando el enlace a su perfil), que confirman en `/mis-estancias`.
+- **Máquinas de estados** (la BD manda; `src/lib/conversations/state.ts` es un espejo solo para decidir qué botones mostrar):
+  - interest: `pending → accepted | declined` (anunciante), `pending | accepted → withdrawn` (interesado). Trigger `private.interests_before_update`.
+  - stay: `proposed → active` (cuando confirman ambos, `confirm_stay`), `proposed → cancelled` (`cancel_stay`, cualquiera), `active → ended` (`end_stay`). Sin UPDATE directo.
+- **No leídos:** tabla `conversation_reads` + RPC `mark_conversation_read` y `my_unread_counts`. Quien envía un mensaje lo marca como leído (trigger). Contador en la cabecera.
+- **Anti-spam en BD:** 60 mensajes y 15 intereses por usuario y hora (trigger `private.enforce_rate_limit`, código `P0429`).
+- **Realtime:** `messages` e `interests` están en la publicación `supabase_realtime`, y Realtime aplica RLS a cada suscriptor. **Importante:** en el navegador hay que llamar a `supabase.realtime.setAuth(token)` antes de suscribirse; si no, el canal se une como anónimo y no llega nada (ver `chat-thread.tsx`).
+- **Emails** (`src/lib/email/`): interfaz `Mailer` con `ResendMailer` (`RESEND_API_KEY` + `EMAIL_FROM`), `MailpitMailer` (`MAILPIT_URL`, en local y en los e2e) y `ConsoleMailer` (sin configurar). Plantillas en español con HTML escapado: nuevo interés, interés aceptado y estancia propuesta. `emailUser()` nunca lanza: un fallo de email no deshace la acción.
+- **Uso de service_role (único hasta ahora):** `src/lib/email/notify.ts` lee el email del destinatario con `auth.admin.getUserById`, porque los emails viven en `auth.users`, que ningún usuario puede leer. No se devuelve nunca al cliente.
+
 ## Desarrollo local con Supabase
 
 ```bash
@@ -111,6 +123,7 @@ Plantilla en `.env.example`. Los valores reales van en `.env.local` (ignorado po
 - `SUPABASE_SERVICE_ROLE_KEY`: **solo servidor**. Nunca con prefijo `NEXT_PUBLIC_`.
 - `SUPABASE_PROJECT_REF`: solo para `typegen`.
 - `NEXT_PUBLIC_SITE_URL`: URL pública para los enlaces de los emails (en local se deduce de la cabecera Host).
+- `RESEND_API_KEY`, `EMAIL_FROM`: email transaccional en producción. `MAILPIT_URL`: buzón local (`npx supabase status`).
 
 ## Base de datos
 
@@ -144,10 +157,11 @@ SUPABASE_PROJECT_REF=<ref> npm run typegen
 | `stays` | estancia host + guest | miembros | alta directa; cambios solo por RPC |
 | `stay_participants` | compañeros de la estancia | miembros | solo por RPC |
 | `reviews` | reseñas | publicadas: todos; el autor, la suya | alta por el autor; inmutables |
+| `conversation_reads` | última lectura de cada conversación | el propio usuario | solo por RPC/trigger |
 | `reports` | denuncias | quien denuncia y admins | quien denuncia (alta); admin (resolver) |
 | `admin_users` | administradores | nadie (vía `private.is_admin()`) | SQL a mano |
 
-RPC (`supabase.rpc(...)`): `confirm_stay`, `cancel_stay`, `end_stay`, `add_stay_participant`, `confirm_stay_participation`, `decline_stay_participation`, `get_review_window`, `delete_review`, `profile_review_stats`, `listing_review_stats`, `review_criteria_for`, `am_i_admin`.
+RPC (`supabase.rpc(...)`): `confirm_stay`, `cancel_stay`, `end_stay`, `add_stay_participant`, `confirm_stay_participation`, `decline_stay_participation`, `get_review_window`, `delete_review`, `profile_review_stats`, `listing_review_stats`, `review_criteria_for`, `am_i_admin`, `mark_conversation_read`, `my_unread_counts`.
 
 ### Reglas de reseñas tal como están implementadas
 
@@ -214,3 +228,7 @@ RPC (`supabase.rpc(...)`): `confirm_stay`, `cancel_stay`, `end_stay`, `add_stay_
 25. **Asistente de publicación en una sola página de cliente**, con el paso en `?paso=`: recarga y Atrás funcionan, y el borrador vive en la BD (no en el navegador).
 26. **Subida directa de fotos a Storage desde el navegador** (no por Server Action): evita el límite de cuerpo de Next y la doble transferencia. La seguridad la ponen RLS de Storage y la validación de rutas en `updatePhotos`.
 27. **Mapa: no se muestra** de momento. Solo texto de barrio/zona, para no revelar la ubicación exacta ni depender de un proveedor de mapas.
+28. **El mensaje del interés es también el primer mensaje del chat**, para que la conversación tenga todo el contexto.
+29. **Los compañeros se añaden pegando el enlace a su perfil.** No hay buscador de usuarios, para no permitir enumerar perfiles.
+30. **Límites de frecuencia en la BD**, no en memoria del servidor: funcionan igual con varias instancias en Vercel y no se pueden saltar llamando a la API directamente.
+31. **La cabecera hace salto de línea en móvil** en lugar de usar un menú hamburguesa: menos JavaScript y todo visible. Se revisará en el Prompt 7.
