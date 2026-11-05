@@ -17,7 +17,7 @@ export function createAdminClient() {
   const serviceRoleKey = z
     .string()
     .min(1, "Falta SUPABASE_SERVICE_ROLE_KEY")
-    .parse(process.env.SUPABASE_SERVICE_ROLE_KEY);
+    .parse(process.env.SUPABASE_SERVICE_ROLE_KEY ?? process.env.secretkey);
 
   return createSupabaseClient<Database>(
     env.NEXT_PUBLIC_SUPABASE_URL,

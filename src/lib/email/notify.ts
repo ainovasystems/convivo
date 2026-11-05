@@ -14,7 +14,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
  */
 export async function emailUser(userId: string, build: () => Omit<EmailMessage, "to">): Promise<void> {
   try {
-    if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    if (!process.env.SUPABASE_SERVICE_ROLE_KEY && !process.env.secretkey) {
       console.warn("[email] SUPABASE_SERVICE_ROLE_KEY no configurada: no se envía el email");
       return;
     }

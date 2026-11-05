@@ -134,6 +134,7 @@ Plantilla en `.env.example`. Los valores reales van en `.env.local` (ignorado po
 
 - `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`: públicas, llegan al navegador. La segunda admite la *publishable key* nueva (`sb_publishable_…`) o la «anon» clásica; las dos están probadas con toda la suite e2e.
 - `SUPABASE_SERVICE_ROLE_KEY`: **solo servidor**. Nunca con prefijo `NEXT_PUBLIC_`. Admite la *secret key* nueva (`sb_secret_…`) o la «service_role» clásica.
+- **Nombres alternativos aceptados** (el proyecto de Vercel los usa): `projecturl` = `NEXT_PUBLIC_SUPABASE_URL`, `publickey` = `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `secretkey` = `SUPABASE_SERVICE_ROLE_KEY`, `cronsecret` = `CRON_SECRET`, `signalsecret` = `SIGNAL_SECRET`. Las dos públicas se copian a `NEXT_PUBLIC_*` en `next.config.ts` (`env`), así que llegan al navegador. Ojo: Vercel Cron solo envía el secreto si la variable se llama exactamente `CRON_SECRET`.
 - `SUPABASE_PROJECT_REF`: solo para `typegen`.
 - `NEXT_PUBLIC_SITE_URL`: URL pública para los enlaces de los emails (en local se deduce de la cabecera Host).
 - `RESEND_API_KEY`, `EMAIL_FROM`: email transaccional en producción. `MAILPIT_URL`: buzón local (`npx supabase status`).
