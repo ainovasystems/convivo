@@ -102,7 +102,19 @@ Antes de cada commit: `npm run lint && npm run typecheck && npm test && npm run 
 - **Anti-spam en BD:** 60 mensajes y 15 intereses por usuario y hora (trigger `private.enforce_rate_limit`, código `P0429`).
 - **Realtime:** `messages` e `interests` están en la publicación `supabase_realtime`, y Realtime aplica RLS a cada suscriptor. **Importante:** en el navegador hay que llamar a `supabase.realtime.setAuth(token)` antes de suscribirse; si no, el canal se une como anónimo y no llega nada (ver `chat-thread.tsx`).
 - **Emails** (`src/lib/email/`): interfaz `Mailer` con `ResendMailer` (`RESEND_API_KEY` + `EMAIL_FROM`), `MailpitMailer` (`MAILPIT_URL`, en local y en los e2e) y `ConsoleMailer` (sin configurar). Plantillas en español con HTML escapado: nuevo interés, interés aceptado y estancia propuesta. `emailUser()` nunca lanza: un fallo de email no deshace la acción.
-- **Uso de service_role (único hasta ahora):** `src/lib/email/notify.ts` lee el email del destinatario con `auth.admin.getUserById`, porque los emails viven en `auth.users`, que ningún usuario puede leer. No se devuelve nunca al cliente.
+- **Uso de service_role (1 de 2; el otro es la tarea de avisos de reseña):** `src/lib/email/notify.ts` lee el email del destinatario con `auth.admin.getUserById`, porque los emails viven en `auth.users`, que ningún usuario puede leer. No se devuelve nunca al cliente.
+
+## Reseñas (interfaz y moderación)
+
+- **Rutas:** `/mis-resenas` (avisos, pendientes con fecha límite, enviadas con su estado), `/resenas/nueva?estancia=…&sujeto=…` (formulario según la relación) y `/admin` (solo admins; a los demás les devuelve 404).
+- **Qué puede reseñar cada uno:** `reviewTargets()` en `src/lib/reviews/targets.ts`, espejo del trigger. `getMyReviewTasks()` lo cruza con `get_review_window` y con las reseñas ya escritas.
+- **Formulario:** criterios de 1 a 5 según la relación (`CRITERIA_BY_RELATIONSHIP`, iguales que en la BD), valoración general y texto de 50 a 1500 caracteres. El mismo esquema Zod se usa en cliente y servidor. Tras enviar: «Se publicará cuando la otra parte opine o el [fecha]», o «ya es pública» si la contraparte ya había reseñado.
+- **Respuesta pública:** tabla `review_responses`, una por reseña y sin UPDATE ni DELETE. Responde el reseñado (o el propietario si la reseña es del inmueble), y solo sobre reseñas publicadas.
+- **Denuncias:** botón en cada reseña. El motivo `personal_data` **oculta la reseña cautelarmente** (RLS + `private.review_is_hidden`, que también la saca de las medias) hasta que un admin la revisa. El resto de motivos no ocultan nada. Hay un límite de 10 denuncias al día por usuario y una denuncia abierta por persona y reseña.
+- **Moderación (`/admin`):** descartar la denuncia, o eliminar la reseña (`delete_review`: queda la constancia con motivo y fecha, sin el texto) y cerrar sus denuncias. También muestra las señales de posible autorreseña.
+- **Señales anti-abuso:** HMAC-SHA256 de la IP y del navegador (`SIGNAL_SECRET`), nunca en claro. Se registran al entrar, al registrarse y al reseñar (`record_signal`). `admin_review_flags()` lista las reseñas en las que autor y sujeto comparten IP o navegador. Es un indicio, no una prueba: puede tratarse de compañeros que comparten wifi.
+- **Avisos de ventana:** `GET /api/cron/review-windows` (Vercel Cron, diario a las 08:17 UTC, en `vercel.json`, protegido con `Authorization: Bearer CRON_SECRET`). Avisa por email y en la app cuando se abre la ventana y 3 días antes de que se cierre. Es idempotente gracias a `review_window_notices`. **Segundo uso acotado de service_role.**
+- **Patrón de UI tras Server Actions en la misma página:** devolver el resultado y hacer `router.refresh()` en el cliente, mostrando ya lo confirmado por el servidor (respuesta publicada, cambio de estado recibido por Realtime). Revalidar la propia página desde la acción podía dejar el formulario «pendiente» para siempre.
 
 ## Desarrollo local con Supabase
 
@@ -124,6 +136,7 @@ Plantilla en `.env.example`. Los valores reales van en `.env.local` (ignorado po
 - `SUPABASE_PROJECT_REF`: solo para `typegen`.
 - `NEXT_PUBLIC_SITE_URL`: URL pública para los enlaces de los emails (en local se deduce de la cabecera Host).
 - `RESEND_API_KEY`, `EMAIL_FROM`: email transaccional en producción. `MAILPIT_URL`: buzón local (`npx supabase status`).
+- `CRON_SECRET`: protege la tarea programada (Vercel lo envía como Bearer). `SIGNAL_SECRET`: clave del HMAC de las señales anti-abuso. Valores aleatorios largos; **no los cambies** una vez en producción, porque los hashes antiguos dejarían de coincidir.
 
 ## Base de datos
 
@@ -157,11 +170,15 @@ SUPABASE_PROJECT_REF=<ref> npm run typegen
 | `stays` | estancia host + guest | miembros | alta directa; cambios solo por RPC |
 | `stay_participants` | compañeros de la estancia | miembros | solo por RPC |
 | `reviews` | reseñas | publicadas: todos; el autor, la suya | alta por el autor; inmutables |
+| `review_responses` | respuesta pública única a una reseña | todos, si la reseña es pública | el reseñado; inmutable |
+| `notifications` | avisos in-app | el propio usuario | sistema (service_role); el usuario solo marca leída |
+| `review_window_notices` | registro de avisos enviados (idempotencia) | nadie | service_role |
+| `user_signals` | hashes de IP y navegador | nadie (admins vía RPC) | `record_signal()` |
 | `conversation_reads` | última lectura de cada conversación | el propio usuario | solo por RPC/trigger |
 | `reports` | denuncias | quien denuncia y admins | quien denuncia (alta); admin (resolver) |
 | `admin_users` | administradores | nadie (vía `private.is_admin()`) | SQL a mano |
 
-RPC (`supabase.rpc(...)`): `confirm_stay`, `cancel_stay`, `end_stay`, `add_stay_participant`, `confirm_stay_participation`, `decline_stay_participation`, `get_review_window`, `delete_review`, `profile_review_stats`, `listing_review_stats`, `review_criteria_for`, `am_i_admin`, `mark_conversation_read`, `my_unread_counts`.
+RPC (`supabase.rpc(...)`): `confirm_stay`, `cancel_stay`, `end_stay`, `add_stay_participant`, `confirm_stay_participation`, `decline_stay_participation`, `get_review_window`, `delete_review`, `profile_review_stats`, `listing_review_stats`, `review_criteria_for`, `am_i_admin`, `mark_conversation_read`, `my_unread_counts`, `record_signal`, `admin_review_flags` (admin), `review_window_notices_due` (solo service_role).
 
 ### Reglas de reseñas tal como están implementadas
 
@@ -232,3 +249,7 @@ RPC (`supabase.rpc(...)`): `confirm_stay`, `cancel_stay`, `end_stay`, `add_stay_
 29. **Los compañeros se añaden pegando el enlace a su perfil.** No hay buscador de usuarios, para no permitir enumerar perfiles.
 30. **Límites de frecuencia en la BD**, no en memoria del servidor: funcionan igual con varias instancias en Vercel y no se pueden saltar llamando a la API directamente.
 31. **La cabecera hace salto de línea en móvil** en lugar de usar un menú hamburguesa: menos JavaScript y todo visible. Se revisará en el Prompt 7.
+32. **Respuesta pública única y no editable**, en una tabla aparte (`review_responses`): la reseña sigue siendo inmutable.
+33. **Ocultación cautelar solo por datos personales.** Es el único caso en que dejar visible la reseña mientras se revisa causa un daño difícil de reparar. Para que no se use como censura hay un límite de 10 denuncias al día, un admin la revisa y, si la descarta, la reseña vuelve a verse.
+34. **Avisos de ventana con Vercel Cron + route handler**, y no con pg_cron: el envío de email vive en la app (interfaz `Mailer`) y así no hay que dar a Postgres acceso a internet.
+35. **Señales anti-abuso solo como hashes con secreto (HMAC)**: minimización de datos (RGPD). No se puede recuperar la IP.
