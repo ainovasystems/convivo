@@ -23,7 +23,7 @@ export default async function SignInPage({
       <h1 className="text-2xl font-bold tracking-tight">Entrar en Convivo</h1>
       <p className="mt-2 text-muted">Accede a tus anuncios, mensajes y reseñas.</p>
       {error ? (
-        <p role="alert" className="mt-4 rounded-md border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-800 dark:border-red-800 dark:bg-red-950 dark:text-red-200">
+        <p role="alert" className="mt-4 rounded-xl border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-800 dark:border-red-800 dark:bg-red-950 dark:text-red-200">
           {error}
         </p>
       ) : null}

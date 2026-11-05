@@ -12,7 +12,7 @@ import { initialFormState } from "@/lib/forms";
 import { formatShortDate } from "@/lib/listings/options";
 
 type Stay = Conversation["stays"][number];
-const btn = "rounded-md border px-3 py-1.5 text-sm font-medium disabled:opacity-50";
+const btn = "rounded-full border px-3 py-1.5 text-sm font-medium disabled:opacity-50";
 
 export function StaysPanel({
   interestId,
@@ -85,14 +85,14 @@ function StayItem({
       : null;
 
   return (
-    <li className="space-y-3 rounded-lg border border-border p-4">
+    <li className="space-y-3 rounded-2xl border border-border bg-background p-4">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
         <p className="font-medium">
           {stay.end_date
             ? `Del ${formatShortDate(stay.start_date)} al ${formatShortDate(stay.end_date)}`
             : `Desde el ${formatShortDate(stay.start_date)}`}
         </p>
-        <span className="rounded-full bg-brand/10 px-2.5 py-1 text-xs font-semibold text-brand">{STAY_STATUS_LABELS[stay.status]}</span>
+        <span className="rounded-full bg-brand-soft px-2.5 py-1 text-xs font-semibold text-brand">{STAY_STATUS_LABELS[stay.status]}</span>
       </div>
       {waitingFor ? <p className="text-sm text-muted">Falta que confirme {waitingFor}.</p> : null}
       {stay.stay_participants.length ? (
@@ -129,7 +129,7 @@ function StayItem({
 function ProposeForm({ interestId }: { interestId: string }) {
   const [state, action] = useActionState(proposeStay, initialFormState);
   return (
-    <form action={action} className="space-y-3 rounded-lg border border-dashed border-border p-4">
+    <form action={action} className="space-y-3 rounded-2xl border border-dashed border-border p-4">
       <h3 className="font-medium">Proponer estancia</h3>
       <input type="hidden" name="interestId" value={interestId} />
       <FormAlert state={state} />

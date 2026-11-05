@@ -107,7 +107,7 @@ export function ChatThread({
   return (
     <section aria-label="Mensajes" className="space-y-4">
       {liveStatus === "accepted" && serverStatus !== "accepted" && isGuest ? (
-        <p role="status" className="rounded-md border border-emerald-300 bg-emerald-50 px-3 py-2 text-sm text-emerald-900 dark:border-emerald-800 dark:bg-emerald-950 dark:text-emerald-100">
+        <p role="status" className="rounded-xl border border-emerald-300 bg-emerald-50 px-3 py-2 text-sm text-emerald-900 dark:border-emerald-800 dark:bg-emerald-950 dark:text-emerald-100">
           ¡El anunciante ha aceptado tu interés! Ya puedes ver la{" "}
           <a href={`/anuncios/${listingId}`} className="font-medium underline">
             dirección exacta en el anuncio
@@ -116,11 +116,11 @@ export function ChatThread({
         </p>
       ) : null}
       {liveStatus === "declined" && serverStatus !== "declined" && isGuest ? (
-        <p role="status" className="rounded-md border border-border px-3 py-2 text-sm text-muted">
+        <p role="status" className="rounded-full border border-border px-3 py-2 text-sm text-muted">
           El anunciante ha rechazado tu interés.
         </p>
       ) : null}
-      <ol className="max-h-[60vh] space-y-3 overflow-y-auto rounded-lg border border-border p-3" aria-live="polite" aria-relevant="additions">
+      <ol className="max-h-[60vh] space-y-3 overflow-y-auto rounded-2xl border border-border bg-background p-3" aria-live="polite" aria-relevant="additions">
         {messages.map((m) => {
           const mine = m.sender_id === currentUserId;
           return (
@@ -143,7 +143,7 @@ export function ChatThread({
         <div ref={endRef} />
       </ol>
 
-      <p className="rounded-md border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-900 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-100">
+      <p className="rounded-xl border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-900 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-100">
         <strong>Nunca pagues antes de ver el piso.</strong> Desconfía de quien pida señales, transferencias o envíos de dinero por adelantado.
       </p>
 

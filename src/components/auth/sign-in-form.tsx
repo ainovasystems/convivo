@@ -18,7 +18,7 @@ export function SignInForm({ next }: { next: string }) {
 
   return (
     <div className="space-y-6">
-      <div role="tablist" aria-label="Forma de entrar" className="grid grid-cols-2 rounded-md border border-border p-1 text-sm">
+      <div role="tablist" aria-label="Forma de entrar" className="grid grid-cols-2 rounded-full border border-border p-1 text-sm">
         {(
           [
             ["password", "Con contraseña"],
@@ -34,8 +34,8 @@ export function SignInForm({ next }: { next: string }) {
             aria-controls={`panel-${value}`}
             onClick={() => setMode(value)}
             className={
-              "rounded px-3 py-2 font-medium focus-visible:outline-2 " +
-              (mode === value ? "bg-brand text-brand-foreground" : "hover:text-brand")
+              "rounded-full px-3 py-2 font-semibold focus-visible:outline-2 " +
+              (mode === value ? "bg-background text-brand shadow-[var(--shadow-card)]" : "text-muted hover:text-brand")
             }
           >
             {label}

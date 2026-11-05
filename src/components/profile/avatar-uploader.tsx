@@ -57,7 +57,7 @@ export function AvatarUploader({ name, path }: { name: string; path: string | nu
             accept={AVATAR_TYPES.join(",")}
             aria-invalid={error ? true : undefined}
             aria-describedby={error ? "avatar-error" : "avatar-hint"}
-            className="block w-full text-sm file:mr-3 file:rounded-md file:border-0 file:bg-brand/10 file:px-3 file:py-2 file:font-medium file:text-brand"
+            className="block w-full text-sm file:mr-3 file:rounded-full file:border-0 file:bg-brand-soft file:px-3 file:py-2 file:font-medium file:text-brand"
             onChange={(e) => {
               const file = e.currentTarget.files?.[0];
               if (!file) return;

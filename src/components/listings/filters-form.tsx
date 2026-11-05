@@ -111,11 +111,11 @@ export function FiltersForm({ filters }: { filters: ListingFilters }) {
       <div className="flex gap-3">
         <button
           type="submit"
-          className="rounded-md bg-brand px-4 py-2.5 font-medium text-brand-foreground hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2"
+          className="rounded-full bg-brand px-4 py-2.5 font-medium text-brand-foreground hover:bg-brand-strong focus-visible:outline-2 focus-visible:outline-offset-2"
         >
           Buscar
         </button>
-        <Link href="/anuncios" className="rounded-md px-3 py-2.5 text-sm font-medium text-brand underline">
+        <Link href="/anuncios" className="rounded-full px-3 py-2.5 text-sm font-semibold text-brand underline">
           Limpiar
         </Link>
       </div>

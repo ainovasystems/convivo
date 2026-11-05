@@ -41,7 +41,7 @@ export default async function AdminPage() {
         {reports?.length ? (
           <ul className="space-y-4">
             {reports.map((r) => (
-              <li key={r.id} className="space-y-3 rounded-lg border border-border p-4">
+              <li key={r.id} className="space-y-3 rounded-2xl border border-border bg-background p-4">
                 <div className="flex flex-wrap items-baseline justify-between gap-2 text-sm">
                   <p>
                     <strong>{REPORT_REASONS[r.reason as keyof typeof REPORT_REASONS] ?? r.reason}</strong>
@@ -53,7 +53,7 @@ export default async function AdminPage() {
                 </div>
                 {r.details ? <p className="text-sm text-muted">«{r.details}»</p> : null}
                 {r.review ? (
-                  <blockquote className="rounded-md bg-brand/5 p-3 text-sm">
+                  <blockquote className="rounded-xl bg-brand-soft p-3 text-sm">
                     <p className="text-muted">
                       De {r.review.author?.display_name} sobre {r.review.subject_user?.display_name ?? r.review.subject_listing?.title}
                     </p>

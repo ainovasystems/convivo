@@ -98,7 +98,7 @@ export function PhotoManager({
           multiple
           disabled={busy || photos.length >= MAX_PHOTOS}
           onChange={(e) => onFiles(e.currentTarget.files)}
-          className="block w-full text-sm file:mr-3 file:rounded-md file:border-0 file:bg-brand/10 file:px-3 file:py-2 file:font-medium file:text-brand"
+          className="block w-full text-sm file:mr-3 file:rounded-full file:border-0 file:bg-brand-soft file:px-3 file:py-2 file:font-medium file:text-brand"
         />
         <p className="text-sm text-muted">
           Hasta {MAX_PHOTOS} fotos. Las reducimos a 1600 px y quitamos los datos de ubicación antes de subirlas. La
@@ -113,7 +113,7 @@ export function PhotoManager({
       {photos.length ? (
         <ol className="grid grid-cols-2 gap-3 sm:grid-cols-3">
           {photos.map((path, i) => (
-            <li key={path} className="space-y-2 rounded-lg border border-border p-2">
+            <li key={path} className="space-y-2 rounded-2xl border border-border bg-background p-2">
               <div className="relative aspect-[4/3] overflow-hidden rounded">
                 <Image src={publicStorageUrl("listing-photos", path)} alt={`Foto ${i + 1}`} fill sizes="240px" className="object-cover" />
                 {i === 0 ? (
@@ -135,7 +135,7 @@ export function PhotoManager({
           ))}
         </ol>
       ) : (
-        <p className="rounded-lg border border-dashed border-border p-6 text-center text-sm text-muted">
+        <p className="rounded-2xl border border-dashed border-border p-6 text-center text-sm text-muted">
           Aún no hay fotos. Los anuncios con fotos reciben muchas más visitas.
         </p>
       )}

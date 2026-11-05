@@ -32,7 +32,7 @@ export default async function InboxPage() {
         </Link>
       </div>
       {conversations.length ? (
-        <ul className="divide-y divide-border rounded-lg border border-border">
+        <ul className="divide-y divide-border rounded-2xl border border-border bg-background">
           {conversations.map((c) => {
             const iAmOwner = c.listing?.owner_id === user.id;
             const other = iAmOwner ? c.guest : c.listing?.owner;
@@ -65,7 +65,7 @@ export default async function InboxPage() {
           })}
         </ul>
       ) : (
-        <div className="rounded-lg border border-dashed border-border p-8 text-center">
+        <div className="rounded-2xl border border-dashed border-border p-8 text-center">
           <p className="font-medium">Aún no tienes conversaciones.</p>
           <p className="mt-1 text-sm text-muted">Cuando muestres interés en un anuncio, o alguien en los tuyos, aparecerá aquí.</p>
           <Link href="/anuncios" className="mt-4 inline-block font-medium text-brand underline">

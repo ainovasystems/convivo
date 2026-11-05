@@ -25,14 +25,14 @@ export default async function MyListingsPage() {
     <div className="mx-auto max-w-3xl space-y-6 px-4 py-8 sm:py-12">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-2xl font-bold tracking-tight">Mis anuncios</h1>
-        <Link href="/publicar" className="rounded-md bg-brand px-4 py-2.5 font-medium text-brand-foreground hover:opacity-90">
+        <Link href="/publicar" className="rounded-full bg-brand px-4 py-2.5 font-medium text-brand-foreground hover:bg-brand-strong">
           Publicar anuncio
         </Link>
       </div>
       {listings.length ? (
         <ul className="space-y-3">
           {listings.map((l) => (
-            <li key={l.id} className="space-y-3 rounded-lg border border-border p-4">
+            <li key={l.id} className="space-y-3 rounded-2xl border border-border bg-background p-4">
               <div className="flex flex-wrap items-start justify-between gap-2">
                 <div className="min-w-0">
                   <p className="text-sm text-muted">{KIND_LABELS[l.kind]}</p>
@@ -56,7 +56,7 @@ export default async function MyListingsPage() {
           ))}
         </ul>
       ) : (
-        <div className="rounded-lg border border-dashed border-border p-8 text-center">
+        <div className="rounded-2xl border border-dashed border-border p-8 text-center">
           <p className="font-medium">Todavía no has publicado nada.</p>
           <p className="mt-1 text-sm text-muted">Publica una habitación, un piso o cuenta lo que buscas.</p>
         </div>

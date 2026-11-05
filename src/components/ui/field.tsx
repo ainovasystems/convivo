@@ -1,15 +1,15 @@
 import type { InputHTMLAttributes, ReactNode, SelectHTMLAttributes, TextareaHTMLAttributes } from "react";
 
 export const inputClass =
-  "block w-full rounded-md border border-border bg-background px-3 py-2 text-base text-foreground placeholder:text-muted " +
-  "focus:border-brand focus:outline-2 focus:outline-offset-1 focus:outline-brand aria-[invalid=true]:border-red-600";
+  "block w-full rounded-xl border border-border bg-background px-4 py-3 text-base text-foreground placeholder:text-muted/80 transition " +
+  "hover:border-brand/40 focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15 aria-[invalid=true]:border-red-600";
 
 type BaseProps = { id: string; label: string; error?: string; hint?: ReactNode; children?: ReactNode };
 
 function Wrapper({ id, label, error, hint, children }: BaseProps) {
   return (
     <div className="space-y-1">
-      <label htmlFor={id} className="block text-sm font-medium">
+      <label htmlFor={id} className="block text-sm font-semibold">
         {label}
       </label>
       {children}

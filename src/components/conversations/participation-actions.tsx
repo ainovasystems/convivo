@@ -15,10 +15,10 @@ export function ParticipationActions({ stayId }: { stayId: string }) {
   return (
     <div className="space-y-2">
       <div className="flex flex-wrap gap-2">
-        <button type="button" disabled={pending} onClick={() => run("confirm_stay_participation")} className="rounded-md bg-brand px-3 py-1.5 text-sm font-medium text-brand-foreground disabled:opacity-50">
+        <button type="button" disabled={pending} onClick={() => run("confirm_stay_participation")} className="rounded-full bg-brand px-3 py-1.5 text-sm font-medium text-brand-foreground disabled:opacity-50">
           Confirmar que conviví/convivo
         </button>
-        <button type="button" disabled={pending} onClick={() => run("decline_stay_participation")} className="rounded-md border border-border px-3 py-1.5 text-sm font-medium disabled:opacity-50">
+        <button type="button" disabled={pending} onClick={() => run("decline_stay_participation")} className="rounded-full border border-border px-3 py-1.5 text-sm font-medium disabled:opacity-50">
           No es correcto
         </button>
       </div>

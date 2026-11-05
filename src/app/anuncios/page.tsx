@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { SearchIcon } from "@/components/brand/icons";
 import { FiltersForm } from "@/components/listings/filters-form";
 import { ListingCard } from "@/components/listings/listing-card";
 import { Pagination } from "@/components/listings/pagination";
@@ -28,8 +29,13 @@ export default async function ListingsPage({ searchParams }: Props) {
     <div className="mx-auto grid max-w-6xl gap-8 px-4 py-8 lg:grid-cols-[260px_1fr]">
       <aside>
         <h2 className="sr-only">Filtros</h2>
-        <details className="rounded-lg border border-border p-4 lg:border-0 lg:p-0" open>
-          <summary className="cursor-pointer font-semibold lg:hidden">Filtros</summary>
+        <details className="group rounded-2xl border border-border bg-background p-4 shadow-[var(--shadow-card)] lg:border-0 lg:p-0 lg:shadow-none" open>
+          <summary className="flex cursor-pointer list-none items-center justify-between font-bold lg:hidden [&::-webkit-details-marker]:hidden">
+            <span className="inline-flex items-center gap-2">
+              <SearchIcon className="size-5 text-brand" /> Filtros y orden
+            </span>
+            <span aria-hidden="true" className="text-brand transition group-open:rotate-180">⌄</span>
+          </summary>
           <div className="pt-4 lg:pt-0">
             <FiltersForm filters={filters} />
           </div>
@@ -53,7 +59,7 @@ export default async function ListingsPage({ searchParams }: Props) {
             ))}
           </ul>
         ) : (
-          <div className="rounded-lg border border-dashed border-border p-8 text-center">
+          <div className="rounded-2xl border border-dashed border-border p-8 text-center">
             <p className="font-medium">No hay anuncios con estos filtros.</p>
             <p className="mt-1 text-sm text-muted">Prueba a ampliar el precio o quitar alguna característica.</p>
             <Link href="/anuncios" className="mt-4 inline-block font-medium text-brand underline">

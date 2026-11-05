@@ -30,7 +30,7 @@ export default async function PublishPage() {
               type="submit"
               name="kind"
               value={kind}
-              className="block w-full rounded-lg border border-border p-4 text-left hover:border-brand focus-visible:outline-2"
+              className="block w-full rounded-2xl border border-border bg-background p-4 text-left hover:border-brand focus-visible:outline-2"
             >
               <span className="block font-semibold">{KIND_LABELS[kind]}</span>
               <span className="block text-sm text-muted">{KIND_DESCRIPTIONS[kind]}</span>
@@ -47,7 +47,7 @@ export default async function PublishPage() {
           <ul className="space-y-2">
             {drafts.map((d) => (
               <li key={d.id}>
-                <Link href={`/publicar/${d.id}?paso=datos`} className="block rounded-md border border-border px-4 py-3 hover:border-brand">
+                <Link href={`/publicar/${d.id}?paso=datos`} className="block rounded-full border border-border px-4 py-3 hover:border-brand">
                   <span className="font-medium">{d.title || "Sin título"}</span>
                   <span className="ml-2 text-sm text-muted">· {KIND_LABELS[d.kind]}</span>
                 </Link>

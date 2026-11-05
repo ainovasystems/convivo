@@ -29,7 +29,7 @@ function ScoreInput({ name, label, hint, error }: { name: string; label: string;
             <input type="radio" name={name} value={n} className="peer sr-only" aria-label={`${n} de 5`} />
             <span
               aria-hidden="true"
-              className="flex size-10 items-center justify-center rounded-md border border-border font-semibold peer-checked:border-brand peer-checked:bg-brand peer-checked:text-brand-foreground peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2"
+              className="flex size-10 items-center justify-center rounded-full border border-border font-semibold peer-checked:border-brand peer-checked:bg-brand peer-checked:text-brand-foreground peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2"
             >
               {n}
             </span>
@@ -93,7 +93,7 @@ export function ReviewForm({
         error={errors.body}
       />
 
-      <div className="rounded-md bg-brand/5 p-3 text-sm">
+      <div className="rounded-xl bg-brand-soft p-3 text-sm">
         <p className="font-medium">Cómo funciona el doble ciego</p>
         <p className="mt-1 text-muted">
           La otra parte no verá tu reseña (ni tú la suya) hasta que ambos hayáis opinado o pasen 14 días desde que se

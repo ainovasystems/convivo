@@ -82,12 +82,12 @@ export default async function ListingPage({ params, searchParams }: Props) {
   return (
     <div className="mx-auto max-w-5xl px-4 py-8">
       {sp.publicado === "1" ? (
-        <p role="status" className="mb-6 rounded-md border border-emerald-300 bg-emerald-50 px-3 py-2 text-sm text-emerald-900 dark:border-emerald-800 dark:bg-emerald-950 dark:text-emerald-100">
+        <p role="status" className="mb-6 rounded-xl border border-emerald-300 bg-emerald-50 px-3 py-2 text-sm text-emerald-900 dark:border-emerald-800 dark:bg-emerald-950 dark:text-emerald-100">
           ¡Anuncio publicado! Ya aparece en los resultados de búsqueda.
         </p>
       ) : null}
       {l.status !== "active" ? (
-        <p className="mb-6 rounded-md border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-900 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-100">
+        <p className="mb-6 rounded-xl border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-900 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-100">
           Este anuncio está en estado «{STATUS_LABELS[l.status]}» y no aparece en las búsquedas.
         </p>
       ) : null}
@@ -169,7 +169,7 @@ export default async function ListingPage({ params, searchParams }: Props) {
                 {stats ? <Rating value={Number(stats.avg_rating)} count={Number(stats.review_count)} size="sm" /> : null}
               </div>
               {stats && stats.criteria_avg && Object.keys(stats.criteria_avg).length ? (
-                <dl className="grid grid-cols-2 gap-x-4 gap-y-1 rounded-lg bg-brand/5 p-3 text-sm sm:grid-cols-5">
+                <dl className="grid grid-cols-2 gap-x-4 gap-y-1 rounded-2xl bg-brand-soft p-3 text-sm sm:grid-cols-5">
                   {Object.entries(stats.criteria_avg as Record<string, number>).map(([k, v]) => (
                     <div key={k}>
                       <dt className="text-muted">{CRITERIA_LABELS[k] ?? k}</dt>
@@ -195,7 +195,7 @@ export default async function ListingPage({ params, searchParams }: Props) {
 
         <aside className="space-y-4 lg:sticky lg:top-6 lg:self-start">
           {owner ? (
-            <section aria-labelledby="anunciante" className="space-y-3 rounded-lg border border-border p-4">
+            <section aria-labelledby="anunciante" className="space-y-3 rounded-2xl border border-border bg-background p-4">
               <h2 id="anunciante" className="text-sm font-semibold uppercase tracking-wide text-muted">
                 Anunciante
               </h2>
@@ -221,11 +221,11 @@ export default async function ListingPage({ params, searchParams }: Props) {
             </section>
           ) : null}
 
-          <section aria-label="Contactar" className="space-y-3 rounded-lg border border-border p-4">
+          <section aria-label="Contactar" className="space-y-3 rounded-2xl border border-border bg-background p-4">
             {isOwner ? (
               <>
                 <p className="text-sm text-muted">Es tu anuncio.</p>
-                <Link href={`/publicar/${l.id}?paso=datos`} className="block rounded-md border border-border px-4 py-2.5 text-center font-medium hover:border-brand">
+                <Link href={`/publicar/${l.id}?paso=datos`} className="block rounded-full border border-border px-4 py-2.5 text-center font-medium hover:border-brand">
                   Editar anuncio
                 </Link>
                 <Link href="/mis-anuncios" className="block text-center text-sm font-medium text-brand underline">
@@ -239,7 +239,7 @@ export default async function ListingPage({ params, searchParams }: Props) {
                 </p>
                 <Link
                   href={`/mensajes/${myInterest.id}`}
-                  className="block rounded-md bg-brand px-4 py-2.5 text-center font-medium text-brand-foreground hover:opacity-90"
+                  className="block rounded-full bg-brand px-4 py-2.5 text-center font-medium text-brand-foreground hover:bg-brand-strong"
                 >
                   Ir a la conversación
                 </Link>
@@ -251,7 +251,7 @@ export default async function ListingPage({ params, searchParams }: Props) {
             ) : (
               <Link
                 href={`/entrar?next=/anuncios/${l.id}`}
-                className="block rounded-md bg-brand px-4 py-2.5 text-center font-medium text-brand-foreground hover:opacity-90"
+                className="block rounded-full bg-brand px-4 py-2.5 text-center font-medium text-brand-foreground hover:bg-brand-strong"
               >
                 Entra para contactar
               </Link>

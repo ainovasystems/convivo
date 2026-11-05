@@ -6,7 +6,7 @@ import { useState, useTransition } from "react";
 import { deleteDraft, duplicateListing, setListingStatus } from "@/app/publicar/actions";
 import type { ListingStatus } from "@/lib/listings/options";
 
-const btn = "rounded-md border border-border px-3 py-1.5 text-sm font-medium hover:border-brand disabled:opacity-50";
+const btn = "rounded-full border border-border px-3 py-1.5 text-sm font-medium hover:border-brand disabled:opacity-50";
 
 export function MyListingActions({ id, status, title }: { id: string; status: ListingStatus; title: string }) {
   const [pending, start] = useTransition();

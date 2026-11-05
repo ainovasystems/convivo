@@ -5,7 +5,7 @@ import { useState, useTransition } from "react";
 import { decideInterest } from "@/app/mensajes/actions";
 import type { InterestAction } from "@/lib/conversations/state";
 
-const btn = "rounded-md border px-4 py-2 text-sm font-medium disabled:opacity-50";
+const btn = "rounded-full border px-4 py-2 text-sm font-medium disabled:opacity-50";
 
 export function InterestActions({ interestId, actions }: { interestId: string; actions: InterestAction[] }) {
   const [pending, start] = useTransition();

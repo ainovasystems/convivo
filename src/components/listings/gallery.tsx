@@ -6,7 +6,7 @@ import { publicStorageUrl } from "@/lib/storage";
 export function Gallery({ photos, title }: { photos: string[]; title: string }) {
   if (!photos.length) {
     return (
-      <div className="flex aspect-[16/9] items-center justify-center rounded-lg bg-brand/5 text-muted">
+      <div className="flex aspect-[16/9] items-center justify-center rounded-2xl bg-brand-soft text-muted">
         El anunciante aún no ha subido fotos
       </div>
     );
@@ -14,7 +14,7 @@ export function Gallery({ photos, title }: { photos: string[]; title: string }) 
   return (
     <div className="space-y-2">
       <ul
-        className="flex snap-x snap-mandatory gap-2 overflow-x-auto rounded-lg"
+        className="flex snap-x snap-mandatory gap-2 overflow-x-auto rounded-3xl"
         aria-label={`Fotos de ${title} (${photos.length})`}
         tabIndex={0}
       >
@@ -25,7 +25,7 @@ export function Gallery({ photos, title }: { photos: string[]; title: string }) 
               alt={`Foto ${i + 1} de ${photos.length}`}
               fill
               sizes="(min-width: 1024px) 700px, 100vw"
-              className="rounded-lg object-cover"
+              className="rounded-3xl object-cover"
               priority={i === 0}
             />
           </li>

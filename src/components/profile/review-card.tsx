@@ -11,7 +11,7 @@ type Viewer = { viewerId: string | null; respondentId: string; path: string };
 export function ReviewCard({ review, viewer }: { review: ReceivedReview; viewer?: Viewer }) {
   if (review.deleted_at) {
     return (
-      <li className="rounded-lg border border-dashed border-border p-4 text-sm text-muted">
+      <li className="rounded-2xl border border-dashed border-border p-4 text-sm text-muted">
         Reseña eliminada el {formatDate(review.deleted_at)}
         {review.deletion_reason ? <>. Motivo: «{review.deletion_reason}»</> : null}
       </li>
@@ -20,7 +20,7 @@ export function ReviewCard({ review, viewer }: { review: ReceivedReview; viewer?
 
   const author = review.author;
   return (
-    <li className="rounded-lg border border-border p-4">
+    <li className="rounded-2xl border border-border bg-background p-4">
       <article className="space-y-3">
         <header className="flex items-center gap-3">
           {author ? <Avatar name={author.display_name} path={author.avatar_path} size="sm" /> : null}

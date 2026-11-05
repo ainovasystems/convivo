@@ -27,12 +27,12 @@ export default async function MyStaysPage() {
             const myRole = s.host_id === user.id ? "Anfitrión/a" : s.guest_id === user.id ? "Inquilino/a" : "Compañero/a";
             const me = s.stay_participants.find((p) => p.user_id === user.id);
             return (
-              <li key={s.id} className="space-y-2 rounded-lg border border-border p-4">
+              <li key={s.id} className="space-y-2 rounded-2xl border border-border bg-background p-4">
                 <div className="flex flex-wrap items-baseline justify-between gap-2">
                   <Link href={`/anuncios/${s.listing?.id}`} className="font-semibold hover:text-brand">
                     {s.listing?.title}
                   </Link>
-                  <span className="rounded-full bg-brand/10 px-2.5 py-1 text-xs font-semibold text-brand">{STAY_STATUS_LABELS[s.status]}</span>
+                  <span className="rounded-full bg-brand-soft px-2.5 py-1 text-xs font-semibold text-brand">{STAY_STATUS_LABELS[s.status]}</span>
                 </div>
                 <p className="text-sm text-muted">
                   {myRole} · {s.host?.display_name} y {s.guest?.display_name} ·{" "}
@@ -40,7 +40,7 @@ export default async function MyStaysPage() {
                   {s.is_retroactive ? " · estancia anterior a Convivo" : ""}
                 </p>
                 {me && !me.confirmed_at ? (
-                  <div className="space-y-2 rounded-md bg-brand/5 p-3">
+                  <div className="space-y-2 rounded-xl bg-brand-soft p-3">
                     <p className="text-sm">Te han añadido como compañero/a de piso en esta estancia. ¿Es correcto?</p>
                     <ParticipationActions stayId={s.id} />
                   </div>
@@ -55,7 +55,7 @@ export default async function MyStaysPage() {
           })}
         </ul>
       ) : (
-        <div className="rounded-lg border border-dashed border-border p-8 text-center">
+        <div className="rounded-2xl border border-dashed border-border p-8 text-center">
           <p className="font-medium">Aún no tienes estancias.</p>
           <p className="mt-1 text-sm text-muted">Se proponen desde una conversación con un interés aceptado.</p>
         </div>

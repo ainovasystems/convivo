@@ -5,7 +5,7 @@ export function Rating({ value, count, size = "md" }: { value: number; count?: n
   const full = Math.round(value);
   return (
     <span className={"inline-flex items-center gap-1.5 " + (size === "sm" ? "text-sm" : "text-base")}>
-      <span aria-hidden="true" className="tracking-tight text-amber-500">
+      <span aria-hidden="true" className="tracking-tight text-accent">
         {"★".repeat(full)}
         <span className="text-border">{"★".repeat(5 - full)}</span>
       </span>

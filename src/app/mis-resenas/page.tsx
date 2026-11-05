@@ -38,7 +38,7 @@ export default async function MyReviewsPage({
       </div>
 
       {justSent ? (
-        <p role="status" className="rounded-md border border-emerald-300 bg-emerald-50 px-3 py-2 text-sm text-emerald-900 dark:border-emerald-800 dark:bg-emerald-950 dark:text-emerald-100">
+        <p role="status" className="rounded-xl border border-emerald-300 bg-emerald-50 px-3 py-2 text-sm text-emerald-900 dark:border-emerald-800 dark:bg-emerald-950 dark:text-emerald-100">
           {new Date(justSent.published_at) <= now
             ? "Tu reseña está enviada y ya es pública: la otra parte también había opinado."
             : `Tu reseña está enviada. Se publicará cuando la otra parte opine o el ${formatDate(justSent.published_at)}.`}
@@ -59,7 +59,7 @@ export default async function MyReviewsPage({
           </div>
           <ul className="space-y-2">
             {unread.map((n) => (
-              <li key={n.id} className="rounded-md border border-border p-3 text-sm">
+              <li key={n.id} className="rounded-full border border-border p-3 text-sm">
                 <p className="font-medium">{n.title}</p>
                 {n.body ? <p className="text-muted">{n.body}</p> : null}
               </li>
@@ -75,7 +75,7 @@ export default async function MyReviewsPage({
         {open.length ? (
           <ul className="space-y-2">
             {open.map((t) => (
-              <li key={`${t.stayId}:${t.subjectId}`} className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border p-4">
+              <li key={`${t.stayId}:${t.subjectId}`} className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border bg-background p-4">
                 <div>
                   <p className="text-sm text-muted">{t.title}</p>
                   <p className="font-medium">{t.subjectName}</p>
@@ -83,7 +83,7 @@ export default async function MyReviewsPage({
                 </div>
                 <Link
                   href={`/resenas/nueva?estancia=${t.stayId}&sujeto=${t.subjectId}`}
-                  className="rounded-md bg-brand px-4 py-2 text-sm font-medium text-brand-foreground hover:opacity-90"
+                  className="rounded-full bg-brand px-4 py-2 text-sm font-medium text-brand-foreground hover:bg-brand-strong"
                   aria-label={`Escribir ${t.title.toLowerCase()}: ${t.subjectName}`}
                 >
                   Escribir reseña
@@ -115,7 +115,7 @@ export default async function MyReviewsPage({
               const published = new Date(w.published_at) <= now;
               const subject = w.subject_user?.display_name ?? w.subject_listing?.title ?? "—";
               return (
-                <li key={w.id} className="space-y-2 rounded-lg border border-border p-4">
+                <li key={w.id} className="space-y-2 rounded-2xl border border-border bg-background p-4">
                   <div className="flex flex-wrap items-baseline justify-between gap-2">
                     <p className="font-medium">
                       {RELATIONSHIP_TITLES[w.relationship]}: {subject}

@@ -29,11 +29,11 @@ export function ModerationForms({ reportId, reviewId }: { reportId: string; revi
         </label>
         <input id={`note-${reportId}`} name="note" className={inputClass} placeholder="Motivo de la decisión" required />
         <div className="flex flex-wrap gap-2">
-          <button formAction={dismiss} className="rounded-md border border-border px-3 py-1.5 text-sm font-medium">
+          <button formAction={dismiss} className="rounded-full border border-border px-3 py-1.5 text-sm font-medium">
             Descartar denuncia
           </button>
           {reviewId ? (
-            <button formAction={remove} className="rounded-md bg-red-700 px-3 py-1.5 text-sm font-medium text-white">
+            <button formAction={remove} className="rounded-full bg-red-700 px-3 py-1.5 text-sm font-medium text-white">
               Eliminar reseña
             </button>
           ) : null}

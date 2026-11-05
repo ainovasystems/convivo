@@ -9,7 +9,7 @@ export default function Loading() {
       </div>
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {[1, 2, 3, 4, 5, 6].map((i) => (
-          <div key={i} className="h-72 rounded-lg bg-border" />
+          <div key={i} className="h-72 rounded-2xl bg-border" />
         ))}
       </div>
     </div>

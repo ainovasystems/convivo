@@ -315,7 +315,7 @@ export function ListingWizard({
             Revisión
           </h2>
           {Object.keys(missing).length || Object.keys(fieldErrs).length ? (
-            <div className="rounded-lg border border-amber-300 bg-amber-50 p-4 text-sm text-amber-900 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-100">
+            <div className="rounded-xl border border-amber-300 bg-amber-50 p-4 text-sm text-amber-900 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-100">
               <p className="font-medium">Antes de {isDraft ? "publicar" : "guardar"} falta:</p>
               <ul className="mt-2 list-disc space-y-1 pl-5">
                 {Object.entries({ ...fieldErrs, ...missing }).map(([k, msg]) => (
@@ -328,7 +328,7 @@ export function ListingWizard({
               </ul>
             </div>
           ) : (
-            <p className="rounded-lg border border-emerald-300 bg-emerald-50 p-4 text-sm text-emerald-900 dark:border-emerald-800 dark:bg-emerald-950 dark:text-emerald-100">
+            <p className="rounded-xl border border-emerald-300 bg-emerald-50 p-4 text-sm text-emerald-900 dark:border-emerald-800 dark:bg-emerald-950 dark:text-emerald-100">
               Todo listo. {isDraft ? "Al publicar, tu anuncio aparecerá en las búsquedas." : "Guarda para aplicar los cambios."}
             </p>
           )}
@@ -362,7 +362,7 @@ export function ListingWizard({
                 {pending ? "Guardando…" : "Guardar cambios"}
               </button>
             )}
-            <Link href="/mis-anuncios" className="rounded-md px-3 py-2.5 font-medium text-brand underline">
+            <Link href="/mis-anuncios" className="rounded-full px-3 py-2.5 font-semibold text-brand underline">
               {isDraft ? "Seguir más tarde" : "Volver a mis anuncios"}
             </Link>
           </div>
@@ -371,7 +371,7 @@ export function ListingWizard({
 
       <div className="flex justify-between border-t border-border pt-4">
         {stepIndex > 0 ? (
-          <button type="button" onClick={() => goTo(steps[stepIndex - 1])} className="rounded-md px-3 py-2 font-medium hover:text-brand">
+          <button type="button" onClick={() => goTo(steps[stepIndex - 1])} className="rounded-full px-4 py-2 font-semibold hover:bg-brand-soft hover:text-brand">
             ← Atrás
           </button>
         ) : (

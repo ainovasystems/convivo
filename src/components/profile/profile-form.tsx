@@ -104,7 +104,7 @@ export function ProfileForm({ initial }: { initial: ProfileFormValues }) {
         <legend className="text-lg font-semibold">¿Cómo usas Convivo?</legend>
         <div className="flex flex-wrap gap-3">
           {USER_ROLES.map((role) => (
-            <label key={role} className="flex items-center gap-2 rounded-md border border-border px-3 py-2">
+            <label key={role} className="flex items-center gap-2 rounded-full border border-border px-3 py-2">
               <input
                 type="checkbox"
                 name="roles"

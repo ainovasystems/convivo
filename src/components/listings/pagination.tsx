@@ -8,7 +8,7 @@ export function Pagination({ filters, total }: { filters: ListingFilters; total:
   if (pages <= 1) return null;
 
   const href = (page: number) => `/anuncios${serializeFilters({ ...filters, pagina: page })}`;
-  const linkClass = "rounded-md border border-border px-3 py-2 text-sm font-medium hover:border-brand";
+  const linkClass = "rounded-full border border-border px-3 py-2 text-sm font-medium hover:border-brand";
 
   return (
     <nav aria-label="Paginación" className="flex items-center justify-between gap-2">

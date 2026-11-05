@@ -4,8 +4,8 @@ import type { ReactNode } from "react";
 import { useFormStatus } from "react-dom";
 
 export const buttonClass =
-  "inline-flex items-center justify-center gap-2 rounded-md bg-brand px-4 py-2.5 font-medium text-brand-foreground " +
-  "hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-60";
+  "inline-flex items-center justify-center gap-2 rounded-full bg-brand px-6 py-3 font-bold text-brand-foreground shadow-[var(--shadow-card)] " +
+  "transition hover:bg-brand-strong focus-visible:outline-2 focus-visible:outline-offset-2 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60";
 
 export function SubmitButton({ children, pendingText }: { children: ReactNode; pendingText: string }) {
   const { pending } = useFormStatus();

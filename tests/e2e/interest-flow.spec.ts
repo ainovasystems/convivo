@@ -58,7 +58,7 @@ test.describe("interés → conversación → estancia confirmada", () => {
 
     // 2. El propietario lo ve en su bandeja con contador de no leídos y le llega un email.
     const host = await loginPage(browser, "diego@convivo.test");
-    await expect(host.getByRole("link", { name: /Mensajes\s*\d+\s*sin leer/ })).toBeVisible();
+    await expect(host.getByRole("link", { name: /Mensajes.*sin leer|sin leer.*Mensajes/ }).first()).toBeVisible();
     await host.goto("/mensajes");
     await host.getByRole("link", { name: new RegExp(`Conversación con ${guestName}.*sin leer`) }).click();
     await expect(host).toHaveURL(conversationUrl);

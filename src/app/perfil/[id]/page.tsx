@@ -66,7 +66,7 @@ export default async function ProfilePage({ params }: Props) {
             {isOwn ? (
               <Link
                 href="/mis-resenas"
-                className="rounded-md border border-border px-3 py-1.5 text-sm font-medium hover:border-brand focus-visible:outline-2"
+                className="rounded-full border border-border px-3 py-1.5 text-sm font-medium hover:border-brand focus-visible:outline-2"
               >
                 Mis reseñas
               </Link>
@@ -74,7 +74,7 @@ export default async function ProfilePage({ params }: Props) {
             {isOwn ? (
               <Link
                 href="/perfil/editar"
-                className="rounded-md border border-border px-3 py-1.5 text-sm font-medium hover:border-brand focus-visible:outline-2"
+                className="rounded-full border border-border px-3 py-1.5 text-sm font-medium hover:border-brand focus-visible:outline-2"
               >
                 Editar perfil
               </Link>
@@ -121,7 +121,7 @@ export default async function ProfilePage({ params }: Props) {
           <p className="mt-2 whitespace-pre-line">{profile.bio}</p>
         </section>
       ) : isOwn ? (
-        <p className="rounded-lg border border-dashed border-border p-4 text-sm text-muted">
+        <p className="rounded-2xl border border-dashed border-border p-4 text-sm text-muted">
           Aún no has escrito una presentación.{" "}
           <Link href="/perfil/editar" className="font-medium text-brand underline">
             Añádela
@@ -173,7 +173,7 @@ export default async function ProfilePage({ params }: Props) {
                 {groupStats ? <Rating value={groupStats.avg_rating} count={groupStats.review_count} size="sm" /> : null}
               </div>
               {groupStats && Object.keys(groupStats.criteria_avg).length ? (
-                <dl className="grid grid-cols-2 gap-x-4 gap-y-1 rounded-lg bg-brand/5 p-3 text-sm sm:grid-cols-4">
+                <dl className="grid grid-cols-2 gap-x-4 gap-y-1 rounded-2xl bg-brand-soft p-3 text-sm sm:grid-cols-4">
                   {Object.entries(groupStats.criteria_avg).map(([key, value]) => (
                     <div key={key}>
                       <dt className="text-muted">{CRITERIA_LABELS[key] ?? key}</dt>
@@ -206,7 +206,7 @@ export default async function ProfilePage({ params }: Props) {
               <li key={l.id}>
                 <Link
                   href={`/anuncios/${l.id}`}
-                  className="block h-full rounded-lg border border-border p-4 hover:border-brand focus-visible:outline-2"
+                  className="block h-full rounded-2xl border border-border bg-background p-4 hover:border-brand focus-visible:outline-2"
                 >
                   <span className="text-xs font-semibold uppercase tracking-wide text-brand">{KIND_LABELS[l.kind]}</span>
                   <span className="mt-1 block font-medium">{l.title}</span>
