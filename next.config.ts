@@ -5,10 +5,13 @@ import type { NextConfig } from "next";
  * mayúsculas ni guiones bajos): projecturl, publickey, secretkey y siteurl.
  * Las públicas se copian a NEXT_PUBLIC_* en el build para que lleguen al
  * navegador; secretkey solo se lee en el servidor (src/lib/supabase/admin.ts).
+ * Si existen, los nombres en minúscula MANDAN sobre los estándar: así una
+ * integración que cree NEXT_PUBLIC_SUPABASE_URL hacia otro proyecto no pisa
+ * la configuración puesta a mano.
  */
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? process.env.projecturl;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? process.env.publickey;
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? process.env.siteurl;
+const supabaseUrl = process.env.projecturl ?? process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseAnonKey = process.env.publickey ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const siteUrl = process.env.siteurl ?? process.env.NEXT_PUBLIC_SITE_URL;
 const publicEnv: Record<string, string> = {};
 if (siteUrl) publicEnv.NEXT_PUBLIC_SITE_URL = siteUrl;
 if (supabaseUrl) publicEnv.NEXT_PUBLIC_SUPABASE_URL = supabaseUrl;

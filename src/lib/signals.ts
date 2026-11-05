@@ -17,7 +17,7 @@ export function hashSignal(value: string, secret: string) {
 
 export async function recordSignal(): Promise<void> {
   // Se acepta también `signalsecret` (algunos paneles no dejan usar guiones bajos).
-  const secret = process.env.SIGNAL_SECRET ?? process.env.signalsecret;
+  const secret = process.env.signalsecret ?? process.env.SIGNAL_SECRET;
   if (!secret) return;
   try {
     const h = await headers();
