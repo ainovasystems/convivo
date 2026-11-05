@@ -16,13 +16,22 @@ export function ChatThread({
   names,
   initialMessages,
   canWrite,
+  isGuest,
+  listingId,
+  serverStatus,
 }: {
   interestId: string;
   currentUserId: string;
   names: Record<string, string>;
   initialMessages: SentMessage[];
   canWrite: boolean;
+  isGuest: boolean;
+  listingId: string;
+  serverStatus: string;
 }) {
+  // Estado del interés recibido por Realtime: se muestra al momento, sin
+  // depender de que llegue el refresco completo de la página.
+  const [liveStatus, setLiveStatus] = useState<string | null>(null);
   const router = useRouter();
   const [messages, setMessages] = useState(initialMessages);
   const [draft, setDraft] = useState("");
@@ -53,7 +62,10 @@ export function ChatThread({
       .on(
         "postgres_changes",
         { event: "UPDATE", schema: "public", table: "interests", filter: `id=eq.${interestId}` },
-        () => router.refresh(),
+        (payload) => {
+          setLiveStatus((payload.new as { status?: string }).status ?? null);
+          router.refresh();
+        },
       )
       .subscribe();
 
@@ -94,6 +106,20 @@ export function ChatThread({
 
   return (
     <section aria-label="Mensajes" className="space-y-4">
+      {liveStatus === "accepted" && serverStatus !== "accepted" && isGuest ? (
+        <p role="status" className="rounded-md border border-emerald-300 bg-emerald-50 px-3 py-2 text-sm text-emerald-900 dark:border-emerald-800 dark:bg-emerald-950 dark:text-emerald-100">
+          ¡El anunciante ha aceptado tu interés! Ya puedes ver la{" "}
+          <a href={`/anuncios/${listingId}`} className="font-medium underline">
+            dirección exacta en el anuncio
+          </a>
+          .
+        </p>
+      ) : null}
+      {liveStatus === "declined" && serverStatus !== "declined" && isGuest ? (
+        <p role="status" className="rounded-md border border-border px-3 py-2 text-sm text-muted">
+          El anunciante ha rechazado tu interés.
+        </p>
+      ) : null}
       <ol className="max-h-[60vh] space-y-3 overflow-y-auto rounded-lg border border-border p-3" aria-live="polite" aria-relevant="additions">
         {messages.map((m) => {
           const mine = m.sender_id === currentUserId;

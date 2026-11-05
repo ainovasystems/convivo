@@ -61,6 +61,7 @@ export default async function ConversationPage({ params }: { params: Promise<{ i
       <InterestActions interestId={interest.id} actions={actions} />
 
       {interest.status === "accepted" && role === "guest" ? (
+        // Nota: si el cambio llega por Realtime, ChatThread muestra su propio aviso.
         <p className="rounded-md border border-emerald-300 bg-emerald-50 px-3 py-2 text-sm text-emerald-900 dark:border-emerald-800 dark:bg-emerald-950 dark:text-emerald-100">
           {listing.owner?.display_name} ha aceptado tu interés: ya puedes ver la{" "}
           <Link href={`/anuncios/${listing.id}`} className="font-medium underline">
@@ -76,6 +77,9 @@ export default async function ConversationPage({ params }: { params: Promise<{ i
         names={names}
         initialMessages={messages}
         canWrite={actions.includes("message")}
+        isGuest={role === "guest"}
+        listingId={listing.id}
+        serverStatus={interest.status}
       />
 
       {listing.kind !== "seeking" && (interest.status === "accepted" || stays.length) ? (
