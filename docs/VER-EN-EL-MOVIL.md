@@ -33,10 +33,12 @@ Tiempo: unos 20-30 minutos. No hace falta instalar nada en tu ordenador.
    - Si no aparece ahí, pulsa el proveedor **Email** en la lista de proveedores: el mismo interruptor está en ese panel.
    - ⚠️ No lo busques en **Authentication → Emails**: esa página solo tiene las plantillas de los correos.
    - Así puedes crear cuentas al momento. Antes de abrir la app al público lo volverás a activar.
-6. **Copia las claves.** Ve a **Project Settings → API** (o *API Keys*) y apunta en una nota estos tres valores:
-   - **Project URL**: algo como `https://abcd1234.supabase.co`.
-   - **anon public**: una clave larga. Es pública y no pasa nada si alguien la ve.
-   - **service_role**: otra clave larga. **Es secreta**: no la compartas con nadie ni la pegues en un chat.
+6. **Copia la dirección y las claves** en una nota:
+   - **Project URL:** pulsa el **engranaje (Project Settings)** abajo en el menú izquierdo y entra en **Data API**. Arriba verás algo como `https://abcd1234.supabase.co`. También aparece en el botón **Connect** de la página principal del proyecto.
+   - **Claves:** en **Project Settings → API Keys**, pestaña *Publishable and secret API keys*:
+     - **Publishable key** (empieza por `sb_publishable_…`): es pública y no pasa nada si alguien la ve.
+     - **Secret key** (empieza por `sb_secret_…`): pulsa el ojo o *Reveal* para verla. Si no hay ninguna, pulsa *Add new secret key*. **Es secreta**: no la compartas ni la pegues en un chat.
+   - Si prefieres las claves clásicas, están en la pestaña **Legacy API Keys** («anon» y «service_role»). Funcionan igual.
 
 ## Parte B · Vercel (publicar la web)
 
@@ -49,8 +51,8 @@ Tiempo: unos 20-30 minutos. No hace falta instalar nada en tu ordenador.
    | Name | Value |
    |---|---|
    | `NEXT_PUBLIC_SUPABASE_URL` | el **Project URL** de Supabase |
-   | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | la clave **anon public** |
-   | `SUPABASE_SERVICE_ROLE_KEY` | la clave **service_role** |
+   | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | la **Publishable key** (`sb_publishable_…`), o la «anon» clásica |
+   | `SUPABASE_SERVICE_ROLE_KEY` | la **Secret key** (`sb_secret_…`), o la «service_role» clásica |
    | `CRON_SECRET` | un texto inventado, largo y aleatorio (40 caracteres o más) |
    | `SIGNAL_SECRET` | otro texto inventado, distinto y también largo |
 
