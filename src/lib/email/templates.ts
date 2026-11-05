@@ -85,3 +85,31 @@ export function stayProposedEmail(p: {
     text: `${paragraphs.map(strip).join("\n\n")}\n\nRevisar la propuesta: ${p.url}`,
   };
 }
+
+export function reviewWindowEmail(p: {
+  name: string;
+  listingTitle: string;
+  kind: "opened" | "closing";
+  closesAt: string;
+  url: string;
+}): Rendered {
+  const opened = p.kind === "opened";
+  const subject = opened
+    ? `Ya puedes reseñar tu estancia en «${p.listingTitle}»`
+    : `Quedan 3 días para reseñar tu estancia en «${p.listingTitle}»`;
+  const paragraphs = [
+    `Hola, ${escapeHtml(p.name)}:`,
+    opened
+      ? `Se ha abierto la ventana para reseñar tu estancia en «${escapeHtml(p.listingTitle)}». Tienes hasta el ${escapeHtml(p.closesAt)}.`
+      : `La ventana para reseñar tu estancia en «${escapeHtml(p.listingTitle)}» se cierra el ${escapeHtml(p.closesAt)}.`,
+    "Las reseñas son a doble ciego: nadie verá la tuya hasta que la otra parte opine o pasen 14 días.",
+  ];
+  return {
+    subject,
+    html: layout(opened ? "Ya puedes dejar tu reseña" : "Tu ventana de reseña se cierra pronto", paragraphs, {
+      label: "Escribir mis reseñas",
+      url: p.url,
+    }),
+    text: `${paragraphs.map(strip).join("\n\n")}\n\nEscribir mis reseñas: ${p.url}`,
+  };
+}

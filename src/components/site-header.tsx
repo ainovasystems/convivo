@@ -47,6 +47,11 @@ export async function SiteHeader() {
                   </Link>
                 </li>
                 <li>
+                  <Link href="/mis-resenas" className={linkClass}>
+                    Reseñas
+                  </Link>
+                </li>
+                <li>
                   <Link href={`/perfil/${user.id}`} className={linkClass}>
                     Mi perfil
                   </Link>
