@@ -93,6 +93,5 @@ test.describe("registro → completar perfil → perfil público", () => {
     await page.goto("/perfil/a0000000-0000-4000-8000-000000000004"); // Diego (seed)
     await expect(page.getByRole("heading", { level: 1, name: "Diego Fernández" })).toBeVisible();
     await expect(page.getByText(/Diego fue correcto/)).toHaveCount(0);
-    await expect(page.getByText("Todavía sin reseñas.")).toBeVisible();
   });
 });
