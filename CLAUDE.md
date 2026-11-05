@@ -222,8 +222,8 @@ RPC (`supabase.rpc(...)`): `confirm_stay`, `cancel_stay`, `end_stay`, `add_stay_
 2. **Tres clientes de Supabase** (navegador, servidor y middleware) más un cuarto `admin` aislado con `server-only` para service_role.
 3. El middleware **no rompe** si faltan las variables de Supabase: deja pasar la petición para que la parte pública funcione en local sin configurar.
 4. Las rutas privadas (`/perfil/editar`, `/publicar`, `/mis-*`) redirigen a `/entrar?next=…` desde el middleware. La lista está en `src/lib/supabase/middleware.ts`.
-5. **Tipografía del sistema** en vez de `next/font/google`: no depende de la red en el build y carga más rápido.
-6. Los tokens de diseño (`brand`, `muted`, `border`…) están en `globals.css` y tienen modo oscuro automático.
+5. **Tipografía Plus Jakarta Sans autoalojada** (`@fontsource-variable/plus-jakarta-sans`, importada en `layout.tsx`): estilo de startup moderna, sin depender de Google Fonts en el build.
+6. **Identidad marrón y blanco** (tokens en `globals.css`): blanco `background`, crema `surface`, marrón nogal `brand` (#7b4b2a) con `brand-strong` y `brand-soft`, y acento miel `accent` (#f4b740) para precios y llamadas a la acción. Botones en píldora (`rounded-full`), tarjetas `rounded-2xl/3xl` con `shadow-[var(--shadow-card)]`. **Modo oscuro desactivado**: la variante `dark:` solo se activaría con la clase `.dark`.
 7. La CLI de Supabase va como devDependency (`npx supabase …`), no hace falta instalarla global.
 8. `@playwright/test` está fijado a 1.63.0 para que coincida con el Chromium preinstalado en la sesión en la nube. En local: `npx playwright install chromium`.
 9. Rango de edad en lugar de fecha de nacimiento (minimización de datos, RGPD).
@@ -248,7 +248,7 @@ RPC (`supabase.rpc(...)`): `confirm_stay`, `cancel_stay`, `end_stay`, `add_stay_
 28. **El mensaje del interés es también el primer mensaje del chat**, para que la conversación tenga todo el contexto.
 29. **Los compañeros se añaden pegando el enlace a su perfil.** No hay buscador de usuarios, para no permitir enumerar perfiles.
 30. **Límites de frecuencia en la BD**, no en memoria del servidor: funcionan igual con varias instancias en Vercel y no se pueden saltar llamando a la API directamente.
-31. **La cabecera hace salto de línea en móvil** en lugar de usar un menú hamburguesa: menos JavaScript y todo visible. Se revisará en el Prompt 7.
+31. **Navegación tipo app:** en móvil, barra de pestañas inferior fija (`bottom-nav.tsx`: Buscar, Mensajes, Publicar, Reseñas, Perfil); en escritorio, cabecera con enlaces y botón «Publicar anuncio». `manifest.ts` + iconos permiten «Añadir a pantalla de inicio».
 32. **Respuesta pública única y no editable**, en una tabla aparte (`review_responses`): la reseña sigue siendo inmutable.
 33. **Ocultación cautelar solo por datos personales.** Es el único caso en que dejar visible la reseña mientras se revisa causa un daño difícil de reparar. Para que no se use como censura hay un límite de 10 denuncias al día, un admin la revisa y, si la descarta, la reseña vuelve a verse.
 34. **Avisos de ventana con Vercel Cron + route handler**, y no con pg_cron: el envío de email vive en la app (interfaz `Mailer`) y así no hay que dar a Postgres acceso a internet.
