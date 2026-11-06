@@ -65,15 +65,21 @@ async function runChecks(): Promise<Check[]> {
       : "Revisa que projecturl y publickey sean del mismo proyecto de Supabase.",
   });
 
-  // Objetos de la última migración: si existen, la instalación está completa.
-  const latest = await supabase.from("review_responses").select("review_id", { head: true, count: "exact" });
-  const fn = await supabase.rpc("review_criteria_for", { p_relationship: "tenant_to_listing" });
-  const complete = !latest.error && !fn.error;
+  // Objetos de las últimas migraciones que se pueden leer sin sesión: si
+  // existen, la instalación está al día.
+  const probes = await Promise.all([
+    supabase.from("review_responses").select("review_id", { head: true, count: "exact" }),
+    supabase.rpc("review_criteria_for", { p_relationship: "tenant_to_listing" }),
+    supabase.from("listings").select("rental_term", { head: true, count: "exact" }),
+    supabase.from("profiles").select("deleted_at", { head: true, count: "exact" }),
+  ]);
+  const firstError = probes.find((p) => p.error)?.error;
+  const complete = !firstError;
   checks.push({
     label: "Instalación completa de la base de datos",
     ok: complete,
-    detail: complete ? "Todas las tablas y funciones están" : `Incompleta: ${(latest.error ?? fn.error)?.message}`,
-    fix: "Vuelve a ejecutar supabase/instalar-base-de-datos.sql en un proyecto de Supabase nuevo o vacío.",
+    detail: complete ? "Todas las tablas y funciones están" : `Incompleta: ${firstError?.message}`,
+    fix: "Faltan migraciones: aplica las de supabase/migrations que falten (o instalar-base-de-datos.sql en un proyecto vacío).",
   });
 
   const auth = await supabase.auth.getClaims();

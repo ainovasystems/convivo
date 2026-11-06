@@ -140,6 +140,9 @@ Antes de cada commit: `npm run lint && npm run typecheck && npm test && npm run 
 - **Cookies:** solo las de sesión de Supabase (`sb-…`), que son técnicas e imprescindibles; por eso **no hay banner de cookies**. Un e2e lo comprueba. Si algún día se añade analítica o publicidad, hará falta banner y consentimiento previo.
 - **Anti-discriminación en anuncios** (`src/lib/listings/discrimination.ts`, único fichero con la lista): se rechazan en título, descripción y zonas las **exclusiones** por origen, nacionalidad, etnia, religión u orientación sexual («solo españoles», «no extranjeros», «abstenerse gitanos», «nacionalidad española»…). El texto se normaliza (minúsculas, sin tildes, signos ni espacios dobles) y se busca la exclusión, no la palabra suelta: «hablamos español» o «barrio chino» pasan. Va en `listingTextSchema` (Zod), que usa `publishErrors()`: el asistente lo marca en vivo y el servidor lo vuelve a comprobar al guardar o publicar. Para ampliarla, añade palabras a `ONLY_GROUPS`, `EXCLUDED_GROUPS` o `FORBIDDEN_PHRASES` y un caso en `tests/unit/discrimination.test.ts`.
 - **Sexo («solo chicas/chicos»):** se permite en habitaciones y en «busco», donde se comparte casa. En piso entero se avisa (`publishWarnings()`) pero no se bloquea.
+- **Anti-fraude** (`listing_flags`, trigger `listings_fraud_flags` → `private.flag_listing`): al publicar o cambiar un anuncio activo se marca para revisión si su texto parece una estafa (`private.scam_phrase`: Western Union, MoneyGram, «paga por adelantado», «estoy en el extranjero», «te mando las llaves»…) o si el precio es menor que la mitad de la mediana de anuncios activos del mismo tipo en la ciudad (mínimo 5 comparables), o en la provincia, o, sin comparables, menor de 120 € (habitación) o 250 € (piso). **No despublica ni avisa al anunciante.** Solo los admins ven las marcas (`/admin`, «Anuncios marcados») y las resuelven con `admin_resolve_listing_flag(id, 'dismiss' | 'close_listing', nota)`.
+- **Aviso en el chat:** «Nunca pagues antes de ver el piso», fijo en cada conversación (`chat-thread.tsx`).
+- **Registro de moderación** (`moderation_log`): append-only. Un trigger impide UPDATE, DELETE y TRUNCATE a cualquier rol, también service_role, igual que con las reseñas. Lo escriben solo la BD: los triggers de `reports` (denuncia descartada o resuelta) y de `reviews` (reseña eliminada por un admin; que el autor borre la suya no es moderación) y la RPC de las marcas de fraude. Guarda quién (`auth.uid()`), qué, sobre qué y cuándo. Solo lo leen los admins (`/admin`, últimas 50 acciones).
 - **Formularios de acceso:** devuelven `values` (nunca la contraseña) para volver a rellenar el email, porque React 19 vacía el formulario al terminar la acción.
 
 ## Desarrollo local con Supabase
@@ -205,8 +208,10 @@ SUPABASE_PROJECT_REF=<ref> npm run typegen
 | `reports` | denuncias | quien denuncia y admins | quien denuncia (alta); admin (resolver) |
 | `admin_users` | administradores | nadie (vía `private.is_admin()`) | SQL a mano |
 | `auth_attempts` | huellas de intentos de acceso (límite) | nadie | `auth_rate_allowed()` / `auth_rate_failed()` |
+| `listing_flags` | marcas anti-fraude para revisar | admins | trigger al publicar; resuelve un admin por RPC |
+| `moderation_log` | registro de auditoría de moderación (append-only) | admins | solo triggers y RPC; nadie modifica ni borra |
 
-RPC (`supabase.rpc(...)`): `confirm_stay`, `cancel_stay`, `end_stay`, `add_stay_participant`, `confirm_stay_participation`, `decline_stay_participation`, `get_review_window`, `delete_review`, `profile_review_stats`, `listing_review_stats`, `review_criteria_for`, `am_i_admin`, `mark_conversation_read`, `my_unread_counts`, `record_signal`, `admin_review_flags` (admin), `review_window_notices_due` (solo service_role), `auth_rate_allowed` y `auth_rate_failed` (anon incluido: se usan antes de entrar), `delete_my_account`.
+RPC (`supabase.rpc(...)`): `confirm_stay`, `cancel_stay`, `end_stay`, `add_stay_participant`, `confirm_stay_participation`, `decline_stay_participation`, `get_review_window`, `delete_review`, `profile_review_stats`, `listing_review_stats`, `review_criteria_for`, `am_i_admin`, `mark_conversation_read`, `my_unread_counts`, `record_signal`, `admin_review_flags` (admin), `review_window_notices_due` (solo service_role), `auth_rate_allowed` y `auth_rate_failed` (anon incluido: se usan antes de entrar), `delete_my_account`, `admin_resolve_listing_flag` (admin).
 
 ### Reglas de reseñas tal como están implementadas
 
@@ -289,3 +294,5 @@ RPC (`supabase.rpc(...)`): `confirm_stay`, `cancel_stay`, `end_stay`, `add_stay_
 39. **El borrado de cuenta vive en la BD (trigger en `auth.users`), no en la app:** funciona igual si se borra desde el panel de Supabase, y no hace falta service_role (el usuario borra sus ficheros con su sesión y su fila con una RPC).
 40. **Sin banner de cookies** mientras solo haya cookies técnicas de sesión.
 41. **Preferencia de sexo permitida solo donde se convive** (habitación y «busco»); en piso entero, aviso sin bloqueo. Pendiente de validar con el abogado.
+42. **Las marcas de fraude no despublican ni avisan**: un falso positivo no perjudica a un anunciante honrado y un estafador no aprende a esquivar el filtro. Decide un admin.
+43. **El registro de moderación se escribe desde la BD**, no desde la app: no se puede moderar sin dejar rastro, ni llamando a la API directamente.
