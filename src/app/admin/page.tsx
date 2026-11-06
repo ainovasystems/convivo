@@ -3,8 +3,10 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { ListingFlagForm } from "@/components/admin/listing-flag-form";
+import { NoticeDecisionForm } from "@/components/admin/notice-decision-form";
 import { ModerationForms } from "@/components/reviews/moderation-forms";
 import { getCurrentUser } from "@/lib/auth";
+import { NOTICE_REASONS, type NoticeReason } from "@/lib/moderation/notices";
 import { formatDate } from "@/lib/reviews/labels";
 import { REPORT_REASONS } from "@/lib/reviews/schema";
 import { createClient } from "@/lib/supabase/server";
@@ -22,6 +24,9 @@ const LOG_ACTIONS: Record<string, string> = {
   review_deleted: "Reseña eliminada",
   listing_flag_dismissed: "Marca de fraude descartada",
   listing_flag_actioned: "Anuncio cerrado por fraude",
+  notice_actioned: "Notificación aceptada",
+  notice_rejected: "Notificación rechazada",
+  listing_closed: "Anuncio cerrado por moderación",
 };
 
 export default async function AdminPage() {
@@ -32,7 +37,7 @@ export default async function AdminPage() {
   // A quien no es admin le respondemos 404: ni siquiera confirmamos que exista.
   if (!isAdmin) notFound();
 
-  const [{ data: reports }, { data: flags }, { data: listingFlags }, { data: log }] = await Promise.all([
+  const [{ data: reports }, { data: flags }, { data: listingFlags }, { data: log }, { data: notices }] = await Promise.all([
     supabase
       .from("reports")
       .select(
@@ -53,11 +58,64 @@ export default async function AdminPage() {
       .select("id, action, target_type, target_id, note, created_at, actor:profiles!moderation_log_actor_id_fkey(display_name)")
       .order("created_at", { ascending: false })
       .limit(50),
+    supabase
+      .from("legal_notices")
+      .select("id, reference, target_type, target_id, target_url, reason, explanation, notifier_name, notifier_email, notifier_user_id, created_at, due_at")
+      .eq("status", "received")
+      .order("due_at", { ascending: true })
+      .limit(100),
   ]);
+  const now = Date.now();
 
   return (
     <div className="mx-auto max-w-4xl space-y-10 px-4 py-8 sm:py-12">
       <h1 className="text-2xl font-bold tracking-tight">Moderación</h1>
+
+      <section aria-labelledby="notificaciones" className="space-y-4">
+        <h2 id="notificaciones" className="text-lg font-semibold">
+          Notificaciones de contenido ilegal ({notices?.length ?? 0})
+        </h2>
+        <p className="text-sm text-muted">
+          Del formulario público <Link className="underline" href="/denunciar">/denunciar</Link> (DSA art. 16). Objetivo:
+          responder en 72 h. Motiva siempre la decisión. Si sospechas de un delito que amenace la vida o la seguridad de
+          alguien, avisa también a las autoridades (112 / Policía) (art. 18).
+        </p>
+        {notices?.length ? (
+          <ul className="space-y-4">
+            {notices.map((n) => {
+              const overdue = new Date(n.due_at).getTime() < now;
+              return (
+                <li key={n.id} className={"space-y-3 rounded-2xl border bg-background p-4 " + (overdue ? "border-red-400" : "border-border")}>
+                  <div className="flex flex-wrap items-baseline justify-between gap-2 text-sm">
+                    <p>
+                      <strong>{NOTICE_REASONS[n.reason as NoticeReason] ?? n.reason}</strong> · ref. <code>{n.reference}</code>
+                    </p>
+                    <p className={overdue ? "font-bold text-red-700" : "text-muted"}>
+                      {overdue ? "Fuera de plazo · " : "Responder antes del "}
+                      {formatDate(n.due_at)}
+                    </p>
+                  </div>
+                  <p className="text-sm">
+                    Contenido:{" "}
+                    {n.target_type === "listing" ? <Link className="underline" href={`/anuncios/${n.target_id}`}>anuncio</Link> : null}
+                    {n.target_type === "profile" ? <Link className="underline" href={`/perfil/${n.target_id}`}>perfil</Link> : null}
+                    {n.target_type === "review" ? <span>reseña <code>{n.target_id?.slice(0, 8)}</code></span> : null}
+                    {n.target_type === "other" ? <span className="break-all">{n.target_url}</span> : null}
+                  </p>
+                  <p className="whitespace-pre-line rounded-xl bg-brand-soft p-3 text-sm">{n.explanation}</p>
+                  <p className="text-xs text-muted">
+                    Notifica: {n.notifier_name} ({n.notifier_email}){n.notifier_user_id ? " · tiene cuenta" : " · sin cuenta"} ·{" "}
+                    {formatDate(n.created_at)}
+                  </p>
+                  <NoticeDecisionForm noticeId={n.id} targetType={n.target_type} />
+                </li>
+              );
+            })}
+          </ul>
+        ) : (
+          <p className="text-sm text-muted">No hay notificaciones pendientes.</p>
+        )}
+      </section>
 
       <section aria-labelledby="denuncias" className="space-y-4">
         <h2 id="denuncias" className="text-lg font-semibold">

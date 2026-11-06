@@ -6,7 +6,12 @@ export function escapeHtml(s: string) {
 
 type Rendered = { subject: string; html: string; text: string };
 
-function layout(title: string, paragraphs: string[], cta: { label: string; url: string }): string {
+function layout(
+  title: string,
+  paragraphs: string[],
+  cta: { label: string; url: string },
+  footer = "Recibes este email porque tienes una cuenta en Convivo.",
+): string {
   const body = paragraphs.map((p) => `<p style="margin:0 0 16px;line-height:1.5">${p}</p>`).join("");
   return `<!doctype html><html lang="es"><body style="margin:0;background:#f5f5f4;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:#1c1917">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td align="center" style="padding:24px">
@@ -18,7 +23,7 @@ ${body}
 <p style="margin:24px 0"><a href="${escapeHtml(cta.url)}" style="background:#0f766e;color:#fff;padding:12px 20px;border-radius:8px;text-decoration:none;font-weight:600">${escapeHtml(cta.label)}</a></p>
 <p style="margin:24px 0 0;font-size:13px;color:#57534e">Consejo de seguridad: nunca pagues ni envíes dinero antes de ver la vivienda y firmar un contrato.</p>
 </td></tr></table>
-<p style="font-size:12px;color:#57534e">Recibes este email porque tienes una cuenta en Convivo.</p>
+<p style="font-size:12px;color:#57534e">${escapeHtml(footer)}</p>
 </td></tr></table></body></html>`;
 }
 
@@ -111,5 +116,57 @@ export function reviewWindowEmail(p: {
       url: p.url,
     }),
     text: `${paragraphs.map(strip).join("\n\n")}\n\nEscribir mis reseñas: ${p.url}`,
+  };
+}
+
+const NOTICE_FOOTER = "Recibes este email porque has enviado una notificación de contenido a Convivo.";
+
+/** Acuse de recibo de una notificación de contenido ilícito (DSA art. 16.4). */
+export function noticeReceivedEmail(p: { name: string; reference: string; url: string }): Rendered {
+  const subject = `Hemos recibido tu notificación (ref. ${p.reference})`;
+  const paragraphs = [
+    `Hola, ${escapeHtml(p.name)}:`,
+    `Hemos recibido tu notificación con la referencia <strong>${escapeHtml(p.reference)}</strong>.`,
+    "La revisará una persona del equipo en un máximo de 72 horas y te escribiremos con la decisión y sus motivos.",
+    "Si el contenido supone un peligro inmediato para alguien, llama al 112.",
+  ];
+  return {
+    subject,
+    html: layout("Notificación recibida", paragraphs, { label: "Ir a Convivo", url: p.url }, NOTICE_FOOTER),
+    text: `${paragraphs.map(strip).join("\n\n")}`,
+  };
+}
+
+/** Decisión motivada a quien notificó (DSA art. 16.5). */
+export function noticeDecisionEmail(p: { name: string; reference: string; actioned: boolean; note: string; url: string }): Rendered {
+  const subject = `Decisión sobre tu notificación (ref. ${p.reference})`;
+  const paragraphs = [
+    `Hola, ${escapeHtml(p.name)}:`,
+    p.actioned
+      ? "Hemos revisado tu notificación y <strong>hemos retirado o restringido el contenido</strong>."
+      : "Hemos revisado tu notificación y <strong>no vamos a retirar el contenido</strong>.",
+    `Motivo: ${escapeHtml(p.note)}`,
+    "Si no estás de acuerdo, responde a este email explicando por qué y lo revisaremos de nuevo.",
+  ];
+  return {
+    subject,
+    html: layout("Decisión sobre tu notificación", paragraphs, { label: "Ir a Convivo", url: p.url }, NOTICE_FOOTER),
+    text: `${paragraphs.map(strip).join("\n\n")}`,
+  };
+}
+
+/** Motivación a la persona cuyo contenido se ha retirado (DSA art. 17). */
+export function contentRemovedEmail(p: { name: string; what: string; note: string; url: string }): Rendered {
+  const subject = `Hemos retirado ${p.what} en Convivo`;
+  const paragraphs = [
+    `Hola, ${escapeHtml(p.name)}:`,
+    `Hemos retirado ${escapeHtml(p.what)} tras revisar una notificación de otra persona.`,
+    `Motivo: ${escapeHtml(p.note)}`,
+    "La decisión la ha tomado una persona del equipo, no un sistema automático. Si no estás de acuerdo, responde a este email explicando por qué y la revisaremos de nuevo.",
+  ];
+  return {
+    subject,
+    html: layout("Hemos retirado contenido tuyo", paragraphs, { label: "Ir a Convivo", url: p.url }),
+    text: `${paragraphs.map(strip).join("\n\n")}`,
   };
 }

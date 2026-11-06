@@ -264,6 +264,11 @@ export default async function ListingPage({ params, searchParams }: Props) {
               </Link>
             )}
             <p className="text-xs text-muted">Nunca pagues ni envíes dinero antes de ver la vivienda y firmar un contrato.</p>
+            {!isOwner ? (
+              <Link href={`/denunciar?url=/anuncios/${l.id}`} className="block text-center text-xs text-muted underline">
+                Notificar este anuncio como ilegal o fraudulento
+              </Link>
+            ) : null}
           </section>
         </aside>
       </div>

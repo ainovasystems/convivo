@@ -55,6 +55,7 @@ export default function RootLayout({
               <Link href="/registro" className="hover:text-brand">Crear cuenta</Link>
               <Link href="/privacidad" className="hover:text-brand">Privacidad</Link>
               <Link href="/terminos" className="hover:text-brand">Condiciones</Link>
+              <Link href="/denunciar" className="hover:text-brand">Denunciar contenido</Link>
             </nav>
             <p>© {new Date().getFullYear()} Convivo · Hecho en España</p>
           </div>

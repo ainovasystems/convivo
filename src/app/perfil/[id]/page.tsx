@@ -223,6 +223,11 @@ export default async function ProfilePage({ params }: Props) {
           <p className="text-sm text-muted">No tiene anuncios activos ahora mismo.</p>
         )}
       </section>
+      <p className="text-center text-xs text-muted">
+        <Link href={`/denunciar?url=/perfil/${profile.id}`} className="underline">
+          Notificar este perfil como ilegal
+        </Link>
+      </p>
     </div>
   );
 }
