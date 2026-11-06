@@ -7,7 +7,7 @@
 - **Qué es:** una plataforma de anuncios de vivienda compartida, con perfiles públicos y reseñas verificadas tras una estancia confirmada por las dos partes.
 - **Interesados:** inquilinos, sobre todo jóvenes y universitarios mayores de 18 años; caseros; compañeros de piso; y personas sin cuenta que envían notificaciones.
 - **Datos:**
-  - Cuenta, perfil (sin DNI, nacionalidad ni datos de salud) y rango de edad.
+  - Cuenta, perfil (sin DNI, nacionalidad ni datos de salud) y año de nacimiento (se muestra la edad).
   - Anuncios y dirección exacta, que se revela solo al interesado aceptado.
   - Mensajes, estancias y reseñas.
   - Huellas HMAC de IP y navegador, y notificaciones de contenido.
@@ -17,7 +17,7 @@
 ## 2. Necesidad y proporcionalidad
 
 - **Minimización:**
-  - rango de edad en lugar de fecha de nacimiento;
+  - año de nacimiento en lugar de la fecha completa, y se muestra solo la edad;
   - hábitos con claves cerradas, sin criterios discriminatorios;
   - dirección oculta hasta que se acepta el interés;
   - fotos sin datos GPS;
@@ -34,12 +34,12 @@
 | Riesgo | Probabilidad e impacto | Medidas existentes | Riesgo residual |
 |---|---|---|---|
 | Reseña difamatoria o con datos personales de un tercero | Media / alto | Solo tras estancia confirmada, doble ciego, denuncia interna, ocultación cautelar por datos personales, canal DSA abierto a quien no tiene cuenta, decisión humana motivada y registrada | Medio. Valorar la detección previa de datos personales (doctrina Russmedia) |
-| Discriminación en anuncios | Media / alto | Validación de exclusiones por origen, religión, etc.; la limitación por sexo se bloquea; hábitos con claves cerradas | Bajo |
+| Discriminación en anuncios | Media / alto | Validación de exclusiones por origen, religión, etc.; hábitos con claves cerradas. La preferencia de sexo («solo chicas») se permite por decisión de producto en vivienda compartida | Medio: pendiente de criterio legal (Ley 15/2022) |
 | Estafas a inquilinos | Media / alto | Marcas anti-fraude con revisión humana, aviso fijo en el chat, dirección oculta | Medio |
 | Revelar la dirección exacta | Baja / alto | RLS: solo el dueño y los interesados aceptados | Bajo |
 | Acceso indebido a datos de otros usuarios | Baja / alto | RLS en todas las tablas con tests de atacante, CSP con nonce, límites de intentos de acceso | Bajo |
 | Reidentificar al autor de una reseña tras borrar la cuenta | Media / medio | Se desvincula el perfil y se borran sus datos; el usuario recibe la información antes de borrar | Medio. Decidir si se corta el enlace con la estancia |
-| Uso por menores | Baja / medio | Declaración de mayoría de edad al registrarse, rango de edad desde 18, suspensión si nos avisan | Bajo |
+| Uso por menores | Baja / medio | Declaración de mayoría de edad al registrarse, año de nacimiento con mínimo de 18 años (trigger), suspensión si nos avisan | Bajo |
 | Transferencias a EE. UU. | — | DPF con cláusulas contractuales tipo como plan B; región UE donde se puede | Seguir el recurso ante el TJUE |
 | Brecha de seguridad | Baja / alto | Proveedores con certificaciones, secretos fuera del código, service_role solo en el servidor | Falta un procedimiento de notificación de brechas en 72 h (art. 33) |
 
