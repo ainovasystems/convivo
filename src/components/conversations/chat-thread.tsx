@@ -106,6 +106,10 @@ export function ChatThread({
 
   return (
     <section aria-label="Mensajes" className="space-y-4">
+      <p role="note" className="rounded-xl border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-900">
+        <strong>Nunca pagues antes de ver el piso.</strong> Desconfía de quien pida transferencias, Western Union o Bizum
+        por adelantado, o diga que está en el extranjero y te enviará las llaves. Si te pasa, denúncialo.
+      </p>
       {liveStatus === "accepted" && serverStatus !== "accepted" && isGuest ? (
         <p role="status" className="rounded-xl border border-emerald-300 bg-emerald-50 px-3 py-2 text-sm text-emerald-900 dark:border-emerald-800 dark:bg-emerald-950 dark:text-emerald-100">
           ¡El anunciante ha aceptado tu interés! Ya puedes ver la{" "}

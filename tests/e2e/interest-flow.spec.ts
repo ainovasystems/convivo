@@ -55,6 +55,7 @@ test.describe("interés → conversación → estancia confirmada", () => {
     await guest.getByRole("button", { name: "Me interesa" }).click();
     await expect(guest).toHaveURL(/\/mensajes\/[0-9a-f-]{36}$/);
     const conversationUrl = guest.url();
+    await expect(guest.getByRole("note").filter({ hasText: "Nunca pagues antes de ver el piso." })).toBeVisible();
 
     // 2. El propietario lo ve en su bandeja con contador de no leídos y le llega un email.
     const host = await loginPage(browser, "diego@convivo.test");
