@@ -44,16 +44,9 @@ export default async function Home() {
           }}
         />
         <div className="relative mx-auto max-w-6xl px-4 pb-16 pt-10 sm:pb-24 sm:pt-20">
-          <p className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-sm font-semibold ring-1 ring-white/20">
-            <span className="size-2 rounded-full bg-accent" aria-hidden="true" />
-            Reseñas solo de quien ha convivido de verdad
-          </p>
-          <h1 className="mt-5 max-w-3xl text-4xl font-extrabold leading-[1.05] sm:text-6xl">
+          <h1 className="max-w-3xl text-4xl font-extrabold leading-[1.05] sm:text-6xl">
             Tu próximo hogar, con gente <span className="text-accent">de confianza</span>
           </h1>
-          <p className="mt-4 max-w-xl text-lg text-white/85">
-            Habitaciones, pisos y compañeros para estudiantes y jóvenes, con perfiles y reseñas reales.
-          </p>
 
           <form
             method="get"
