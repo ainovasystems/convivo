@@ -28,11 +28,16 @@ async function latestListings() {
   }
 }
 
-export default async function Home() {
-  const listings = await latestListings();
+export default async function Home({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
+  const [listings, params] = await Promise.all([latestListings(), searchParams]);
 
   return (
     <div>
+      {params.cuenta === "borrada" ? (
+        <p role="status" className="bg-brand-soft px-4 py-3 text-center text-sm font-semibold text-brand">
+          Tu cuenta se ha borrado. Gracias por haber usado Convivo.
+        </p>
+      ) : null}
       {/* HERO */}
       <section className="relative overflow-hidden bg-brand text-brand-foreground">
         <div

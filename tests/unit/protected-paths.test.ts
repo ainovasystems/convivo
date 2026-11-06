@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import { isGuestOnlyPath, isProtectedPath } from "@/lib/supabase/middleware";
 
 describe("isProtectedPath", () => {
-  it.each(["/perfil", "/perfil/editar", "/publicar", "/mis-anuncios", "/mensajes", "/admin"])(
+  it.each(["/perfil", "/perfil/editar", "/publicar", "/mis-anuncios", "/mensajes", "/admin", "/cuenta"])(
     "protege %s",
     (path) => expect(isProtectedPath(path)).toBe(true),
   );

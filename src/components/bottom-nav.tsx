@@ -13,7 +13,7 @@ export function BottomNav({ loggedIn, unread, profileHref }: { loggedIn: boolean
     { href: loggedIn ? "/mensajes" : "/entrar?next=/mensajes", label: "Mensajes", Icon: ChatIcon, match: ["/mensajes"], badge: unread },
     { href: "/publicar", label: "Publicar", Icon: PlusIcon, match: ["/publicar"], primary: true },
     { href: loggedIn ? "/mis-resenas" : "/entrar?next=/mis-resenas", label: "Reseñas", Icon: StarIcon, match: ["/mis-resenas", "/resenas"] },
-    { href: profileHref, label: "Perfil", Icon: UserIcon, match: ["/perfil", "/entrar", "/registro", "/mis-anuncios", "/mis-estancias"] },
+    { href: profileHref, label: "Perfil", Icon: UserIcon, match: ["/perfil", "/entrar", "/registro", "/mis-anuncios", "/mis-estancias", "/cuenta"] },
   ];
 
   return (

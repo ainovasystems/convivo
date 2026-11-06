@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { AvatarUploader } from "@/components/profile/avatar-uploader";
@@ -47,6 +48,12 @@ export default async function EditProfilePage({
           habits: profile.habits,
         }}
       />
+      <p className="border-t border-border pt-6 text-sm text-muted">
+        ¿Quieres descargar tus datos o borrar tu cuenta?{" "}
+        <Link href="/cuenta" className="font-semibold text-brand underline">
+          Mi cuenta y mis datos
+        </Link>
+      </p>
     </div>
   );
 }
