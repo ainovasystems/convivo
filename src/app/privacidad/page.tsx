@@ -71,6 +71,13 @@ export default function PrivacyPage() {
               <td>Interés legítimo</td>
             </tr>
             <tr>
+              <td>
+                Gestionar notificaciones de contenido ilegal, también de personas sin cuenta (nombre, email y lo que nos
+                cuentan)
+              </td>
+              <td>Obligación legal (Reglamento de Servicios Digitales, arts. 16 y 17)</td>
+            </tr>
+            <tr>
               <td>Moderación de denuncias y cumplimiento de obligaciones legales</td>
               <td>Obligación legal e interés legítimo</td>
             </tr>
@@ -94,12 +101,15 @@ export default function PrivacyPage() {
         <ul>
           <li>Datos de la cuenta, perfil y anuncios: mientras la cuenta exista.</li>
           <li>
-            Reseñas: se conservan aunque borres la cuenta, <strong>anonimizadas</strong> (el autor pasa a «Usuario eliminado»),
-            para no borrar la reputación de otras personas. [POR COMPLETAR: validar base legal de la conservación]
+            Reseñas: se conservan aunque borres la cuenta, <strong>desvinculadas de tu cuenta</strong> (aparecen como «Usuario
+            eliminado»), para no borrar la reputación de otras personas. No es un anonimizado completo: quien convivió
+            contigo puede deducir quién la escribió por la estancia. Base legal: interés legítimo (art. 6.1.f RGPD) y la
+            excepción de libertad de expresión e información al derecho de supresión (art. 17.3.a). [POR COMPLETAR: validar
+            con el abogado y decidir si se corta también el enlace con la estancia]
           </li>
           <li>Huellas de seguridad de los intentos de acceso: se eliminan a partir de las 24 horas.</li>
           <li>Huellas anti-abuso de las reseñas: [POR COMPLETAR: plazo, p. ej. 12 meses]</li>
-          <li>Denuncias y registro de moderación: [POR COMPLETAR: plazo]</li>
+          <li>Denuncias, notificaciones de contenido ilegal y registro de moderación: [POR COMPLETAR: plazo; propuesta en docs/legal/conservacion.md]</li>
           <li>Copias de seguridad: [POR COMPLETAR: plazo según el plan de Supabase]</li>
         </ul>
       </section>
@@ -130,7 +140,11 @@ export default function PrivacyPage() {
 
       <section>
         <h2>8. Menores</h2>
-        <p>Convivo está dirigido a mayores de edad. [POR COMPLETAR: edad mínima y cómo se comprueba]</p>
+        <p>
+          Convivo es solo para mayores de 18 años: al registrarte declaras que lo eres, y el rango de edad del perfil empieza
+          en 18. No pedimos DNI. Si sabemos que una cuenta es de un menor, la suspendemos y borramos sus datos. Puedes
+          avisarnos desde el <a href="/denunciar" className="font-semibold text-brand underline">formulario de denuncias</a>.
+        </p>
       </section>
     </LegalPage>
   );

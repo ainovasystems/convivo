@@ -24,7 +24,7 @@ export default function TermsPage() {
       <section>
         <h2>2. Tu cuenta</h2>
         <ul>
-          <li>Tienes que ser mayor de edad. [POR COMPLETAR: confirmar edad mínima]</li>
+          <li>Tienes que tener 18 años o más (un menor no puede firmar un alquiler). Lo declaras al registrarte; si se detecta que una cuenta es de un menor, se suspende y se borran sus datos.</li>
           <li>Los datos de tu perfil deben ser veraces. No suplantes a nadie.</li>
           <li>Eres responsable de guardar tu contraseña.</li>
           <li>
@@ -66,7 +66,7 @@ export default function TermsPage() {
           </li>
           <li>La persona reseñada puede responder una vez, públicamente.</li>
           <li>
-            Si borras tu cuenta, tus reseñas se conservan anonimizadas. Puedes eliminar una reseña tuya indicando el motivo; queda
+            Si borras tu cuenta, tus reseñas se conservan, desvinculadas de tu cuenta: aparecen como «Usuario eliminado». Puedes eliminar una reseña tuya indicando el motivo; queda
             constancia de que existió.
           </li>
         </ul>
@@ -74,12 +74,25 @@ export default function TermsPage() {
 
       <section>
         <h2>5. Denuncias y moderación</h2>
-        <p>
-          Cualquier persona puede denunciar una reseña, un anuncio o un usuario. Las reseñas denunciadas por contener datos
-          personales se ocultan hasta que las revisamos. Podemos retirar contenidos o cerrar cuentas que incumplan estas
-          condiciones. [POR COMPLETAR: plazos de respuesta, vía de reclamación y obligaciones del Reglamento de Servicios
-          Digitales (DSA)]
-        </p>
+        <ul>
+          <li>
+            Cualquier persona, tenga cuenta o no, puede notificar un anuncio, un perfil o una reseña que crea ilegal desde{" "}
+            <Link href="/denunciar" className="font-semibold text-brand underline">
+              Notificar contenido ilegal
+            </Link>
+            . Enviamos un acuse de recibo con una referencia y nuestro objetivo es decidir en un máximo de 72 horas.
+          </li>
+          <li>
+            Las decisiones las toma una persona, no un sistema automático, y siempre se motivan: se comunican a quien notificó
+            y, si se retira o restringe contenido, a quien lo publicó.
+          </li>
+          <li>Las reseñas denunciadas por contener datos personales se ocultan hasta que las revisamos.</li>
+          <li>
+            Si no estás de acuerdo con una decisión, responde al email en el que te la comunicamos o escribe a [POR COMPLETAR:
+            email de reclamaciones] y la revisaremos de nuevo.
+          </li>
+          <li>Si detectamos indicios de un delito que amenace la vida o la seguridad de alguien, avisaremos a las autoridades.</li>
+        </ul>
       </section>
 
       <section>

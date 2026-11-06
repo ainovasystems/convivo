@@ -30,7 +30,7 @@ async function listOwnFiles(supabase: Awaited<ReturnType<typeof createClient>>, 
 /**
  * Borra la cuenta. Primero las fotos y el avatar de Storage (con la sesión de
  * la propia persona: RLS solo le deja tocar su carpeta) y después
- * delete_my_account, que borra el usuario y anonimiza el perfil en la BD.
+ * delete_my_account, que borra el usuario y desvincula el perfil en la BD («Usuario eliminado»).
  */
 export async function deleteAccount(_prev: FormState, formData: FormData): Promise<FormState> {
   const parsed = deleteSchema.safeParse({ confirm: formData.get("confirm") });

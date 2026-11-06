@@ -51,9 +51,13 @@ export default async function AccountPage() {
             <li>Se borran tu perfil, tu foto, tus conversaciones, tus avisos y las fotos de tus anuncios.</li>
             <li>Tus anuncios se borran. Si alguno tiene estancias registradas, se cierra y se quita su dirección.</li>
             <li>
-              <strong>Las reseñas no se borran: se anonimizan.</strong> Las que escribiste y las que recibiste se quedan,
-              pero tu nombre pasa a «Usuario eliminado». Así no desaparece la reputación que otras personas ganaron
-              contigo y las valoraciones siguen siendo fiables.
+              <strong>Las reseñas no se borran: se desvinculan de tu cuenta.</strong> Las que escribiste y las que
+              recibiste se quedan, pero en lugar de tu nombre aparece «Usuario eliminado». Así no desaparece la
+              reputación que otras personas ganaron contigo y las valoraciones siguen siendo fiables.
+            </li>
+            <li>
+              Ten en cuenta que quien convivió contigo puede deducir que una reseña era tuya por la estancia a la que
+              corresponde.
             </li>
           </ul>
           <p>Si quieres guardar una copia, descarga antes tus datos.</p>
