@@ -391,6 +391,7 @@ export type Database = {
           bio: string | null;
           city: string | null;
           created_at: string;
+          deleted_at: string | null;
           display_name: string;
           email_verified: boolean;
           habits: NonNullable<Json>;
@@ -408,6 +409,7 @@ export type Database = {
           bio?: string | null;
           city?: string | null;
           created_at?: string;
+          deleted_at?: string | null;
           display_name: string;
           email_verified?: boolean;
           habits?: NonNullable<Json>;
@@ -424,6 +426,7 @@ export type Database = {
           bio?: string | null;
           city?: string | null;
           created_at?: string;
+          deleted_at?: string | null;
           display_name?: string;
           email_verified?: boolean;
           habits?: NonNullable<Json>;
@@ -983,6 +986,7 @@ export type Database = {
         };
       };
       decline_stay_participation: { Args: { p_stay_id: string }; Returns: undefined };
+      delete_my_account: { Args: { p_confirm: string }; Returns: undefined };
       delete_review: { Args: { p_reason: string; p_review_id: string }; Returns: undefined };
       end_stay: {
         Args: { p_end_date?: string; p_stay_id: string };
