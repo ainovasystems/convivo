@@ -51,6 +51,7 @@ export default async function EditListingPage({
     moveInDate: str(l.move_in_date),
     rentalTerm: l.rental_term,
     availableUntil: str(l.available_until),
+    cohabitation: l.cohabitation,
     addressLine: str(address?.address_line),
     floorDoor: str(address?.floor_door),
     postalCode: str(address?.postal_code),

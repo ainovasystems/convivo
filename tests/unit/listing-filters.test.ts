@@ -17,6 +17,7 @@ class Recorder implements FilterableQuery<Recorder> {
   }
   eq(c: string, v: unknown) { return this.rec("eq", c, v); }
   ilike(c: string, p: string) { return this.rec("ilike", c, p); }
+  in(c: string, v: readonly unknown[]) { return this.rec("in", c, v); }
   gte(c: string, v: unknown) { return this.rec("gte", c, v); }
   lte(c: string, v: unknown) { return this.rec("lte", c, v); }
   order(c: string, o: { ascending: boolean; nullsFirst?: boolean }) { return this.rec("order", c, o); }
@@ -119,5 +120,10 @@ describe("applyListingFilters", () => {
   it("una ciudad conocida corrige la provincia incoherente", () => {
     expect(parseFilters({ ciudad: "Lugo", provincia: "Madrid" }).provincia).toBe("Lugo");
     expect(parseFilters({ ciudad: "Pueblo inventado", provincia: "Madrid" }).provincia).toBe("Madrid");
+  });
+
+  it("filtra por convivencia: «chicas» incluye los indiferentes", () => {
+    expect(run({ convivencia: "chicas" })).toContainEqual(["in", "cohabitation", ["women", "any"]]);
+    expect(parseFilters({ convivencia: "otros" }).convivencia).toBeUndefined();
   });
 });

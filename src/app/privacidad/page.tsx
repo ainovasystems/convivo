@@ -24,8 +24,8 @@ export default function PrivacyPage() {
         <ul>
           <li><strong>Cuenta:</strong> email, contraseña (cifrada, nunca la vemos) y nombre visible.</li>
           <li>
-            <strong>Perfil público</strong> (lo que tú decidas poner): foto, presentación, ciudad, ocupación, rango de edad
-            (no la fecha de nacimiento), idiomas y hábitos de convivencia de una lista cerrada.
+            <strong>Perfil público</strong> (lo que tú decidas poner): foto, presentación, ciudad, ocupación, año de nacimiento
+            (se muestra solo la edad, nunca la fecha), idiomas y hábitos de convivencia de una lista cerrada.
           </li>
           <li>
             <strong>Anuncios:</strong> descripción, precio, fotos (sin datos de ubicación GPS) y la dirección exacta, que solo
@@ -141,8 +141,8 @@ export default function PrivacyPage() {
       <section>
         <h2>8. Menores</h2>
         <p>
-          Convivo es solo para mayores de 18 años: al registrarte declaras que lo eres, y el rango de edad del perfil empieza
-          en 18. No pedimos DNI. Si sabemos que una cuenta es de un menor, la suspendemos y borramos sus datos. Puedes
+          Convivo es solo para mayores de 18 años: al registrarte declaras que lo eres, y el año de nacimiento del perfil no
+          admite menores de 18. No pedimos DNI. Si sabemos que una cuenta es de un menor, la suspendemos y borramos sus datos. Puedes
           avisarnos desde el <a href="/denunciar" className="font-semibold text-brand underline">formulario de denuncias</a>.
         </p>
       </section>

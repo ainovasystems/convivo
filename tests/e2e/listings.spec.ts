@@ -64,7 +64,7 @@ test.describe("anuncios", () => {
     await expect(page.getByText(/La dirección exacta se comparte/)).toBeVisible();
   });
 
-  test("el asistente rechaza requisitos discriminatorios y los limitados por sexo", async ({ page }) => {
+  test("el asistente rechaza requisitos discriminatorios y permite elegir convivencia", async ({ page }) => {
     await login(page, "farid@convivo.test");
     await page.goto("/publicar");
     await page.getByRole("button", { name: /^Habitación/ }).click();
@@ -75,12 +75,12 @@ test.describe("anuncios", () => {
     await expect(page.getByText(/No se pueden poner requisitos por origen/)).toBeVisible();
     await expect(description).toHaveAttribute("aria-invalid", "true");
 
+    // Elegir con quién se convive sí está permitido, en el texto y en el campo cerrado.
     await description.fill("Habitación muy luminosa en piso reformado. Solo chicas.");
     await expect(page.getByText(/No se pueden poner requisitos por origen/)).toHaveCount(0);
-    await expect(page.getByText(/no se pueden publicar anuncios limitados por sexo/)).toBeVisible();
-
-    await description.fill("Habitación muy luminosa en piso reformado. Ahora vivimos dos chicas.");
     await expect(description).not.toHaveAttribute("aria-invalid", "true");
+    await page.getByLabel("¿Con quién buscáis convivir?").selectOption("women");
+    await expect(page.getByRole("status").filter({ hasText: "Guardado." })).toBeVisible();
   });
 
   test("el formulario de filtros escribe los filtros en la URL", async ({ page }) => {

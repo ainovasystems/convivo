@@ -17,6 +17,7 @@ import {
   formatShortDate,
   KIND_LABELS,
   priceText,
+  COHABITATION_LABELS,
   RENTAL_TERM_LABELS,
   RULE_KEYS,
   RULE_LABELS,
@@ -68,12 +69,14 @@ export default async function ListingPage({ params, searchParams }: Props) {
     if (l.max_budget) facts.push(["Presupuesto", `Hasta ${formatEuros(l.max_budget)}/mes`]);
     if (l.move_in_date) facts.push(["Fecha de entrada", formatShortDate(l.move_in_date)]);
     facts.push(["Para cuánto tiempo", period]);
+    if (l.cohabitation !== "any") facts.push(["Convivencia", COHABITATION_LABELS[l.cohabitation]]);
     if (l.zones.length) facts.push(["Zonas", l.zones.join(", ")]);
   } else {
     if (l.monthly_rent) facts.push(["Precio", `${formatEuros(l.monthly_rent)}/mes`]);
     if (l.deposit !== null) facts.push(["Fianza", formatEuros(l.deposit)]);
     if (l.available_from) facts.push(["Disponible desde", formatShortDate(l.available_from)]);
     facts.push(["Periodo de alquiler", period]);
+    if (l.cohabitation !== "any") facts.push(["Convivencia", COHABITATION_LABELS[l.cohabitation]]);
     if (l.min_stay_months) facts.push(["Estancia mínima", `${l.min_stay_months} meses`]);
     if (l.bills_included !== null) facts.push(["Gastos", l.bills_included ? "Incluidos" : "No incluidos"]);
     if (l.furnished !== null) facts.push(["Amueblado", l.furnished ? "Sí" : "No"]);

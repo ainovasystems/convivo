@@ -10,11 +10,9 @@ import { z } from "zod";
  * gitanos"…). No se busca la palabra suelta, sino la exclusión: "hablamos
  * español" o "barrio chino" no son discriminatorios.
  *
- * Sexo: "solo chicas/chicos" se rechaza en TODOS los tipos mientras no haya
- * criterio legal (Ley 15/2022: el sexo es causa protegida y la excepción de la
- * vida privada no está resuelta para pisos compartidos). Si el abogado lo
- * admite para habitaciones, se hará con un campo cerrado del anuncio, nunca
- * con texto libre.
+ * Sexo: "solo chicas/chicos" está PERMITIDO (decisión de producto: quien
+ * comparte casa elige con quién convive). Además existe el campo cerrado
+ * listings.cohabitation para habitaciones y «busco», que se puede filtrar.
  */
 
 /** Grupos que nunca se pueden exigir ("solo …"). */
@@ -85,9 +83,6 @@ export function hasGenderRestriction(text: string) {
 export const DISCRIMINATION_MESSAGE =
   "No se pueden poner requisitos por origen, nacionalidad, etnia, religión u orientación sexual. Quita la expresión";
 
-export const GENDER_MESSAGE =
-  "Por ahora no se pueden publicar anuncios limitados por sexo («solo chicas», «solo chicos»…). Quita esa condición: puedes describir cómo es la convivencia en casa.";
-
 /**
  * Esquema Zod del contenido de texto del anuncio. Lo usan publishErrors() (en
  * cliente y en servidor, que es el que manda) y el aviso en vivo del asistente.
@@ -102,6 +97,5 @@ export const listingTextSchema = z
     ] as const) {
       const terms = findDiscriminatoryTerms(text);
       if (terms.length) ctx.addIssue({ code: "custom", path: [field], message: `${DISCRIMINATION_MESSAGE} «${terms[0]}».` });
-      else if (hasGenderRestriction(text)) ctx.addIssue({ code: "custom", path: [field], message: GENDER_MESSAGE });
     }
   });

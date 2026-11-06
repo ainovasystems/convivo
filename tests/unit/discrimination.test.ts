@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { findDiscriminatoryTerms, hasGenderRestriction, normalizeForMatching } from "@/lib/listings/discrimination";
-import { listingDraftSchema, publishErrors } from "@/lib/listings/schema";
+import { listingDraftSchema, publishErrors, toListingRow } from "@/lib/listings/schema";
 
 describe("normalización", () => {
   it("quita mayúsculas, tildes, signos y espacios de más", () => {
@@ -65,14 +65,17 @@ describe("al publicar", () => {
     expect(publishErrors("room", listingDraftSchema.parse(base))).toEqual({});
   });
 
-  it("«solo chicas» o «solo chicos» se rechaza en todos los tipos hasta que haya criterio legal", () => {
+  it("«solo chicas» o «solo chicos» está permitido en todos los tipos", () => {
     for (const extra of ["Solo chicas.", "Habitación solo para chicos", "Mujeres únicamente"]) {
       const d = listingDraftSchema.parse({ ...base, description: `${base.description} ${extra}` });
       expect(hasGenderRestriction(d.description)).toBe(true);
-      for (const kind of ["room", "flat"] as const) expect(publishErrors(kind, d).description).toMatch(/limitados por sexo/);
+      for (const kind of ["room", "flat"] as const) expect(publishErrors(kind, d)).toEqual({});
     }
-    // Hablar de quién vive en casa no es una restricción.
-    const ok = listingDraftSchema.parse({ ...base, description: `${base.description} Ahora vivimos dos chicas y un chico.` });
-    expect(publishErrors("room", ok)).toEqual({});
+  });
+
+  it("la preferencia de convivencia nunca se guarda en un piso entero", () => {
+    const d = listingDraftSchema.parse({ ...base, cohabitation: "women" });
+    expect(toListingRow("room", d).cohabitation).toBe("women");
+    expect(toListingRow("flat", d).cohabitation).toBe("any");
   });
 });

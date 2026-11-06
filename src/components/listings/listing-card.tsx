@@ -3,7 +3,7 @@ import Link from "next/link";
 
 import { BedIcon, HomeIcon, PinIcon, UsersIcon } from "@/components/brand/icons";
 import type { ListingCardData } from "@/lib/listings/queries";
-import { formatShortDate, KIND_LABELS, periodText, priceText } from "@/lib/listings/options";
+import { COHABITATION_LABELS, formatShortDate, KIND_LABELS, periodText, priceText } from "@/lib/listings/options";
 import { publicStorageUrl } from "@/lib/storage";
 
 const KIND_ICON = { room: BedIcon, flat: HomeIcon, seeking: UsersIcon } as const;
@@ -37,6 +37,11 @@ export function ListingCard({ listing, priority = false }: { listing: ListingCar
           <KindIcon className="size-3.5" />
           {KIND_LABELS[listing.kind]}
         </span>
+        {listing.cohabitation !== "any" ? (
+          <span className="absolute right-3 top-3 rounded-full bg-background/95 px-3 py-1 text-xs font-bold text-brand shadow-sm">
+            {COHABITATION_LABELS[listing.cohabitation]}
+          </span>
+        ) : null}
         <span className="absolute bottom-3 right-3 rounded-full bg-accent px-3 py-1 text-sm font-extrabold text-accent-foreground shadow-sm">
           {priceText(listing)}
         </span>

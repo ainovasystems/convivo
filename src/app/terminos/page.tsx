@@ -43,8 +43,12 @@ export default function TermsPage() {
           <li>Publica solo viviendas que puedas alquilar o compartir legalmente, con fotos y precios reales.</li>
           <li>
             <strong>No se permiten anuncios discriminatorios</strong>: no se puede excluir a nadie por origen, nacionalidad,
-            religión, orientación sexual u otros motivos protegidos. [POR COMPLETAR: decidir y redactar la política sobre
-            anuncios del tipo «solo chicas»]
+            religión, orientación sexual u otros motivos protegidos.
+          </li>
+          <li>
+            En habitaciones y en búsquedas de compañero se puede indicar con quién se quiere convivir («solo chicas», «solo
+            chicos»), porque se comparte la vivienda. [POR COMPLETAR: validar con el abogado (Ley 15/2022) y, en su caso,
+            limitarlo a viviendas en las que convive quien anuncia]
           </li>
           <li>No pidas pagos por adelantado antes de que la otra persona haya visto la vivienda.</li>
           <li>No incluyas en los textos datos personales de terceros.</li>
