@@ -333,6 +333,7 @@ export type Database = {
           bedrooms: number | null;
           bills_included: boolean | null;
           city: string | null;
+          cohabitation: Database["public"]["Enums"]["cohabitation_preference"];
           created_at: string;
           current_flatmates: number | null;
           deposit: number | null;
@@ -365,6 +366,7 @@ export type Database = {
           bedrooms?: number | null;
           bills_included?: boolean | null;
           city?: string | null;
+          cohabitation?: Database["public"]["Enums"]["cohabitation_preference"];
           created_at?: string;
           current_flatmates?: number | null;
           deposit?: number | null;
@@ -396,6 +398,7 @@ export type Database = {
           bedrooms?: number | null;
           bills_included?: boolean | null;
           city?: string | null;
+          cohabitation?: Database["public"]["Enums"]["cohabitation_preference"];
           created_at?: string;
           current_flatmates?: number | null;
           deposit?: number | null;
@@ -553,9 +556,9 @@ export type Database = {
       };
       profiles: {
         Row: {
-          age_range: Database["public"]["Enums"]["age_range"] | null;
           avatar_path: string | null;
           bio: string | null;
+          birth_year: number | null;
           city: string | null;
           created_at: string;
           deleted_at: string | null;
@@ -571,9 +574,9 @@ export type Database = {
         };
         ComputedFields: never;
         Insert: {
-          age_range?: Database["public"]["Enums"]["age_range"] | null;
           avatar_path?: string | null;
           bio?: string | null;
+          birth_year?: number | null;
           city?: string | null;
           created_at?: string;
           deleted_at?: string | null;
@@ -588,9 +591,9 @@ export type Database = {
           updated_at?: string;
         };
         Update: {
-          age_range?: Database["public"]["Enums"]["age_range"] | null;
           avatar_path?: string | null;
           bio?: string | null;
+          birth_year?: number | null;
           city?: string | null;
           created_at?: string;
           deleted_at?: string | null;
@@ -1258,7 +1261,7 @@ export type Database = {
       };
     };
     Enums: {
-      age_range: "18-24" | "25-34" | "35-44" | "45-54" | "55-64" | "65+";
+      cohabitation_preference: "any" | "women" | "men";
       interest_status: "pending" | "accepted" | "declined" | "withdrawn";
       listing_kind: "room" | "flat" | "seeking";
       listing_status: "draft" | "active" | "paused" | "closed";
@@ -1395,7 +1398,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      age_range: ["18-24", "25-34", "35-44", "45-54", "55-64", "65+"],
+      cohabitation_preference: ["any", "women", "men"],
       interest_status: ["pending", "accepted", "declined", "withdrawn"],
       listing_kind: ["room", "flat", "seeking"],
       listing_status: ["draft", "active", "paused", "closed"],

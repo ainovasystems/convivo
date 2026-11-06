@@ -50,34 +50,34 @@ select u.id::text, u.id, jsonb_build_object('sub', u.id::text, 'email', u.email,
 -- Perfiles
 -- -----------------------------------------------------------------------------
 update public.profiles p set
-  bio = v.bio, city = v.city, occupation = v.occupation, age_range = v.age_range::public.age_range,
+  bio = v.bio, city = v.city, occupation = v.occupation, birth_year = v.birth_year,
   languages = v.languages::text[], habits = v.habits::jsonb, roles = v.roles::public.user_role[]
 from (values
   ('a0000000-0000-4000-8000-000000000001'::uuid,
    'Profesora jubilada. Alquilo habitaciones en mi piso del centro de Lugo desde hace años; me gusta que la casa sea tranquila y cuidada.',
-   'Lugo', 'Profesora jubilada', '55-64', '{es,gl}', '{"smoker": false, "pets": true, "schedule": "early", "cleanliness": 5, "noise": 1}', '{landlord}'),
+   'Lugo', 'Profesora jubilada', extract(year from now())::int - 62, '{es,gl}', '{"smoker": false, "pets": true, "schedule": "early", "cleanliness": 5, "noise": 1}', '{landlord}'),
   ('a0000000-0000-4000-8000-000000000002'::uuid,
    'Estudiante de Veterinaria en el campus de Lugo. Ordenado, cocino bastante y salgo a correr por el Miño.',
-   'Lugo', 'Estudiante de Veterinaria', '18-24', '{es,gl,en}', '{"smoker": false, "pets": false, "schedule": "standard", "cleanliness": 4, "noise": 2, "guests": "sometimes"}', '{tenant,flatmate}'),
+   'Lugo', 'Estudiante de Veterinaria', extract(year from now())::int - 21, '{es,gl,en}', '{"smoker": false, "pets": false, "schedule": "standard", "cleanliness": 4, "noise": 2, "guests": "sometimes"}', '{tenant,flatmate}'),
   ('a0000000-0000-4000-8000-000000000003'::uuid,
    'Enfermera en el HULA con turnos rotativos. Busco convivencia tranquila y respeto los descansos de los demás.',
-   'Lugo', 'Enfermera', '25-34', '{es,gl}', '{"smoker": false, "pets": false, "schedule": "shifts", "cleanliness": 4, "noise": 1, "guests": "rarely"}', '{flatmate}'),
+   'Lugo', 'Enfermera', extract(year from now())::int - 29, '{es,gl}', '{"smoker": false, "pets": false, "schedule": "shifts", "cleanliness": 4, "noise": 1, "guests": "rarely"}', '{flatmate}'),
   ('a0000000-0000-4000-8000-000000000004'::uuid,
    'Tengo dos pisos en A Coruña que alquilo a estudiantes y profesionales. Respondo rápido y arreglo las cosas a tiempo.',
-   'A Coruña', 'Autónomo', '45-54', '{es,gl,pt}', '{"smoker": false, "cleanliness": 4}', '{landlord}'),
+   'A Coruña', 'Autónomo', extract(year from now())::int - 48, '{es,gl,pt}', '{"smoker": false, "cleanliness": 4}', '{landlord}'),
   ('a0000000-0000-4000-8000-000000000005'::uuid,
    'Desarrolladora web. Viví dos años en A Coruña y ahora me mudo a Madrid por trabajo.',
-   'Madrid', 'Desarrolladora web', '25-34', '{es,en}', '{"smoker": false, "pets": true, "schedule": "standard", "cleanliness": 4, "noise": 2, "guests": "sometimes"}', '{tenant}'),
+   'Madrid', 'Desarrolladora web', extract(year from now())::int - 31, '{es,en}', '{"smoker": false, "pets": true, "schedule": "standard", "cleanliness": 4, "noise": 2, "guests": "sometimes"}', '{tenant}'),
   ('a0000000-0000-4000-8000-000000000006'::uuid,
    'Alquilo un piso entero en Lavapiés y una habitación en Chamberí. Contratos claros y fianza depositada en el organismo autonómico.',
-   'Madrid', 'Ingeniero de caminos', '35-44', '{es,fr,ar}', '{"smoker": false, "cleanliness": 4}', '{landlord}'),
+   'Madrid', 'Ingeniero de caminos', extract(year from now())::int - 38, '{es,fr,ar}', '{"smoker": false, "cleanliness": 4}', '{landlord}'),
   ('a0000000-0000-4000-8000-000000000007'::uuid,
    'Diseñadora gráfica. Comparto mi piso de Gràcia con una habitación libre; ambiente creativo y tranquilo.',
-   'Barcelona', 'Diseñadora gráfica', '35-44', '{ca,es,en}', '{"smoker": false, "pets": true, "schedule": "standard", "cleanliness": 4, "noise": 2}', '{landlord,flatmate}'),
+   'Barcelona', 'Diseñadora gráfica', extract(year from now())::int - 36, '{ca,es,en}', '{"smoker": false, "pets": true, "schedule": "standard", "cleanliness": 4, "noise": 2}', '{landlord,flatmate}'),
   ('a0000000-0000-4000-8000-000000000008'::uuid,
    'Investigador predoctoral en la UPF. Busco habitación cerca de Ciutadella o Poblenou.',
-   'Barcelona', 'Investigador predoctoral', '25-34', '{es,en,it}', '{"smoker": false, "pets": false, "schedule": "night", "cleanliness": 3, "noise": 2, "guests": "rarely"}', '{tenant}')
-) as v (id, bio, city, occupation, age_range, languages, habits, roles)
+   'Barcelona', 'Investigador predoctoral', extract(year from now())::int - 27, '{es,en,it}', '{"smoker": false, "pets": false, "schedule": "night", "cleanliness": 3, "noise": 2, "guests": "rarely"}', '{tenant}')
+) as v (id, bio, city, occupation, birth_year, languages, habits, roles)
 where p.id = v.id;
 
 -- -----------------------------------------------------------------------------
