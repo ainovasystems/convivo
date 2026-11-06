@@ -161,6 +161,82 @@ export type Database = {
           },
         ];
       };
+      legal_notices: {
+        Row: {
+          created_at: string;
+          decided_at: string | null;
+          decided_by: string | null;
+          decision_note: string | null;
+          due_at: string;
+          explanation: string;
+          good_faith: boolean;
+          id: string;
+          notifier_email: string;
+          notifier_name: string;
+          notifier_user_id: string | null;
+          reason: string;
+          reference: string;
+          status: string;
+          target_id: string | null;
+          target_type: string;
+          target_url: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          created_at?: string;
+          decided_at?: string | null;
+          decided_by?: string | null;
+          decision_note?: string | null;
+          due_at?: string;
+          explanation: string;
+          good_faith: boolean;
+          id?: string;
+          notifier_email: string;
+          notifier_name: string;
+          notifier_user_id?: string | null;
+          reason: string;
+          reference?: string;
+          status?: string;
+          target_id?: string | null;
+          target_type: string;
+          target_url: string;
+        };
+        Update: {
+          created_at?: string;
+          decided_at?: string | null;
+          decided_by?: string | null;
+          decision_note?: string | null;
+          due_at?: string;
+          explanation?: string;
+          good_faith?: boolean;
+          id?: string;
+          notifier_email?: string;
+          notifier_name?: string;
+          notifier_user_id?: string | null;
+          reason?: string;
+          reference?: string;
+          status?: string;
+          target_id?: string | null;
+          target_type?: string;
+          target_url?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "legal_notices_decided_by_fkey";
+            columns: ["decided_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "legal_notices_notifier_user_id_fkey";
+            columns: ["notifier_user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       listing_addresses: {
         Row: {
           address_line: string;
@@ -988,6 +1064,11 @@ export type Database = {
           isSetofReturn: false;
         };
       };
+      admin_close_listing: { Args: { p_listing_id: string; p_note: string }; Returns: undefined };
+      admin_decide_legal_notice: {
+        Args: { p_decision: string; p_note: string; p_notice_id: string };
+        Returns: undefined;
+      };
       admin_resolve_listing_flag: {
         Args: { p_action: string; p_flag_id: string; p_note: string };
         Returns: undefined;
@@ -1159,6 +1240,21 @@ export type Database = {
           stay_id: string;
           user_id: string;
         }[];
+      };
+      submit_legal_notice: {
+        Args: {
+          p_email_hash: string;
+          p_explanation: string;
+          p_good_faith: boolean;
+          p_ip_hash: string;
+          p_notifier_email: string;
+          p_notifier_name: string;
+          p_reason: string;
+          p_target_id: string;
+          p_target_type: string;
+          p_target_url: string;
+        };
+        Returns: string;
       };
     };
     Enums: {

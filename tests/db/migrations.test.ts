@@ -14,6 +14,7 @@ describe("migraciones", () => {
       "blocks",
       "conversation_reads",
       "interests",
+      "legal_notices",
       "listing_addresses",
       "listing_flags",
       "listings",

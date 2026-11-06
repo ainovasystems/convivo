@@ -458,6 +458,7 @@ describe("superficie expuesta", () => {
       "listing_review_stats",
       "profile_review_stats",
       "review_criteria_for",
+      "submit_legal_notice",
     ]);
   });
 });
