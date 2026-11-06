@@ -197,6 +197,58 @@ export type Database = {
           },
         ];
       };
+      listing_flags: {
+        Row: {
+          created_at: string;
+          details: string;
+          id: string;
+          listing_id: string;
+          reason: string;
+          resolution_note: string | null;
+          resolved_at: string | null;
+          resolved_by: string | null;
+          status: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          created_at?: string;
+          details: string;
+          id?: string;
+          listing_id: string;
+          reason: string;
+          resolution_note?: string | null;
+          resolved_at?: string | null;
+          resolved_by?: string | null;
+          status?: string;
+        };
+        Update: {
+          created_at?: string;
+          details?: string;
+          id?: string;
+          listing_id?: string;
+          reason?: string;
+          resolution_note?: string | null;
+          resolved_at?: string | null;
+          resolved_by?: string | null;
+          status?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "listing_flags_listing_id_fkey";
+            columns: ["listing_id"];
+            isOneToOne: false;
+            referencedRelation: "listings";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "listing_flags_resolved_by_fkey";
+            columns: ["resolved_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       listings: {
         Row: {
           available_from: string | null;
@@ -336,6 +388,45 @@ export type Database = {
           {
             foreignKeyName: "messages_sender_id_fkey";
             columns: ["sender_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      moderation_log: {
+        Row: {
+          action: string;
+          actor_id: string | null;
+          created_at: string;
+          id: number;
+          note: string | null;
+          target_id: string;
+          target_type: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          action: string;
+          actor_id?: string | null;
+          created_at?: string;
+          id?: never;
+          note?: string | null;
+          target_id: string;
+          target_type: string;
+        };
+        Update: {
+          action?: string;
+          actor_id?: string | null;
+          created_at?: string;
+          id?: never;
+          note?: string | null;
+          target_id?: string;
+          target_type?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "moderation_log_actor_id_fkey";
+            columns: ["actor_id"];
             isOneToOne: false;
             referencedRelation: "profiles";
             referencedColumns: ["id"];
@@ -896,6 +987,10 @@ export type Database = {
           isOneToOne: true;
           isSetofReturn: false;
         };
+      };
+      admin_resolve_listing_flag: {
+        Args: { p_action: string; p_flag_id: string; p_note: string };
+        Returns: undefined;
       };
       admin_review_flags: {
         Args: Record<PropertyKey, never>;
