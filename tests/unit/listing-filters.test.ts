@@ -110,4 +110,14 @@ describe("applyListingFilters", () => {
     expect(escapeLike("50%_off\\")).toBe("50\\%\\_off\\\\");
     expect(run({ ciudad: "%" })).toContainEqual(["ilike", "city", "%\\%%"]);
   });
+
+  it("filtra por periodo de alquiler", () => {
+    expect(run({ periodo: "curso" })).toContainEqual(["eq", "rental_term", "academic_year"]);
+    expect(parseFilters({ periodo: "trimestre" }).periodo).toBeUndefined();
+  });
+
+  it("una ciudad conocida corrige la provincia incoherente", () => {
+    expect(parseFilters({ ciudad: "Lugo", provincia: "Madrid" }).provincia).toBe("Lugo");
+    expect(parseFilters({ ciudad: "Pueblo inventado", provincia: "Madrid" }).provincia).toBe("Madrid");
+  });
 });

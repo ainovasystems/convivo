@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+import { findCity } from "@/lib/listings/cities";
 import { LISTING_KINDS, PROVINCES } from "@/lib/listings/options";
 
 /**
@@ -7,6 +8,8 @@ import { LISTING_KINDS, PROVINCES } from "@/lib/listings/options";
  * compartir, enlazar, indexar y sobreviven a recargas y al botón Atrás.
  * Nombres de parámetro en español porque se ven en la barra de direcciones.
  */
+/** Periodo en la URL (en español) → valor de listings.rental_term. */
+export const PERIODS = { indefinido: "indefinite", curso: "academic_year", fechas: "fixed" } as const;
 export const SORTS = ["recientes", "precio_asc", "precio_desc"] as const;
 export const PAGE_SIZE = 12;
 
@@ -24,6 +27,7 @@ export const filtersSchema = z.object({
   precio_min: money,
   precio_max: money,
   desde: z.iso.date().optional().catch(undefined),
+  periodo: z.enum(Object.keys(PERIODS) as [keyof typeof PERIODS]).optional().catch(undefined),
   amueblado: flag,
   gastos: flag,
   mascotas: flag,
@@ -42,7 +46,11 @@ export function parseFilters(params: RawParams): ListingFilters {
   const single = Object.fromEntries(
     Object.entries(params).map(([k, v]) => [k, Array.isArray(v) ? v[0] : v]).filter(([, v]) => v !== ""),
   );
-  return filtersSchema.parse(single);
+  const f = filtersSchema.parse(single);
+  // Una ciudad conocida fija su provincia: "Lugo" + "Madrid" no tiene sentido.
+  const known = findCity(f.ciudad);
+  if (known && f.provincia) f.provincia = known.province;
+  return f;
 }
 
 /** Filtros -> query string canónica (sin valores vacíos ni página 1). */
@@ -89,6 +97,7 @@ export function applyListingFilters<Q extends FilterableQuery<Q>>(query: Q, f: L
   if (f.precio_max !== undefined) q = q.lte(priceColumn, f.precio_max);
 
   if (f.desde && f.tipo !== "seeking") q = q.lte("available_from", f.desde);
+  if (f.periodo) q = q.eq("rental_term", PERIODS[f.periodo]);
   if (f.amueblado) q = q.eq("furnished", true);
   if (f.gastos) q = q.eq("bills_included", true);
   if (f.mascotas) q = q.eq("rules->>pets", "true");
