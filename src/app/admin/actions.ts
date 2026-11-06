@@ -76,3 +76,32 @@ export async function removeReview(_prev: FormState, formData: FormData): Promis
     .eq("status", "open");
   return { status: "success", message: "Reseña eliminada y denuncias cerradas." };
 }
+
+const flagSchema = z.object({
+  flagId: z.uuid(),
+  decision: z.enum(["dismiss", "close_listing"]),
+  note: z.string().trim().min(5, { error: "Explica brevemente la decisión" }).max(1000),
+});
+
+/** Revisa una marca anti-fraude: descartarla o cerrar el anuncio. La BD deja constancia en moderation_log. */
+export async function resolveListingFlag(_prev: FormState, formData: FormData): Promise<FormState> {
+  const ctx = await requireAdmin();
+  if (!ctx) return { status: "error", message: "Solo administradores." };
+  const parsed = flagSchema.safeParse({
+    flagId: formData.get("flagId"),
+    decision: formData.get("decision"),
+    note: formData.get("note"),
+  });
+  if (!parsed.success) return { status: "error", message: parsed.error.issues[0]?.message };
+
+  const { error } = await ctx.supabase.rpc("admin_resolve_listing_flag", {
+    p_flag_id: parsed.data.flagId,
+    p_action: parsed.data.decision,
+    p_note: parsed.data.note,
+  });
+  if (error) return { status: "error", message: error.message };
+  return {
+    status: "success",
+    message: parsed.data.decision === "dismiss" ? "Marca descartada." : "Anuncio cerrado.",
+  };
+}

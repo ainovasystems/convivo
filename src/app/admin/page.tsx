@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { ListingFlagForm } from "@/components/admin/listing-flag-form";
 import { ModerationForms } from "@/components/reviews/moderation-forms";
 import { getCurrentUser } from "@/lib/auth";
 import { formatDate } from "@/lib/reviews/labels";
@@ -9,6 +10,19 @@ import { REPORT_REASONS } from "@/lib/reviews/schema";
 import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = { title: "Moderación", robots: { index: false } };
+
+const FLAG_REASONS: Record<string, string> = {
+  payment_scam: "Texto típico de estafa",
+  low_price: "Precio sospechosamente bajo",
+};
+
+const LOG_ACTIONS: Record<string, string> = {
+  report_dismissed: "Denuncia descartada",
+  report_resolved: "Denuncia resuelta",
+  review_deleted: "Reseña eliminada",
+  listing_flag_dismissed: "Marca de fraude descartada",
+  listing_flag_actioned: "Anuncio cerrado por fraude",
+};
 
 export default async function AdminPage() {
   const user = await getCurrentUser();
@@ -18,7 +32,7 @@ export default async function AdminPage() {
   // A quien no es admin le respondemos 404: ni siquiera confirmamos que exista.
   if (!isAdmin) notFound();
 
-  const [{ data: reports }, { data: flags }] = await Promise.all([
+  const [{ data: reports }, { data: flags }, { data: listingFlags }, { data: log }] = await Promise.all([
     supabase
       .from("reports")
       .select(
@@ -28,6 +42,17 @@ export default async function AdminPage() {
       .order("created_at", { ascending: true })
       .limit(100),
     supabase.rpc("admin_review_flags"),
+    supabase
+      .from("listing_flags")
+      .select("id, reason, details, created_at, listing:listings!listing_flags_listing_id_fkey(id, title, city, status, owner_id)")
+      .eq("status", "open")
+      .order("created_at", { ascending: true })
+      .limit(100),
+    supabase
+      .from("moderation_log")
+      .select("id, action, target_type, target_id, note, created_at, actor:profiles!moderation_log_actor_id_fkey(display_name)")
+      .order("created_at", { ascending: false })
+      .limit(50),
   ]);
 
   return (
@@ -76,6 +101,43 @@ export default async function AdminPage() {
         )}
       </section>
 
+      <section aria-labelledby="fraude" className="space-y-4">
+        <h2 id="fraude" className="text-lg font-semibold">
+          Anuncios marcados por posible fraude ({listingFlags?.length ?? 0})
+        </h2>
+        <p className="text-sm text-muted">
+          Marcas automáticas: siguen publicados y el anunciante no lo sabe. Revísalos y decide.
+        </p>
+        {listingFlags?.length ? (
+          <ul className="space-y-4">
+            {listingFlags.map((f) => (
+              <li key={f.id} className="space-y-3 rounded-2xl border border-border bg-background p-4">
+                <div className="flex flex-wrap items-baseline justify-between gap-2 text-sm">
+                  <p>
+                    <strong>{FLAG_REASONS[f.reason] ?? f.reason}</strong> · {f.details}
+                  </p>
+                  <p className="text-muted">{formatDate(f.created_at)}</p>
+                </div>
+                {f.listing ? (
+                  <p className="text-sm">
+                    <Link className="font-medium underline" href={`/anuncios/${f.listing.id}`}>
+                      {f.listing.title}
+                    </Link>{" "}
+                    · {f.listing.city} ·{" "}
+                    <Link className="underline" href={`/perfil/${f.listing.owner_id}`}>
+                      anunciante
+                    </Link>
+                  </p>
+                ) : null}
+                <ListingFlagForm flagId={f.id} />
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="text-sm text-muted">No hay anuncios marcados.</p>
+        )}
+      </section>
+
       <section aria-labelledby="senales" className="space-y-3">
         <h2 id="senales" className="text-lg font-semibold">
           Señales de posible autorreseña
@@ -97,6 +159,30 @@ export default async function AdminPage() {
           </ul>
         ) : (
           <p className="text-sm text-muted">Sin señales.</p>
+        )}
+      </section>
+
+      <section aria-labelledby="registro" className="space-y-3">
+        <h2 id="registro" className="text-lg font-semibold">
+          Registro de moderación
+        </h2>
+        <p className="text-sm text-muted">Últimas 50 acciones. Nadie puede modificar ni borrar este registro.</p>
+        {log?.length ? (
+          <ul className="divide-y divide-border rounded-2xl border border-border text-sm">
+            {log.map((e) => (
+              <li key={e.id} className="flex flex-wrap justify-between gap-2 px-4 py-2">
+                <span>
+                  <strong>{LOG_ACTIONS[e.action] ?? e.action}</strong>
+                  {e.note ? <span className="text-muted"> · «{e.note}»</span> : null}
+                </span>
+                <span className="text-muted">
+                  {e.actor?.display_name ?? "Sistema"} · {formatDate(e.created_at)}
+                </span>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="text-sm text-muted">Todavía no hay acciones registradas.</p>
         )}
       </section>
     </div>
