@@ -23,7 +23,7 @@ test.describe("registro → completar perfil → perfil público", () => {
     await page.getByLabel("Sobre ti").fill("Estudiante de Arquitectura. Ordenada, tranquila y me encanta cocinar.");
     await page.getByLabel("Ciudad").fill("A Coruña");
     await page.getByLabel("Ocupación").fill("Estudiante");
-    await page.getByLabel("Rango de edad").selectOption("18-24");
+    await page.getByLabel("Año de nacimiento").fill(String(new Date().getFullYear() - 21));
     await page.getByLabel("Inquilino/a").check();
     await page.getByLabel("Gallego").check();
     await page.getByLabel("¿Fumas?").selectOption("no");
@@ -33,7 +33,7 @@ test.describe("registro → completar perfil → perfil público", () => {
 
     await page.getByRole("link", { name: "Ver mi perfil público" }).click();
     await expect(page.getByRole("heading", { level: 1, name: "Marta E2E" })).toBeVisible();
-    await expect(page.getByText("A Coruña · Estudiante · 18-24 años")).toBeVisible();
+    await expect(page.getByText("A Coruña · Estudiante · 21 años")).toBeVisible();
     await expect(page.getByText("Email verificado")).toBeVisible();
     await expect(page.getByText("No fumador/a")).toBeVisible();
     await expect(page.getByText("Limpieza: muy ordenado/a")).toBeVisible();

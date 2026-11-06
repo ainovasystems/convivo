@@ -28,7 +28,7 @@ export async function updateProfile(_prev: FormState, formData: FormData): Promi
       bio: p.bio,
       city: p.city,
       occupation: p.occupation,
-      age_range: p.ageRange,
+      birth_year: p.birthYear,
       languages: p.languages,
       roles: p.roles,
       habits: p.habits,

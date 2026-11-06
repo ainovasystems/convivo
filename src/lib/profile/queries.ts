@@ -9,7 +9,7 @@ import { createClient } from "@/lib/supabase/server";
 export const profileIdSchema = z.uuid();
 
 const PUBLIC_PROFILE_COLUMNS =
-  "id, display_name, bio, avatar_path, city, occupation, age_range, languages, habits, roles, email_verified, phone_verified, created_at";
+  "id, display_name, bio, avatar_path, city, occupation, birth_year, deleted_at, languages, habits, roles, email_verified, phone_verified, created_at";
 
 export async function getProfile(id: string) {
   const supabase = await createClient();

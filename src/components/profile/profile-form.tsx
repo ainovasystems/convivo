@@ -9,7 +9,6 @@ import { SelectField, TextAreaField, TextField } from "@/components/ui/field";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { initialFormState } from "@/lib/forms";
 import {
-  AGE_RANGES,
   CLEANLINESS_LABELS,
   GUESTS,
   GUESTS_LABELS,
@@ -20,6 +19,7 @@ import {
   SCHEDULES,
   USER_ROLES,
   type Habits,
+  maxBirthYear,
 } from "@/lib/profile/options";
 import { useClientValidation } from "@/lib/use-client-validation";
 import { profileFormDataToObject, profileSchema } from "@/lib/validation/profile";
@@ -30,7 +30,7 @@ export type ProfileFormValues = {
   bio: string | null;
   city: string | null;
   occupation: string | null;
-  ageRange: string | null;
+  birthYear: number | null;
   languages: string[];
   roles: string[];
   habits: Habits;
@@ -90,13 +90,16 @@ export function ProfileForm({ initial }: { initial: ProfileFormValues }) {
             error={errors.occupation}
           />
         </div>
-        <SelectField
-          id="ageRange"
-          label="Rango de edad"
-          defaultValue={initial.ageRange ?? ""}
-          options={AGE_RANGES.map((a) => ({ value: a, label: `${a} años` }))}
-          hint="Solo mostramos el rango, nunca tu fecha de nacimiento."
-          error={errors.ageRange}
+        <TextField
+          id="birthYear"
+          label="Año de nacimiento"
+          type="number"
+          inputMode="numeric"
+          min={new Date().getFullYear() - 110}
+          max={maxBirthYear()}
+          defaultValue={initial.birthYear ?? ""}
+          hint="En tu perfil se muestra tu edad, no el año."
+          error={errors.birthYear}
         />
       </fieldset>
 

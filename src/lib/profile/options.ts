@@ -1,11 +1,15 @@
 /**
  * Valores permitidos de los campos de perfil y sus etiquetas en español.
  * Deben coincidir con los CHECK y enums de la base de datos
- * (private.valid_habits, public.age_range, public.user_role).
+ * (private.valid_habits, public.user_role; la edad, por el trigger profiles_check_age).
  */
 
-export const AGE_RANGES = ["18-24", "25-34", "35-44", "45-54", "55-64", "65+"] as const;
-export type AgeRange = (typeof AGE_RANGES)[number];
+/** Edad que se muestra a partir del año de nacimiento (puede ir un año por delante hasta el cumpleaños). */
+export function ageFromBirthYear(birthYear: number | null | undefined, today = new Date()) {
+  return birthYear ? today.getFullYear() - birthYear : null;
+}
+/** Último año de nacimiento admitido (18 años o más). */
+export const maxBirthYear = (today = new Date()) => today.getFullYear() - 18;
 
 export const USER_ROLES = ["tenant", "landlord", "flatmate"] as const;
 export type UserRole = (typeof USER_ROLES)[number];

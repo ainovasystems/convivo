@@ -18,7 +18,7 @@ describe("profileSchema + profileFormDataToObject", () => {
       ["bio", ""],
       ["city", "Lugo"],
       ["occupation", ""],
-      ["ageRange", "18-24"],
+      ["birthYear", "2003"],
       ["languages", "es"],
       ["languages", "gl"],
       ["roles", "tenant"],
@@ -35,7 +35,7 @@ describe("profileSchema + profileFormDataToObject", () => {
       bio: null,
       city: "Lugo",
       occupation: null,
-      ageRange: "18-24",
+      birthYear: 2003,
       languages: ["es", "gl"],
       roles: ["tenant"],
       habits: { smoker: false, schedule: "night", cleanliness: 4 },
@@ -43,9 +43,12 @@ describe("profileSchema + profileFormDataToObject", () => {
   });
 
   it("rechaza valores fuera de las listas cerradas", () => {
-    const base = { displayName: "Ana", bio: "", city: "", occupation: "", ageRange: null, roles: [], habits: {} };
+    const base = { displayName: "Ana", bio: "", city: "", occupation: "", birthYear: null, roles: [], habits: {} };
     expect(profileSchema.safeParse({ ...base, languages: ["klingon"] }).success).toBe(false);
-    expect(profileSchema.safeParse({ ...base, languages: [], ageRange: "17" }).success).toBe(false);
+    // Menor de edad o año imposible.
+    expect(profileSchema.safeParse({ ...base, languages: [], birthYear: new Date().getFullYear() - 17 }).success).toBe(false);
+    expect(profileSchema.safeParse({ ...base, languages: [], birthYear: 1800 }).success).toBe(false);
+    expect(profileSchema.safeParse({ ...base, languages: [], birthYear: new Date().getFullYear() - 18 }).success).toBe(true);
     expect(profileSchema.safeParse({ ...base, languages: [], roles: ["admin"] }).success).toBe(false);
     expect(profileSchema.safeParse({ ...base, languages: [], bio: "x".repeat(1001) }).success).toBe(false);
   });

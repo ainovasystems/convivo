@@ -7,7 +7,7 @@ import { ReviewCard } from "@/components/profile/review-card";
 import { Chip } from "@/components/ui/chip";
 import { Rating } from "@/components/ui/rating";
 import { getCurrentUser } from "@/lib/auth";
-import { habitChips, LANGUAGES, ROLE_LABELS, type LanguageCode } from "@/lib/profile/options";
+import { ageFromBirthYear, habitChips, LANGUAGES, ROLE_LABELS, type LanguageCode } from "@/lib/profile/options";
 import {
   getActiveListingsByOwner,
   getProfile,
@@ -50,7 +50,8 @@ export default async function ProfilePage({ params }: Props) {
   const overall = overallRating(stats);
   const chips = habitChips(profile.habits);
   const isOwn = viewer?.id === profile.id;
-  const facts = [profile.city, profile.occupation, profile.age_range ? `${profile.age_range} años` : null].filter(
+  const age = ageFromBirthYear(profile.birth_year);
+  const facts = [profile.city, profile.occupation, age ? `${age} años` : null].filter(
     Boolean,
   );
 

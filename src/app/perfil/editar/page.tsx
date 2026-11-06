@@ -42,7 +42,7 @@ export default async function EditProfilePage({
           bio: profile.bio,
           city: profile.city,
           occupation: profile.occupation,
-          ageRange: profile.age_range,
+          birthYear: profile.birth_year,
           languages: profile.languages,
           roles: profile.roles,
           habits: profile.habits,

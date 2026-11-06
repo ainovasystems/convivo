@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { AGE_RANGES, GUESTS, LANGUAGE_CODES, SCHEDULES, USER_ROLES } from "@/lib/profile/options";
+import { GUESTS, LANGUAGE_CODES, maxBirthYear, SCHEDULES, USER_ROLES } from "@/lib/profile/options";
 
 const optionalText = (max: number, label: string) =>
   z
@@ -33,7 +33,15 @@ export const profileSchema = z.object({
   bio: optionalText(1000, "La presentación"),
   city: optionalText(80, "La ciudad"),
   occupation: optionalText(80, "La ocupación"),
-  ageRange: z.enum(AGE_RANGES).nullable(),
+  birthYear: z.preprocess(
+    (v) => (v === "" || v === null || v === undefined ? null : v),
+    z.coerce
+      .number({ error: "Escribe el año con cuatro cifras" })
+      .int({ error: "Escribe el año con cuatro cifras" })
+      .min(new Date().getFullYear() - 110, { error: "Revisa el año de nacimiento" })
+      .max(maxBirthYear(), { error: "Para usar Convivo tienes que tener 18 años o más" })
+      .nullable(),
+  ),
   languages: z.array(z.enum(LANGUAGE_CODES)).max(10, { error: "Elige como máximo 10 idiomas" }),
   roles: z.array(z.enum(USER_ROLES)),
   habits: habitsSchema,
@@ -61,7 +69,7 @@ export function profileFormDataToObject(fd: FormData) {
     bio: str("bio"),
     city: str("city"),
     occupation: str("occupation"),
-    ageRange: str("ageRange") || null,
+    birthYear: str("birthYear") || null,
     languages: fd.getAll("languages").filter((v): v is string => typeof v === "string"),
     roles: fd.getAll("roles").filter((v): v is string => typeof v === "string"),
     habits: Object.fromEntries(
