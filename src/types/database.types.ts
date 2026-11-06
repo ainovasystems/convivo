@@ -190,6 +190,8 @@ export type Database = {
           min_stay_months: number | null;
           monthly_rent: number | null;
           move_in_date: string | null;
+          rental_term: Database["public"]["Enums"]["rental_term"];
+          available_until: string | null;
           neighborhood: string | null;
           owner_id: string;
           photos: string[];
@@ -220,6 +222,8 @@ export type Database = {
           min_stay_months?: number | null;
           monthly_rent?: number | null;
           move_in_date?: string | null;
+          rental_term?: Database["public"]["Enums"]["rental_term"];
+          available_until?: string | null;
           neighborhood?: string | null;
           owner_id: string;
           photos?: string[];
@@ -249,6 +253,8 @@ export type Database = {
           min_stay_months?: number | null;
           monthly_rent?: number | null;
           move_in_date?: string | null;
+          rental_term?: Database["public"]["Enums"]["rental_term"];
+          available_until?: string | null;
           neighborhood?: string | null;
           owner_id?: string;
           photos?: string[];
@@ -1031,6 +1037,7 @@ export type Database = {
       interest_status: "pending" | "accepted" | "declined" | "withdrawn";
       listing_kind: "room" | "flat" | "seeking";
       listing_status: "draft" | "active" | "paused" | "closed";
+      rental_term: "indefinite" | "academic_year" | "fixed";
       report_reason:
         | "spam"
         | "fraud"
@@ -1167,6 +1174,7 @@ export const Constants = {
       interest_status: ["pending", "accepted", "declined", "withdrawn"],
       listing_kind: ["room", "flat", "seeking"],
       listing_status: ["draft", "active", "paused", "closed"],
+      rental_term: ["indefinite", "academic_year", "fixed"],
       report_reason: [
         "spam",
         "fraud",

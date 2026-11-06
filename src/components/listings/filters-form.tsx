@@ -83,6 +83,15 @@ export function FiltersForm({ filters }: { filters: ListingFilters }) {
           <input name="desde" type="date" defaultValue={filters.desde ?? ""} className={inputClass} />
         </label>
         <label className="block space-y-1 text-sm font-medium">
+          Periodo
+          <select name="periodo" defaultValue={filters.periodo ?? ""} className={inputClass}>
+            <option value="">Cualquiera</option>
+            <option value="curso">Curso universitario</option>
+            <option value="fechas">Fechas concretas</option>
+            <option value="indefinido">Sin fecha de fin</option>
+          </select>
+        </label>
+        <label className="block space-y-1 text-sm font-medium">
           Ordenar por
           <select name="orden" defaultValue={filters.orden ?? "recientes"} className={inputClass}>
             {SORTS.map((s) => (

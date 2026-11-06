@@ -165,6 +165,11 @@ insert into public.listings (
    '{}', null, null, null, null,
    null, '{}', null, now());
 
+-- Dos habitaciones de estudiantes se alquilan por curso (unos 9 meses).
+update public.listings
+   set rental_term = 'academic_year', available_until = available_from + interval '9 months' - interval '1 day'
+ where id in ('b0000000-0000-4000-8000-000000000002', 'b0000000-0000-4000-8000-000000000005');
+
 insert into public.listing_addresses (listing_id, address_line, floor_door, postal_code) values
   ('b0000000-0000-4000-8000-000000000001', 'Rúa da Raíña 14', '2º izq.', '27001'),
   ('b0000000-0000-4000-8000-000000000002', 'Rúa Montero Ríos 31', '4º B', '27002'),

@@ -49,6 +49,8 @@ export default async function EditListingPage({
     maxBudget: str(l.max_budget),
     zones: l.zones.join(", "),
     moveInDate: str(l.move_in_date),
+    rentalTerm: l.rental_term,
+    availableUntil: str(l.available_until),
     addressLine: str(address?.address_line),
     floorDoor: str(address?.floor_door),
     postalCode: str(address?.postal_code),

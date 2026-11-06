@@ -10,13 +10,18 @@ import { SelectField, TextAreaField, TextField } from "@/components/ui/field";
 import { buttonClass } from "@/components/ui/submit-button";
 import {
   KIND_LABELS,
+  nextAcademicYear,
   PROVINCES,
+  RENTAL_TERM_LABELS,
+  RENTAL_TERMS,
   RULE_KEYS,
   RULE_LABELS,
   type ListingKind,
   type ListingStatus,
+  type RentalTerm,
   type RuleKey,
 } from "@/lib/listings/options";
+import { findCity, KNOWN_CITY_NAMES } from "@/lib/listings/cities";
 import { listingDraftSchema, publishErrors } from "@/lib/listings/schema";
 import { fieldErrors } from "@/lib/validation/profile";
 
@@ -40,6 +45,8 @@ export type WizardValues = {
   maxBudget: string;
   zones: string; // separadas por comas
   moveInDate: string;
+  rentalTerm: RentalTerm;
+  availableUntil: string;
   addressLine: string;
   floorDoor: string;
   postalCode: string;
@@ -74,6 +81,8 @@ export function toDraftInput(v: WizardValues) {
       .map((z) => z.trim())
       .filter(Boolean),
     moveInDate: v.moveInDate,
+    rentalTerm: v.rentalTerm,
+    availableUntil: v.rentalTerm === "indefinite" ? "" : v.availableUntil,
     rules: Object.fromEntries(
       Object.entries(v.rules)
         .map(([k, val]) => [k, triToBool(val ?? "")])
@@ -174,6 +183,32 @@ export function ListingWizard({
   const tri = (key: "billsIncluded" | "furnished", label: string) => (
     <SelectField id={key} label={label} options={YES_NO} value={values[key]} onChange={(e) => set(key, e.target.value)} />
   );
+  const knownCity = findCity(values.city);
+
+  /** Periodo de alquiler. Al elegir "curso" se proponen las fechas del próximo curso. */
+  function changeTerm(term: RentalTerm, startKey: "availableFrom" | "moveInDate") {
+    dirty.current = true;
+    setValues((v) => {
+      if (term !== "academic_year") return { ...v, rentalTerm: term };
+      const course = nextAcademicYear();
+      return { ...v, rentalTerm: term, [startKey]: v[startKey] || course.from, availableUntil: v.availableUntil || course.until };
+    });
+  }
+  const periodFields = (startKey: "availableFrom" | "moveInDate") => (
+    <div className="grid gap-4 sm:grid-cols-2">
+      <SelectField
+        id="rentalTerm"
+        label={isSeeking ? "¿Para cuánto tiempo?" : "Periodo de alquiler"}
+        options={RENTAL_TERMS.map((t) => ({ value: t, label: RENTAL_TERM_LABELS[t] }))}
+        placeholder="Elige el periodo"
+        value={values.rentalTerm}
+        onChange={(e) => changeTerm((e.target.value || "indefinite") as RentalTerm, startKey)}
+        hint={values.rentalTerm === "academic_year" ? "Normalmente de septiembre a junio (9-10 meses). Ajusta las fechas si hace falta." : undefined}
+      />
+      {values.rentalTerm !== "indefinite" ? text("availableUntil", "Hasta (último día)", { type: "date" }) : null}
+    </div>
+  );
+
   const stepIndex = steps.indexOf(step);
   const STEP_LABELS: Record<Step, string> = { datos: "Datos", fotos: "Fotos", revision: "Revisión" };
 
@@ -227,16 +262,23 @@ export function ListingWizard({
               hint="Mínimo 30 caracteres. No incluyas teléfonos ni datos de pago, ni requisitos sobre origen, religión o similares."
             />
             <div className="grid gap-4 sm:grid-cols-2">
+              {text("city", "Ciudad", { maxLength: 80, list: "known-cities", autoComplete: "off" })}
+              <datalist id="known-cities">
+                {KNOWN_CITY_NAMES.map((c) => (
+                  <option key={c} value={c} />
+                ))}
+              </datalist>
               <SelectField
                 id="province"
                 label="Provincia"
                 options={PROVINCES.map((p) => ({ value: p, label: p }))}
                 placeholder="Elige provincia"
-                value={values.province}
+                value={knownCity ? knownCity.province : values.province}
                 onChange={(e) => set("province", e.target.value)}
-                error={errors.province}
+                disabled={Boolean(knownCity)}
+                hint={knownCity ? `Se rellena sola: ${knownCity.name} está en la provincia de ${knownCity.province}.` : undefined}
+                error={knownCity ? undefined : errors.province}
               />
-              {text("city", "Ciudad", { maxLength: 80 })}
             </div>
             {!isSeeking ? text("neighborhood", "Barrio o zona", { maxLength: 120, hint: "Se muestra en el anuncio. La dirección exacta, no." }) : null}
           </fieldset>
@@ -248,6 +290,7 @@ export function ListingWizard({
                 {text("maxBudget", "Presupuesto máximo (€/mes)", { type: "number", inputMode: "numeric", min: 50 })}
                 {text("moveInDate", "Fecha de entrada", { type: "date" })}
               </div>
+              {periodFields("moveInDate")}
               {text("zones", "Zonas que te interesan", { hint: "Separadas por comas. Ej.: Centro, Milagrosa" })}
             </fieldset>
           ) : (
@@ -262,6 +305,7 @@ export function ListingWizard({
                   {tri("billsIncluded", "¿Gastos incluidos?")}
                   {tri("furnished", "¿Amueblado?")}
                 </div>
+                {periodFields("availableFrom")}
               </fieldset>
               <fieldset className="space-y-4">
                 <legend className="text-lg font-semibold">La vivienda</legend>
@@ -339,7 +383,14 @@ export function ListingWizard({
             </div>
             <div>
               <dt className="text-muted">Ubicación</dt>
-              <dd className="font-medium">{[values.neighborhood, values.city, values.province].filter(Boolean).join(", ") || "—"}</dd>
+              <dd className="font-medium">{[values.neighborhood, knownCity?.name ?? values.city, knownCity?.province ?? values.province].filter(Boolean).join(", ") || "—"}</dd>
+            </div>
+            <div>
+              <dt className="text-muted">Periodo</dt>
+              <dd className="font-medium">
+                {RENTAL_TERM_LABELS[values.rentalTerm]}
+                {values.rentalTerm !== "indefinite" && values.availableUntil ? ` (hasta el ${values.availableUntil.split("-").reverse().join("/")})` : ""}
+              </dd>
             </div>
             <div>
               <dt className="text-muted">{isSeeking ? "Presupuesto" : "Precio"}</dt>

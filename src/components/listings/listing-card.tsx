@@ -3,7 +3,7 @@ import Link from "next/link";
 
 import { BedIcon, HomeIcon, PinIcon, UsersIcon } from "@/components/brand/icons";
 import type { ListingCardData } from "@/lib/listings/queries";
-import { formatShortDate, KIND_LABELS, priceText } from "@/lib/listings/options";
+import { formatShortDate, KIND_LABELS, periodText, priceText } from "@/lib/listings/options";
 import { publicStorageUrl } from "@/lib/storage";
 
 const KIND_ICON = { room: BedIcon, flat: HomeIcon, seeking: UsersIcon } as const;
@@ -13,6 +13,7 @@ export function ListingCard({ listing, priority = false }: { listing: ListingCar
   const place = [listing.neighborhood, listing.city].filter(Boolean).join(", ");
   const date = listing.kind === "seeking" ? listing.move_in_date : listing.available_from;
   const KindIcon = KIND_ICON[listing.kind];
+  const period = periodText(listing);
 
   return (
     <article className="group relative flex h-full flex-col overflow-hidden rounded-3xl border border-border bg-background shadow-[var(--shadow-card)] transition hover:-translate-y-0.5 hover:shadow-[var(--shadow-lift)]">
@@ -52,9 +53,11 @@ export function ListingCard({ listing, priority = false }: { listing: ListingCar
             {place}
           </p>
         ) : null}
-        {date ? (
+        {date || period ? (
           <p className="mt-auto pt-1 text-sm font-medium text-foreground/80">
-            {listing.kind === "seeking" ? "Entrada" : "Disponible"}: {formatShortDate(date)}
+            {date ? `${listing.kind === "seeking" ? "Entrada" : "Disponible"}: ${formatShortDate(date)}` : null}
+            {date && period ? " · " : null}
+            {period}
           </p>
         ) : null}
       </div>

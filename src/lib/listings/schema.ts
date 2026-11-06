@@ -1,6 +1,7 @@
 import { z } from "zod";
 
-import { LISTING_KINDS, MAX_PHOTOS, PROVINCES, RULE_KEYS } from "@/lib/listings/options";
+import { findCity } from "@/lib/listings/cities";
+import { LISTING_KINDS, MAX_PHOTOS, PROVINCES, RENTAL_TERMS, RULE_KEYS } from "@/lib/listings/options";
 
 /**
  * Esquemas de anuncio. Reflejan los CHECK de la tabla public.listings:
@@ -56,6 +57,8 @@ export const listingDraftSchema = z.object({
   maxBudget: optionalInt(50, 20000, "Presupuesto").default(null),
   zones: z.array(text(60).min(1)).max(10, { error: "Máximo 10 zonas" }).default([]),
   moveInDate: optionalDate.default(null),
+  rentalTerm: z.enum(RENTAL_TERMS).catch("indefinite").default("indefinite"),
+  availableUntil: optionalDate.default(null),
   address: addressSchema.default({ addressLine: "", floorDoor: "", postalCode: "" }),
 });
 
@@ -74,7 +77,7 @@ export function publishErrors(kind: (typeof LISTING_KINDS)[number], d: ListingDr
   if (d.title.trim().length < 10) e.title = "El título debe tener al menos 10 caracteres";
   if (d.description.trim().length < 30) e.description = "La descripción debe tener al menos 30 caracteres";
   if (!d.city) e.city = "Indica la ciudad";
-  if (!d.province) e.province = "Elige la provincia";
+  if (!d.province && !findCity(d.city)) e.province = "Elige la provincia";
 
   if (kind === "seeking") {
     if (!required(d.maxBudget)) e.maxBudget = "Indica tu presupuesto máximo";
@@ -83,6 +86,11 @@ export function publishErrors(kind: (typeof LISTING_KINDS)[number], d: ListingDr
   } else {
     if (!required(d.monthlyRent)) e.monthlyRent = "Indica el precio mensual";
     if (!required(d.availableFrom)) e.availableFrom = "Indica desde cuándo está disponible";
+  }
+  const start = kind === "seeking" ? d.moveInDate : d.availableFrom;
+  if (d.rentalTerm !== "indefinite") {
+    if (!d.availableUntil) e.availableUntil = "Indica hasta cuándo";
+    else if (start && d.availableUntil <= start) e.availableUntil = "Debe ser posterior a la fecha de entrada";
   }
   return e;
 }
@@ -97,11 +105,18 @@ export function photoPathBelongsTo(path: string, ownerId: string, listingId: str
 /** Campos que no aplican al tipo se envían a null (respetan el CHECK de exclusividad). */
 export function toListingRow(kind: (typeof LISTING_KINDS)[number], d: ListingDraft) {
   const isSeeking = kind === "seeking";
+  // Si la ciudad es conocida, manda su provincia (y su nombre oficial).
+  const known = findCity(d.city);
+  const start = isSeeking ? d.moveInDate : d.availableFrom;
+  const until = d.rentalTerm === "indefinite" ? null : d.availableUntil;
   return {
     title: d.title,
     description: d.description,
-    city: d.city,
-    province: d.province,
+    city: known?.name ?? d.city,
+    province: known?.province ?? d.province,
+    rental_term: d.rentalTerm,
+    // En borradores puede quedar incoherente mientras se escribe: no se guarda.
+    available_until: until && start && until <= start ? null : until,
     neighborhood: d.neighborhood,
     monthly_rent: isSeeking ? null : d.monthlyRent,
     deposit: isSeeking ? null : d.deposit,
