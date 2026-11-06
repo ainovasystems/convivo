@@ -1,5 +1,7 @@
 import type { NextConfig } from "next";
 
+import { STATIC_SECURITY_HEADERS } from "./src/lib/security/headers";
+
 /**
  * Nombres alternativos de las variables (algunos paneles no dejan usar
  * mayúsculas ni guiones bajos): projecturl, publickey, secretkey y siteurl.
@@ -31,6 +33,11 @@ function supabaseImagePattern() {
 
 const nextConfig: NextConfig = {
   env: publicEnv,
+  poweredByHeader: false,
+  async headers() {
+    // La CSP no va aquí: lleva un nonce por petición y la pone src/middleware.ts.
+    return [{ source: "/:path*", headers: [...STATIC_SECURITY_HEADERS] }];
+  },
   images: { remotePatterns: [supabaseImagePattern()] },
   experimental: {
     // Subida de avatar (2 MB) por Server Action: el límite por defecto es 1 MB.

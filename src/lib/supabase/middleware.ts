@@ -24,15 +24,23 @@ export function isGuestOnlyPath(pathname: string): boolean {
  * actualizadas tanto a la petición (para los Server Components) como a la
  * respuesta (para el navegador).
  */
-export async function updateSession(request: NextRequest) {
+export async function updateSession(request: NextRequest, extraRequestHeaders: Record<string, string> = {}) {
+  // Reenvía las cabeceras de la petición (con las cookies al día) más las
+  // extra, p. ej. la CSP con su nonce, que Next.js lee para firmar sus scripts.
+  const next = () => {
+    const headers = new Headers(request.headers);
+    for (const [key, value] of Object.entries(extraRequestHeaders)) headers.set(key, value);
+    return NextResponse.next({ request: { headers } });
+  };
+
   if (!hasPublicEnv()) {
     // Sin Supabase configurado (p. ej. primer arranque en local) dejamos
     // pasar la petición para que la web pública se pueda ver igualmente.
-    return NextResponse.next({ request });
+    return next();
   }
   const env = getPublicEnv();
 
-  let response = NextResponse.next({ request });
+  let response = next();
 
   const supabase = createServerClient<Database>(
     env.NEXT_PUBLIC_SUPABASE_URL,
@@ -46,7 +54,7 @@ export async function updateSession(request: NextRequest) {
           cookiesToSet.forEach(({ name, value }) =>
             request.cookies.set(name, value),
           );
-          response = NextResponse.next({ request });
+          response = next();
           cookiesToSet.forEach(({ name, value, options }) =>
             response.cookies.set(name, value, options),
           );
