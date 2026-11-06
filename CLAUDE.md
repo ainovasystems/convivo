@@ -92,7 +92,8 @@ Antes de cada commit: `npm run lint && npm run typecheck && npm test && npm run 
 - **Periodo de alquiler** (`rental_term` + `available_until`): `indefinite` (sin fecha de fin), `academic_year` (curso, propone 1 sep – 30 jun) o `fixed` (fechas concretas). Si no es indefinido, hace falta la fecha de fin para publicar y debe ser posterior a la entrada (CHECK en la BD y `publishErrors()`). Vale para los tres tipos.
 - **Filtros en la URL** (`src/lib/listings/filters.ts`): `tipo, provincia, ciudad, precio_min, precio_max, desde, periodo (curso|fechas|indefinido), amueblado, gastos, mascotas, fumadores, orden, pagina`. Una ciudad conocida corrige una provincia incoherente. `parseFilters` ignora los valores inválidos (nunca rompe), `serializeFilters` genera la URL canónica y `applyListingFilters` construye la consulta (con tests unitarios sobre un builder falso). El formulario es un `<form method="get">`: funciona sin JavaScript. Con `tipo=seeking`, el precio filtra y ordena por `max_budget`. Paginación por páginas de 12, con desempate por `id`.
 - **Dirección exacta:** la pide `/anuncios/[id]` sin más; RLS solo devuelve la fila al dueño y a los interesados aceptados. Los demás ven barrio, ciudad y provincia.
-- **Estados:** `active ↔ paused`, `active|paused → closed` (definitivo; se puede duplicar). Solo se borran borradores.
+- **Estados:** `draft → active|paused`, `active ↔ paused`, `active|paused → closed` (definitivo; se puede duplicar). Solo se borran borradores. Lo impone `private.listings_guard` en la BD: un publicado no vuelve a borrador (evita borrarlo y arrastrar conversaciones ajenas) y un cerrado ya no se modifica.
+- **Rutas de fotos atadas a su carpeta:** CHECK `listings_photos_own_folder` (`{owner_id}/{listing_id}/…`), para que nadie enlace fotos de otro ni URLs externas.
 - **Duplicar** copia los datos, la dirección y las fotos (copia física en Storage) a un borrador nuevo.
 
 ## Interés, mensajes y estancias
@@ -202,6 +203,8 @@ RPC (`supabase.rpc(...)`): `confirm_stay`, `cancel_stay`, `end_stay`, `add_stay_
   - compañero: `coexistence`, `cleanliness`, `noise`, `respect`
 
 ### Tests de base de datos
+
+**Auditoría de seguridad:** `tests/db/security-*.test.ts` son ataques de un usuario normal o anónimo que deben fallar (direcciones, conversaciones ajenas, reseñas, escrituras cruzadas, tablas internas, RPC restringidas y Storage). Incluye dos comprobaciones globales: todas las tablas de `public` tienen RLS y anon solo puede ejecutar las funciones de la lista blanca. Si añades una tabla o una función pública, ese test te obligará a decidir sus permisos.
 
 `tests/db/` levanta un Postgres en memoria (PGlite, WASM) con `supabase-shim.sql` y aplica las migraciones reales. Simula usuarios con `SET ROLE authenticated` y claims JWT, como hace la API. Ver `as()` en `tests/db/helpers.ts`. **Toda regla nueva de RLS o de negocio lleva su test aquí.** Limitación: PGlite es Postgres 18 y Supabase usa 15 o 17, así que no hay que usar sintaxis exclusiva de la 18. Las migraciones también se verificaron aplicándolas sobre un Postgres 16 real.
 
