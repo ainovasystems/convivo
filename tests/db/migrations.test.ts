@@ -10,6 +10,7 @@ describe("migraciones", () => {
     );
     expect(rows.map((r) => r.tablename)).toEqual([
       "admin_users",
+      "auth_attempts",
       "blocks",
       "conversation_reads",
       "interests",

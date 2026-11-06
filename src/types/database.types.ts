@@ -19,6 +19,31 @@ export type Database = {
         };
         Relationships: [];
       };
+      auth_attempts: {
+        Row: {
+          created_at: string;
+          email_hash: string;
+          id: number;
+          ip_hash: string;
+          kind: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          created_at?: string;
+          email_hash: string;
+          id?: never;
+          ip_hash: string;
+          kind: string;
+        };
+        Update: {
+          created_at?: string;
+          email_hash?: string;
+          id?: never;
+          ip_hash?: string;
+          kind?: string;
+        };
+        Relationships: [];
+      };
       blocks: {
         Row: {
           blocked_id: string;
@@ -175,6 +200,7 @@ export type Database = {
       listings: {
         Row: {
           available_from: string | null;
+          available_until: string | null;
           bathrooms: number | null;
           bedrooms: number | null;
           bills_included: boolean | null;
@@ -190,13 +216,12 @@ export type Database = {
           min_stay_months: number | null;
           monthly_rent: number | null;
           move_in_date: string | null;
-          rental_term: Database["public"]["Enums"]["rental_term"];
-          available_until: string | null;
           neighborhood: string | null;
           owner_id: string;
           photos: string[];
           province: string | null;
           published_at: string | null;
+          rental_term: Database["public"]["Enums"]["rental_term"];
           rules: NonNullable<Json>;
           size_m2: number | null;
           status: Database["public"]["Enums"]["listing_status"];
@@ -207,6 +232,7 @@ export type Database = {
         ComputedFields: never;
         Insert: {
           available_from?: string | null;
+          available_until?: string | null;
           bathrooms?: number | null;
           bedrooms?: number | null;
           bills_included?: boolean | null;
@@ -222,13 +248,12 @@ export type Database = {
           min_stay_months?: number | null;
           monthly_rent?: number | null;
           move_in_date?: string | null;
-          rental_term?: Database["public"]["Enums"]["rental_term"];
-          available_until?: string | null;
           neighborhood?: string | null;
           owner_id: string;
           photos?: string[];
           province?: string | null;
           published_at?: string | null;
+          rental_term?: Database["public"]["Enums"]["rental_term"];
           rules?: NonNullable<Json>;
           size_m2?: number | null;
           status?: Database["public"]["Enums"]["listing_status"];
@@ -238,6 +263,7 @@ export type Database = {
         };
         Update: {
           available_from?: string | null;
+          available_until?: string | null;
           bathrooms?: number | null;
           bedrooms?: number | null;
           bills_included?: boolean | null;
@@ -253,13 +279,12 @@ export type Database = {
           min_stay_months?: number | null;
           monthly_rent?: number | null;
           move_in_date?: string | null;
-          rental_term?: Database["public"]["Enums"]["rental_term"];
-          available_until?: string | null;
           neighborhood?: string | null;
           owner_id?: string;
           photos?: string[];
           province?: string | null;
           published_at?: string | null;
+          rental_term?: Database["public"]["Enums"]["rental_term"];
           rules?: NonNullable<Json>;
           size_m2?: number | null;
           status?: Database["public"]["Enums"]["listing_status"];
@@ -880,6 +905,11 @@ export type Database = {
         }[];
       };
       am_i_admin: { Args: Record<PropertyKey, never>; Returns: boolean };
+      auth_rate_allowed: {
+        Args: { p_email_hash: string; p_ip_hash: string; p_kind: string };
+        Returns: boolean;
+      };
+      auth_rate_failed: { Args: { p_email_hash: string; p_ip_hash: string }; Returns: undefined };
       cancel_stay: {
         Args: { p_stay_id: string };
         Returns: {

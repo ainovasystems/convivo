@@ -15,13 +15,26 @@ export function hashSignal(value: string, secret: string) {
   return createHmac("sha256", secret).update(value).digest("hex");
 }
 
+/** Se acepta también `signalsecret` (algunos paneles no dejan usar guiones bajos). */
+export function getSignalSecret() {
+  return process.env.signalsecret ?? process.env.SIGNAL_SECRET;
+}
+
+/**
+ * IP del visitante. En Vercel, x-real-ip y el primer valor de x-forwarded-for
+ * los pone la propia plataforma (no se pueden falsear desde el navegador).
+ */
+export async function getClientIp() {
+  const h = await headers();
+  return (h.get("x-real-ip") ?? h.get("x-forwarded-for") ?? "desconocida").split(",")[0].trim();
+}
+
 export async function recordSignal(): Promise<void> {
-  // Se acepta también `signalsecret` (algunos paneles no dejan usar guiones bajos).
-  const secret = process.env.signalsecret ?? process.env.SIGNAL_SECRET;
+  const secret = getSignalSecret();
   if (!secret) return;
   try {
     const h = await headers();
-    const ip = (h.get("x-forwarded-for") ?? h.get("x-real-ip") ?? "desconocida").split(",")[0].trim();
+    const ip = await getClientIp();
     const ua = h.get("user-agent") ?? "desconocido";
     const supabase = await createClient();
     await supabase.rpc("record_signal", { p_ip_hash: hashSignal(ip, secret), p_ua_hash: hashSignal(ua, secret) });

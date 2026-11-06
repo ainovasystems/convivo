@@ -71,12 +71,31 @@ test.describe("registro → completar perfil → perfil público", () => {
 
   test("credenciales incorrectas muestran un error genérico", async ({ page }) => {
     await page.goto("/entrar");
-    await page.getByLabel("Email").fill("ana@convivo.test");
+    // Email inventado: los fallos cuentan para el límite de intentos y no queremos bloquear a Ana.
+    await page.getByLabel("Email").fill(uniqueEmail("fallo"));
     await page.getByLabel("Contraseña", { exact: true }).fill("mala");
     await page.getByRole("button", { name: "Entrar" }).click();
     await expect(page.getByRole("alert").filter({ hasText: "incorrectos" })).toHaveText(
       "Email o contraseña incorrectos.",
     );
+  });
+
+  test("tras muchos fallos con una cuenta se bloquea con un mensaje genérico", async ({ page }, info) => {
+    test.skip(info.project.name === "movil", "Basta con un navegador: cada pasada suma fallos a la IP local.");
+    const email = uniqueEmail("bloqueo");
+    await page.goto("/entrar");
+    await page.getByLabel("Email").fill(email);
+    const password = page.getByLabel("Contraseña", { exact: true });
+    for (let i = 0; i < 8; i++) {
+      await password.fill(`mala-${i}`);
+      await page.getByRole("button", { name: "Entrar" }).click();
+      // Al terminar cada intento el formulario se vacía (la contraseña nunca se devuelve).
+      await expect(password).toHaveValue("");
+      await expect(page.getByRole("alert").filter({ hasText: "incorrectos" })).toBeVisible();
+    }
+    await page.getByLabel("Contraseña", { exact: true }).fill("otra-mala");
+    await page.getByRole("button", { name: "Entrar" }).click();
+    await expect(page.getByRole("alert").filter({ hasText: "Demasiados intentos" })).toBeVisible();
   });
 
   test("el perfil público muestra reseñas publicadas separadas por rol", async ({ page }) => {

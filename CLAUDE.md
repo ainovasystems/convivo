@@ -125,6 +125,12 @@ Antes de cada commit: `npm run lint && npm run typecheck && npm test && npm run 
 - **`/estado`**: página de diagnóstico para quien despliega. Dice si existen las variables (nunca su valor), si la base de datos responde, si la instalación SQL está completa (comprueba objetos de la última migración) y si funciona el login. Tiene `noindex`.
 - **`error.tsx`, `global-error.tsx` y `not-found.tsx`**: pantallas de error con la marca, botón de reintentar y el código del error (digest), que sirve para buscarlo en los logs de Vercel.
 
+## Seguridad y RGPD
+
+- **Cabeceras** (`src/lib/security/headers.ts`): CSP con un **nonce por petición**, que pone `src/middleware.ts` en la respuesta y en la petición para que Next.js firme sus `<script>`. Así `script-src` no lleva `'unsafe-inline'` (`'strict-dynamic'` deja cargar los trozos que pide Next). Funciona porque todas las páginas se generan en cada petición; **una página estática nueva no tendría nonce** y sus scripts se bloquearían. `style-src` sí lleva `'unsafe-inline'` por los atributos `style` de React y `next/image`. `connect-src` e `img-src` permiten el host de Supabase (https y wss para Realtime). Las fijas (HSTS, nosniff, Referrer-Policy, Permissions-Policy, X-Frame-Options, COOP) van en `next.config.ts`.
+- **Límite de intentos de acceso** (`auth_attempts`, RPC `auth_rate_allowed` y `auth_rate_failed`, `src/lib/security/rate-limit.ts`): por huella HMAC de la IP y del email normalizado (`SIGNAL_SECRET`). Login: 8 fallos por cuenta o fallos con 30 cuentas distintas por IP en 15 min (solo cuentan los fallos). Registro: 3 por email y 60 por IP a la hora. Enlace mágico: 5 por email y 60 por IP a la hora. El mensaje es el mismo exista o no la cuenta. Sin `SIGNAL_SECRET`, o si la BD falla, deja pasar (sigue el límite propio de Supabase Auth). En local, `npx supabase db reset` vacía los contadores.
+- **Formularios de acceso:** devuelven `values` (nunca la contraseña) para volver a rellenar el email, porque React 19 vacía el formulario al terminar la acción.
+
 ## Desarrollo local con Supabase
 
 ```bash
@@ -187,8 +193,9 @@ SUPABASE_PROJECT_REF=<ref> npm run typegen
 | `conversation_reads` | última lectura de cada conversación | el propio usuario | solo por RPC/trigger |
 | `reports` | denuncias | quien denuncia y admins | quien denuncia (alta); admin (resolver) |
 | `admin_users` | administradores | nadie (vía `private.is_admin()`) | SQL a mano |
+| `auth_attempts` | huellas de intentos de acceso (límite) | nadie | `auth_rate_allowed()` / `auth_rate_failed()` |
 
-RPC (`supabase.rpc(...)`): `confirm_stay`, `cancel_stay`, `end_stay`, `add_stay_participant`, `confirm_stay_participation`, `decline_stay_participation`, `get_review_window`, `delete_review`, `profile_review_stats`, `listing_review_stats`, `review_criteria_for`, `am_i_admin`, `mark_conversation_read`, `my_unread_counts`, `record_signal`, `admin_review_flags` (admin), `review_window_notices_due` (solo service_role).
+RPC (`supabase.rpc(...)`): `confirm_stay`, `cancel_stay`, `end_stay`, `add_stay_participant`, `confirm_stay_participation`, `decline_stay_participation`, `get_review_window`, `delete_review`, `profile_review_stats`, `listing_review_stats`, `review_criteria_for`, `am_i_admin`, `mark_conversation_read`, `my_unread_counts`, `record_signal`, `admin_review_flags` (admin), `review_window_notices_due` (solo service_role), `auth_rate_allowed` y `auth_rate_failed` (anon incluido: se usan antes de entrar).
 
 ### Reglas de reseñas tal como están implementadas
 
@@ -266,3 +273,5 @@ RPC (`supabase.rpc(...)`): `confirm_stay`, `cancel_stay`, `end_stay`, `add_stay_
 34. **Avisos de ventana con Vercel Cron + route handler**, y no con pg_cron: el envío de email vive en la app (interfaz `Mailer`) y así no hay que dar a Postgres acceso a internet.
 35. **Señales anti-abuso solo como hashes con secreto (HMAC)**: minimización de datos (RGPD). No se puede recuperar la IP.
 36. **Región europea:** las funciones de Vercel se ejecutan en París (`"regions": ["cdg1"]` en `vercel.json`) y Supabase debe crearse también en Europa (París `eu-west-3` o Frankfurt `eu-central-1`). Así cada consulta no cruza el Atlántico.
+37. **CSP con nonce y no con `'unsafe-inline'`** en los scripts: todas las páginas ya eran dinámicas, así que el nonce no cuesta rendimiento.
+38. **Límite de acceso por fallos y por cuentas distintas**, no por intentos: en residencias y campus muchos estudiantes comparten IP, y entrar bien nunca debe penalizar.

@@ -451,6 +451,13 @@ describe("superficie expuesta", () => {
         where n.nspname = 'public' and has_function_privilege('anon', p.oid, 'execute')
         order by 1`,
     );
-    expect(rows.map((r) => r.proname)).toEqual(["listing_review_stats", "profile_review_stats", "review_criteria_for"]);
+    // auth_rate_*: se usan antes de iniciar sesión y solo aceptan huellas HMAC.
+    expect(rows.map((r) => r.proname)).toEqual([
+      "auth_rate_allowed",
+      "auth_rate_failed",
+      "listing_review_stats",
+      "profile_review_stats",
+      "review_criteria_for",
+    ]);
   });
 });
