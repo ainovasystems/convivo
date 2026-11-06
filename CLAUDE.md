@@ -72,7 +72,7 @@ Antes de cada commit: `npm run lint && npm run typecheck && npm test && npm run 
 
 ## Auth y perfiles
 
-- **Rutas:** `/registro`, `/entrar` (contraseña o magic link), `/auth/callback` (destino de los enlaces de email: acepta `?code=` en PKCE y `?token_hash=&type=`), `/perfil` (redirige al tuyo), `/perfil/[id]` (público) y `/perfil/editar`.
+- **Rutas:** `/cuenta` (descargar mis datos y borrar la cuenta), `/registro`, `/entrar` (contraseña o magic link), `/auth/callback` (destino de los enlaces de email: acepta `?code=` en PKCE y `?token_hash=&type=`), `/perfil` (redirige al tuyo), `/perfil/[id]` (público) y `/perfil/editar`.
 - **Server Actions:** `src/app/(auth)/actions.ts` y `src/app/perfil/editar/actions.ts`. Siempre: validar con Zod y devolver un `FormState` (`src/lib/forms.ts`) con errores por campo.
 - **Validación doble:** los esquemas de `src/lib/validation/*` se usan en cliente (`useClientValidation`, para dar respuesta inmediata) y en servidor (la que manda).
 - **Identidad en servidor:** `getCurrentUser()` (`src/lib/auth.ts`, usa `getClaims()` y se cachea por petición).
@@ -129,6 +129,15 @@ Antes de cada commit: `npm run lint && npm run typecheck && npm test && npm run 
 
 - **Cabeceras** (`src/lib/security/headers.ts`): CSP con un **nonce por petición**, que pone `src/middleware.ts` en la respuesta y en la petición para que Next.js firme sus `<script>`. Así `script-src` no lleva `'unsafe-inline'` (`'strict-dynamic'` deja cargar los trozos que pide Next). Funciona porque todas las páginas se generan en cada petición; **una página estática nueva no tendría nonce** y sus scripts se bloquearían. `style-src` sí lleva `'unsafe-inline'` por los atributos `style` de React y `next/image`. `connect-src` e `img-src` permiten el host de Supabase (https y wss para Realtime). Las fijas (HSTS, nosniff, Referrer-Policy, Permissions-Policy, X-Frame-Options, COOP) van en `next.config.ts`.
 - **Límite de intentos de acceso** (`auth_attempts`, RPC `auth_rate_allowed` y `auth_rate_failed`, `src/lib/security/rate-limit.ts`): por huella HMAC de la IP y del email normalizado (`SIGNAL_SECRET`). Login: 8 fallos por cuenta o fallos con 30 cuentas distintas por IP en 15 min (solo cuentan los fallos). Registro: 3 por email y 60 por IP a la hora. Enlace mágico: 5 por email y 60 por IP a la hora. El mensaje es el mismo exista o no la cuenta. Sin `SIGNAL_SECRET`, o si la BD falla, deja pasar (sigue el límite propio de Supabase Auth). En local, `npx supabase db reset` vacía los contadores.
+- **Mis datos** (`GET /api/mis-datos`, `src/lib/account/export.ts`): JSON descargable con perfil, anuncios con su dirección, intereses, mis mensajes, estancias, reseñas escritas y recibidas ya publicadas, avisos, bloqueos y denuncias hechas. Se lee con la sesión del usuario: RLS garantiza que no sale nada ajeno. Sin sesión, 401.
+- **Borrar mi cuenta** (`/cuenta`, acción `deleteAccount`): pide escribir BORRAR (Zod y la BD lo comprueban), borra con la sesión del usuario sus ficheros de `avatars` y `listing-photos` y llama a `delete_my_account('BORRAR')`, que borra la fila de `auth.users`. El trigger `on_auth_user_deleted` → `private.anonymize_user()` hace el resto, **también si se borra el usuario desde el panel de Supabase**:
+  - el perfil queda como «Usuario eliminado», sin datos y con `deleted_at`. Ya no cuelga en cascada de `auth.users`;
+  - las reseñas escritas y recibidas se conservan intactas (siguen siendo inmutables) y las medias no cambian;
+  - se borran conversaciones (intereses y mensajes en ambos papeles), avisos, bloqueos, lecturas, señales y participaciones sin confirmar;
+  - los anuncios sin estancias se borran; los que tienen estancias se cierran sin dirección, fotos ni descripción (la variable de sesión `convivo.anonymizing` deja al guardián tocar un anuncio cerrado solo en ese momento);
+  - las denuncias hechas se conservan sin su texto libre.
+- **Textos legales** (`/privacidad`, `/terminos`, `src/components/legal/legal-page.tsx`): BORRADORES con el aviso «Borrador pendiente de revisión legal» y huecos `[POR COMPLETAR]`. Enlazados desde el registro y el pie (el pie se ve también en móvil, con hueco para la barra de pestañas).
+- **Cookies:** solo las de sesión de Supabase (`sb-…`), que son técnicas e imprescindibles; por eso **no hay banner de cookies**. Un e2e lo comprueba. Si algún día se añade analítica o publicidad, hará falta banner y consentimiento previo.
 - **Formularios de acceso:** devuelven `values` (nunca la contraseña) para volver a rellenar el email, porque React 19 vacía el formulario al terminar la acción.
 
 ## Desarrollo local con Supabase
@@ -177,7 +186,7 @@ SUPABASE_PROJECT_REF=<ref> npm run typegen
 
 | Tabla | Para qué | Quién lee | Quién escribe |
 |---|---|---|---|
-| `profiles` | perfil público (1:1 con `auth.users`, creado por un trigger) | todos | el dueño, solo columnas editables |
+| `profiles` | perfil público (1:1 con `auth.users`, creado por un trigger; al borrar la cuenta queda anonimizado con `deleted_at`) | todos | el dueño, solo columnas editables |
 | `blocks` | A bloquea a B | quien bloquea | quien bloquea |
 | `listings` | anuncios room/flat/seeking | todos si `active`; el dueño, todos los suyos | el dueño (solo borra borradores) |
 | `listing_addresses` | dirección exacta | el dueño e interesados `accepted` | el dueño |
@@ -195,7 +204,7 @@ SUPABASE_PROJECT_REF=<ref> npm run typegen
 | `admin_users` | administradores | nadie (vía `private.is_admin()`) | SQL a mano |
 | `auth_attempts` | huellas de intentos de acceso (límite) | nadie | `auth_rate_allowed()` / `auth_rate_failed()` |
 
-RPC (`supabase.rpc(...)`): `confirm_stay`, `cancel_stay`, `end_stay`, `add_stay_participant`, `confirm_stay_participation`, `decline_stay_participation`, `get_review_window`, `delete_review`, `profile_review_stats`, `listing_review_stats`, `review_criteria_for`, `am_i_admin`, `mark_conversation_read`, `my_unread_counts`, `record_signal`, `admin_review_flags` (admin), `review_window_notices_due` (solo service_role), `auth_rate_allowed` y `auth_rate_failed` (anon incluido: se usan antes de entrar).
+RPC (`supabase.rpc(...)`): `confirm_stay`, `cancel_stay`, `end_stay`, `add_stay_participant`, `confirm_stay_participation`, `decline_stay_participation`, `get_review_window`, `delete_review`, `profile_review_stats`, `listing_review_stats`, `review_criteria_for`, `am_i_admin`, `mark_conversation_read`, `my_unread_counts`, `record_signal`, `admin_review_flags` (admin), `review_window_notices_due` (solo service_role), `auth_rate_allowed` y `auth_rate_failed` (anon incluido: se usan antes de entrar), `delete_my_account`.
 
 ### Reglas de reseñas tal como están implementadas
 
@@ -255,7 +264,7 @@ RPC (`supabase.rpc(...)`): `confirm_stay`, `cancel_stay`, `end_stay`, `add_stay_
 16. **Doble ciego sin cron:** `published_at` guarda la fecha programada de publicación.
 17. **Estadísticas mediante funciones `security definer`** con filtro explícito de "publicada", en lugar de vistas (que se saltarían RLS o contarían reseñas pendientes).
 18. **Denuncias con claves foráneas reales** por tipo de objetivo y CHECK de "exactamente uno".
-19. **Borrado de cuenta en cascada por ahora.** El trigger impide borrar reseñas directamente, pero deja pasar la cascada. TODO (Prompt 6): anonimizar en vez de borrar.
+19. **Borrar la cuenta anonimiza, no borra en cascada** (resuelto en la Fase 6): el perfil queda como «Usuario eliminado» y las reseñas se conservan, para no destruir reputación ajena ni falsear medias. Ver «Seguridad y RGPD».
 20. Bucket `listing-photos` público (máximo 5 MB, jpeg/png/webp), con escritura solo en `{user_id}/…`.
 21. **Avatar como ruta (`avatar_path`), no como URL**, con un CHECK que la ata a la carpeta del usuario.
 22. **Magic link solo para cuentas existentes** (`shouldCreateUser: false`). El registro siempre pasa por `/registro`, con nombre y aceptación de condiciones.
@@ -275,3 +284,5 @@ RPC (`supabase.rpc(...)`): `confirm_stay`, `cancel_stay`, `end_stay`, `add_stay_
 36. **Región europea:** las funciones de Vercel se ejecutan en París (`"regions": ["cdg1"]` en `vercel.json`) y Supabase debe crearse también en Europa (París `eu-west-3` o Frankfurt `eu-central-1`). Así cada consulta no cruza el Atlántico.
 37. **CSP con nonce y no con `'unsafe-inline'`** en los scripts: todas las páginas ya eran dinámicas, así que el nonce no cuesta rendimiento.
 38. **Límite de acceso por fallos y por cuentas distintas**, no por intentos: en residencias y campus muchos estudiantes comparten IP, y entrar bien nunca debe penalizar.
+39. **El borrado de cuenta vive en la BD (trigger en `auth.users`), no en la app:** funciona igual si se borra desde el panel de Supabase, y no hace falta service_role (el usuario borra sus ficheros con su sesión y su fila con una RPC).
+40. **Sin banner de cookies** mientras solo haya cookies técnicas de sesión.
