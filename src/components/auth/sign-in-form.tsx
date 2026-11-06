@@ -59,7 +59,7 @@ function PasswordForm({ next }: { next: string }) {
     <form action={action} onSubmit={onSubmit} noValidate className="space-y-4">
       <input type="hidden" name="next" value={next} />
       <FormAlert state={state} />
-      <TextField id="email" label="Email" type="email" autoComplete="email" required error={errors.email} />
+      <TextField id="email" label="Email" type="email" autoComplete="email" required defaultValue={state.values?.email} error={errors.email} />
       <TextField
         id="password"
         label="Contraseña"
@@ -89,7 +89,7 @@ function MagicLinkForm({ next }: { next: string }) {
       <input type="hidden" name="next" value={next} />
       <FormAlert state={state} />
       <p className="text-sm text-muted">Te enviamos un enlace de un solo uso para entrar sin contraseña.</p>
-      <TextField id="email" label="Email" type="email" autoComplete="email" required error={errors.email} />
+      <TextField id="email" label="Email" type="email" autoComplete="email" required defaultValue={state.values?.email} error={errors.email} />
       <SubmitButton pendingText="Enviando…">Enviarme el enlace</SubmitButton>
     </form>
   );

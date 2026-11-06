@@ -27,12 +27,13 @@ export function SignUpForm() {
         id="displayName"
         label="Nombre"
         autoComplete="given-name"
+        defaultValue={state.values?.displayName}
         required
         maxLength={60}
         hint="Es el nombre que verán los demás. Puedes usar solo tu nombre de pila."
         error={errors.displayName}
       />
-      <TextField id="email" label="Email" type="email" autoComplete="email" required error={errors.email} />
+      <TextField id="email" label="Email" type="email" autoComplete="email" required defaultValue={state.values?.email} error={errors.email} />
       <TextField
         id="password"
         label="Contraseña"
