@@ -41,17 +41,20 @@ export default function RootLayout({
           Saltar al contenido
         </a>
         <SiteHeader />
-        {/* pb-24 en móvil: deja sitio a la barra de pestañas inferior */}
-        <main id="contenido" className="flex-1 pb-24 sm:pb-0">
+        <main id="contenido" className="flex-1">
           {children}
         </main>
-        <footer className="hidden border-t border-border bg-surface sm:block">
+        {/* pb-24 en móvil: deja sitio a la barra de pestañas inferior. Visible
+            también en móvil para que privacidad y condiciones estén a mano. */}
+        <footer className="border-t border-border bg-surface pb-24 sm:pb-0">
           <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-8 text-sm text-muted">
             <Logo />
             <nav aria-label="Pie de página" className="flex flex-wrap gap-5">
               <Link href="/anuncios" className="hover:text-brand">Buscar</Link>
               <Link href="/publicar" className="hover:text-brand">Publicar</Link>
               <Link href="/registro" className="hover:text-brand">Crear cuenta</Link>
+              <Link href="/privacidad" className="hover:text-brand">Privacidad</Link>
+              <Link href="/terminos" className="hover:text-brand">Condiciones</Link>
             </nav>
             <p>© {new Date().getFullYear()} Convivo · Hecho en España</p>
           </div>

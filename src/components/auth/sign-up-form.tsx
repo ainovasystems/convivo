@@ -56,7 +56,15 @@ export function SignUpForm() {
             aria-describedby={errors.acceptTerms ? "acceptTerms-error" : undefined}
           />
           <label htmlFor="acceptTerms" className="text-sm">
-            Acepto las condiciones de uso y la política de privacidad.
+            Acepto las{" "}
+            <Link href="/terminos" target="_blank" className="font-semibold text-brand underline">
+              condiciones de uso
+            </Link>{" "}
+            y la{" "}
+            <Link href="/privacidad" target="_blank" className="font-semibold text-brand underline">
+              política de privacidad
+            </Link>
+            .
           </label>
         </div>
         {errors.acceptTerms ? (
