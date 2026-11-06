@@ -12,6 +12,7 @@ async function newUserPage(browser: Browser, name: string) {
   await page.getByLabel("Nombre").fill(name);
   await page.getByLabel("Email").fill(uniqueEmail("flujo"));
   await page.getByLabel("Contraseña", { exact: true }).fill("contraseña-segura-123");
+  await page.getByLabel("Tengo 18 años o más.").check();
   await page.getByLabel(/Acepto las condiciones/).check();
   await page.getByRole("button", { name: "Crear cuenta" }).click();
   await expect(page).toHaveURL(/\/perfil\/editar/);

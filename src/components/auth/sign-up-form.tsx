@@ -47,6 +47,27 @@ export function SignUpForm() {
       <div className="space-y-1">
         <div className="flex items-start gap-2">
           <input
+            id="isAdult"
+            name="isAdult"
+            type="checkbox"
+            required
+            className="mt-1 size-4 accent-[var(--brand)]"
+            aria-invalid={errors.isAdult ? true : undefined}
+            aria-describedby={errors.isAdult ? "isAdult-error" : undefined}
+          />
+          <label htmlFor="isAdult" className="text-sm">
+            Tengo 18 años o más.
+          </label>
+        </div>
+        {errors.isAdult ? (
+          <p id="isAdult-error" className="text-sm text-red-700 dark:text-red-400">
+            {errors.isAdult}
+          </p>
+        ) : null}
+      </div>
+      <div className="space-y-1">
+        <div className="flex items-start gap-2">
+          <input
             id="acceptTerms"
             name="acceptTerms"
             type="checkbox"

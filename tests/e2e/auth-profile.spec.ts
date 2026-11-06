@@ -12,6 +12,7 @@ test.describe("registro → completar perfil → perfil público", () => {
     await page.getByLabel("Nombre").fill("Marta E2E");
     await page.getByLabel("Email").fill(email);
     await page.getByLabel("Contraseña", { exact: true }).fill("contraseña-segura-123");
+    await page.getByLabel("Tengo 18 años o más.").check();
     await page.getByLabel(/Acepto las condiciones/).check();
     await page.getByRole("button", { name: "Crear cuenta" }).click();
 

@@ -30,6 +30,7 @@ async function register(browser: Browser, name: string) {
   await page.getByLabel("Nombre").fill(name);
   await page.getByLabel("Email").fill(uniqueEmail("e2e"));
   await page.getByLabel("Contraseña", { exact: true }).fill("contraseña-segura-123");
+  await page.getByLabel("Tengo 18 años o más.").check();
   await page.getByLabel(/Acepto las condiciones/).check();
   await page.getByRole("button", { name: "Crear cuenta" }).click();
   await expect(page).toHaveURL(/\/perfil\/editar/);
@@ -65,6 +66,7 @@ test.describe("reseñas con doble ciego", () => {
     await guest.getByLabel("Nombre").fill(guestName);
     await guest.getByLabel("Email").fill(uniqueEmail("resena"));
     await guest.getByLabel("Contraseña", { exact: true }).fill("contraseña-segura-123");
+    await guest.getByLabel("Tengo 18 años o más.").check();
     await guest.getByLabel(/Acepto las condiciones/).check();
     await guest.getByRole("button", { name: "Crear cuenta" }).click();
     await expect(guest).toHaveURL(/\/perfil\/editar/);

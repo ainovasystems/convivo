@@ -24,8 +24,12 @@ export const signUpSchema = z.object({
     .string({ error: "Elige una contraseña" })
     .min(8, { error: "La contraseña debe tener al menos 8 caracteres" })
     .max(72, { error: "La contraseña no puede pasar de 72 caracteres" }),
+  isAdult: z.literal("on", { error: "Para usar Convivo tienes que ser mayor de edad" }),
   acceptTerms: z.literal("on", { error: "Debes aceptar las condiciones para continuar" }),
 });
+
+/** Versión de las condiciones que se acepta al registrarse (cámbiala al modificarlas). */
+export const TERMS_VERSION = "2026-11-06-borrador";
 
 export type SignInInput = z.infer<typeof signInSchema>;
 export type SignUpInput = z.infer<typeof signUpSchema>;

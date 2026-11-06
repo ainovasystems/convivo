@@ -7,7 +7,7 @@ import { getSiteUrl } from "@/lib/site-url";
 import { authAttemptAllowed, recordLoginFailure, TOO_MANY_ATTEMPTS } from "@/lib/security/rate-limit";
 import { recordSignal } from "@/lib/signals";
 import { createClient } from "@/lib/supabase/server";
-import { magicLinkSchema, safeNextPath, signInSchema, signUpSchema } from "@/lib/validation/auth";
+import { magicLinkSchema, safeNextPath, signInSchema, signUpSchema, TERMS_VERSION } from "@/lib/validation/auth";
 import { fieldErrors } from "@/lib/validation/profile";
 
 /** Campos de texto a devolver al formulario (nunca la contraseña). */
@@ -80,6 +80,7 @@ export async function signUp(_prev: FormState, formData: FormData): Promise<Form
     displayName: formData.get("displayName"),
     email: formData.get("email"),
     password: formData.get("password"),
+    isAdult: formData.get("isAdult"),
     acceptTerms: formData.get("acceptTerms"),
   });
   if (!parsed.success) {
@@ -95,7 +96,13 @@ export async function signUp(_prev: FormState, formData: FormData): Promise<Form
     email: parsed.data.email,
     password: parsed.data.password,
     options: {
-      data: { display_name: parsed.data.displayName },
+      // Constancia de la aceptación (LSSI) y de la declaración de mayoría de edad.
+      data: {
+        display_name: parsed.data.displayName,
+        terms_version: TERMS_VERSION,
+        terms_accepted_at: new Date().toISOString(),
+        adult_declared_at: new Date().toISOString(),
+      },
       emailRedirectTo: `${await getSiteUrl()}/auth/callback?next=${encodeURIComponent("/perfil/editar?bienvenida=1")}`,
     },
   });

@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import { magicLinkSchema, safeNextPath, signInSchema, signUpSchema } from "@/lib/validation/auth";
 
 describe("signUpSchema", () => {
-  const valid = { displayName: "  Lucía ", email: " Lucia@Example.COM ", password: "12345678", acceptTerms: "on" };
+  const valid = { displayName: "  Lucía ", email: " Lucia@Example.COM ", password: "12345678", isAdult: "on", acceptTerms: "on" };
 
   it("acepta datos válidos y normaliza nombre y email", () => {
     const r = signUpSchema.parse(valid);
@@ -16,6 +16,7 @@ describe("signUpSchema", () => {
     ["email", { email: "no-es-email" }, "no parece válido"],
     ["password", { password: "1234567" }, "al menos 8"],
     ["acceptTerms", { acceptTerms: undefined }, "aceptar las condiciones"],
+    ["isAdult", { isAdult: undefined }, "mayor de edad"],
   ])("rechaza %s inválido", (field, override, message) => {
     const r = signUpSchema.safeParse({ ...valid, ...override });
     expect(r.success).toBe(false);
