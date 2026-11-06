@@ -138,6 +138,8 @@ Antes de cada commit: `npm run lint && npm run typecheck && npm test && npm run 
   - las denuncias hechas se conservan sin su texto libre.
 - **Textos legales** (`/privacidad`, `/terminos`, `src/components/legal/legal-page.tsx`): BORRADORES con el aviso «Borrador pendiente de revisión legal» y huecos `[POR COMPLETAR]`. Enlazados desde el registro y el pie (el pie se ve también en móvil, con hueco para la barra de pestañas).
 - **Cookies:** solo las de sesión de Supabase (`sb-…`), que son técnicas e imprescindibles; por eso **no hay banner de cookies**. Un e2e lo comprueba. Si algún día se añade analítica o publicidad, hará falta banner y consentimiento previo.
+- **Anti-discriminación en anuncios** (`src/lib/listings/discrimination.ts`, único fichero con la lista): se rechazan en título, descripción y zonas las **exclusiones** por origen, nacionalidad, etnia, religión u orientación sexual («solo españoles», «no extranjeros», «abstenerse gitanos», «nacionalidad española»…). El texto se normaliza (minúsculas, sin tildes, signos ni espacios dobles) y se busca la exclusión, no la palabra suelta: «hablamos español» o «barrio chino» pasan. Va en `listingTextSchema` (Zod), que usa `publishErrors()`: el asistente lo marca en vivo y el servidor lo vuelve a comprobar al guardar o publicar. Para ampliarla, añade palabras a `ONLY_GROUPS`, `EXCLUDED_GROUPS` o `FORBIDDEN_PHRASES` y un caso en `tests/unit/discrimination.test.ts`.
+- **Sexo («solo chicas/chicos»):** se permite en habitaciones y en «busco», donde se comparte casa. En piso entero se avisa (`publishWarnings()`) pero no se bloquea.
 - **Formularios de acceso:** devuelven `values` (nunca la contraseña) para volver a rellenar el email, porque React 19 vacía el formulario al terminar la acción.
 
 ## Desarrollo local con Supabase
@@ -286,3 +288,4 @@ RPC (`supabase.rpc(...)`): `confirm_stay`, `cancel_stay`, `end_stay`, `add_stay_
 38. **Límite de acceso por fallos y por cuentas distintas**, no por intentos: en residencias y campus muchos estudiantes comparten IP, y entrar bien nunca debe penalizar.
 39. **El borrado de cuenta vive en la BD (trigger en `auth.users`), no en la app:** funciona igual si se borra desde el panel de Supabase, y no hace falta service_role (el usuario borra sus ficheros con su sesión y su fila con una RPC).
 40. **Sin banner de cookies** mientras solo haya cookies técnicas de sesión.
+41. **Preferencia de sexo permitida solo donde se convive** (habitación y «busco»); en piso entero, aviso sin bloqueo. Pendiente de validar con el abogado.

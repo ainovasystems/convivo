@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 import { findCity } from "@/lib/listings/cities";
+import { GENDER_WARNING, hasGenderRestriction, listingTextSchema } from "@/lib/listings/discrimination";
 import { LISTING_KINDS, MAX_PHOTOS, PROVINCES, RENTAL_TERMS, RULE_KEYS } from "@/lib/listings/options";
 
 /**
@@ -87,12 +88,25 @@ export function publishErrors(kind: (typeof LISTING_KINDS)[number], d: ListingDr
     if (!required(d.monthlyRent)) e.monthlyRent = "Indica el precio mensual";
     if (!required(d.availableFrom)) e.availableFrom = "Indica desde cuándo está disponible";
   }
+  // Sin requisitos discriminatorios (lista en src/lib/listings/discrimination.ts).
+  const text = listingTextSchema.safeParse({ title: d.title, description: d.description, zones: d.zones });
+  if (!text.success) {
+    for (const issue of text.error.issues) e[String(issue.path[0])] ??= issue.message;
+  }
+
   const start = kind === "seeking" ? d.moveInDate : d.availableFrom;
   if (d.rentalTerm !== "indefinite") {
     if (!d.availableUntil) e.availableUntil = "Indica hasta cuándo";
     else if (start && d.availableUntil <= start) e.availableUntil = "Debe ser posterior a la fecha de entrada";
   }
   return e;
+}
+
+/** Avisos que no impiden publicar. */
+export function publishWarnings(kind: (typeof LISTING_KINDS)[number], d: Pick<ListingDraft, "title" | "description">) {
+  const w: string[] = [];
+  if (kind === "flat" && hasGenderRestriction(`${d.title} ${d.description}`)) w.push(GENDER_WARNING);
+  return w;
 }
 
 export const photosSchema = z.array(z.string().min(1)).max(MAX_PHOTOS, { error: `Máximo ${MAX_PHOTOS} fotos` });

@@ -22,7 +22,8 @@ import {
   type RuleKey,
 } from "@/lib/listings/options";
 import { findCity, KNOWN_CITY_NAMES } from "@/lib/listings/cities";
-import { listingDraftSchema, publishErrors } from "@/lib/listings/schema";
+import { DISCRIMINATION_MESSAGE } from "@/lib/listings/discrimination";
+import { listingDraftSchema, publishErrors, publishWarnings } from "@/lib/listings/schema";
 import { fieldErrors } from "@/lib/validation/profile";
 
 /** Valores del formulario tal como los escribe el usuario (texto). */
@@ -124,7 +125,13 @@ export function ListingWizard({
   const parsed = useMemo(() => listingDraftSchema.safeParse(toDraftInput(values)), [values]);
   const fieldErrs = parsed.success ? {} : fieldErrors(parsed.error);
   const missing = parsed.success ? publishErrors(listing.kind, parsed.data) : {};
-  const errors = { ...serverErrors, ...fieldErrs };
+  // Los textos discriminatorios se marcan mientras se escribe (el resto de lo
+  // que falta para publicar se enseña en el paso Revisión).
+  const discrimination = Object.fromEntries(
+    Object.entries(missing).filter(([, msg]) => msg.startsWith(DISCRIMINATION_MESSAGE)),
+  );
+  const warnings = parsed.success ? publishWarnings(listing.kind, parsed.data) : [];
+  const errors = { ...serverErrors, ...discrimination, ...fieldErrs };
 
   const set = useCallback(<K extends keyof WizardValues>(key: K, value: WizardValues[K]) => {
     dirty.current = true;
@@ -261,6 +268,11 @@ export function ListingWizard({
               error={errors.description}
               hint="Mínimo 30 caracteres. No incluyas teléfonos ni datos de pago, ni requisitos sobre origen, religión o similares."
             />
+            {warnings.map((w) => (
+              <p key={w} role="status" className="rounded-xl border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900">
+                {w}
+              </p>
+            ))}
             <div className="grid gap-4 sm:grid-cols-2">
               {text("city", "Ciudad", { maxLength: 80, list: "known-cities", autoComplete: "off" })}
               <datalist id="known-cities">
@@ -376,6 +388,11 @@ export function ListingWizard({
               Todo listo. {isDraft ? "Al publicar, tu anuncio aparecerá en las búsquedas." : "Guarda para aplicar los cambios."}
             </p>
           )}
+          {warnings.map((w) => (
+            <p key={w} role="status" className="rounded-xl border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900">
+              {w}
+            </p>
+          ))}
           <dl className="grid gap-3 text-sm sm:grid-cols-2">
             <div>
               <dt className="text-muted">Título</dt>
