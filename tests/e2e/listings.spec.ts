@@ -64,20 +64,23 @@ test.describe("anuncios", () => {
     await expect(page.getByText(/La dirección exacta se comparte/)).toBeVisible();
   });
 
-  test("el asistente rechaza requisitos discriminatorios y avisa en piso entero si se limita por sexo", async ({ page }) => {
+  test("el asistente rechaza requisitos discriminatorios y los limitados por sexo", async ({ page }) => {
     await login(page, "farid@convivo.test");
     await page.goto("/publicar");
-    await page.getByRole("button", { name: /^Piso entero/ }).click();
+    await page.getByRole("button", { name: /^Habitación/ }).click();
     await expect(page).toHaveURL(/\/publicar\/[0-9a-f-]{36}\?paso=datos/);
 
     const description = page.getByLabel("Descripción");
-    await description.fill("Piso de dos habitaciones muy luminoso y reformado. Solo españoles.");
+    await description.fill("Habitación muy luminosa en piso reformado. Solo españoles.");
     await expect(page.getByText(/No se pueden poner requisitos por origen/)).toBeVisible();
     await expect(description).toHaveAttribute("aria-invalid", "true");
 
-    await description.fill("Piso de dos habitaciones muy luminoso y reformado. Solo chicas.");
+    await description.fill("Habitación muy luminosa en piso reformado. Solo chicas.");
     await expect(page.getByText(/No se pueden poner requisitos por origen/)).toHaveCount(0);
-    await expect(page.getByText(/limitarlo por sexo puede considerarse discriminatorio/).first()).toBeVisible();
+    await expect(page.getByText(/no se pueden publicar anuncios limitados por sexo/)).toBeVisible();
+
+    await description.fill("Habitación muy luminosa en piso reformado. Ahora vivimos dos chicas.");
+    await expect(description).not.toHaveAttribute("aria-invalid", "true");
   });
 
   test("el formulario de filtros escribe los filtros en la URL", async ({ page }) => {
