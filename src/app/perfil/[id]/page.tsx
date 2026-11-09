@@ -51,6 +51,8 @@ export default async function ProfilePage({ params }: Props) {
   const chips = habitChips(profile.habits);
   const isOwn = viewer?.id === profile.id;
   const age = ageFromBirthYear(profile.birth_year);
+  // Menos de 90 días: quien la vea sabe que el perfil aún no tiene historial propio.
+  const isNewAccount = Date.now() - new Date(profile.created_at).getTime() < 90 * 24 * 3600 * 1000;
   const facts = [profile.city, profile.occupation, age ? `${age} años` : null].filter(
     Boolean,
   );
@@ -82,7 +84,17 @@ export default async function ProfilePage({ params }: Props) {
             ) : null}
           </div>
           {facts.length ? <p className="text-muted">{facts.join(" · ")}</p> : null}
-          <p className="text-sm text-muted">En Convivo desde {formatMonth(profile.created_at)}</p>
+          <p className="text-sm text-muted">
+            En Convivo desde {formatMonth(profile.created_at)}
+            {isNewAccount && !profile.deleted_at ? (
+              <span className="ml-2 rounded-full bg-accent/30 px-2 py-0.5 text-xs font-bold text-foreground">Cuenta nueva</span>
+            ) : null}
+          </p>
+          {profile.restored_from ? (
+            <p className="text-sm text-muted">
+              Volvió a Convivo con el mismo email: sus reseñas incluyen las de su cuenta anterior.
+            </p>
+          ) : null}
           <ul aria-label="Verificaciones" className="flex flex-wrap gap-2 pt-1">
             {profile.email_verified ? (
               <li>

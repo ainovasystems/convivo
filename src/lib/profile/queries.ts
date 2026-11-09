@@ -9,7 +9,7 @@ import { createClient } from "@/lib/supabase/server";
 export const profileIdSchema = z.uuid();
 
 const PUBLIC_PROFILE_COLUMNS =
-  "id, display_name, bio, avatar_path, city, occupation, birth_year, deleted_at, languages, habits, roles, email_verified, phone_verified, created_at";
+  "id, display_name, bio, avatar_path, city, occupation, birth_year, deleted_at, restored_from, languages, habits, roles, email_verified, phone_verified, created_at";
 
 export async function getProfile(id: string) {
   const supabase = await createClient();
@@ -44,13 +44,16 @@ export async function getProfileStats(id: string): Promise<ProfileStats[]> {
  */
 export async function getReceivedReviews(id: string) {
   const supabase = await createClient();
+  // Incluye las reseñas de sus cuentas anteriores (si borró la cuenta y volvió con el mismo email).
+  const { data: lineage } = await supabase.rpc("profile_lineage", { p_user_id: id });
+  const ids = lineage?.length ? lineage : [id];
   const { data, error } = await supabase
     .from("reviews")
     .select(
       "id, relationship, rating, criteria, body, published_at, deleted_at, deletion_reason, author:profiles!reviews_author_id_fkey(id, display_name, avatar_path), response:review_responses(body, created_at)",
     )
     .eq("subject_type", "user")
-    .eq("subject_user_id", id)
+    .in("subject_user_id", ids)
     .lte("published_at", new Date().toISOString())
     .order("published_at", { ascending: false })
     .limit(100);

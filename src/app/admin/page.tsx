@@ -37,7 +37,7 @@ export default async function AdminPage() {
   // A quien no es admin le respondemos 404: ni siquiera confirmamos que exista.
   if (!isAdmin) notFound();
 
-  const [{ data: reports }, { data: flags }, { data: listingFlags }, { data: log }, { data: notices }] = await Promise.all([
+  const [{ data: reports }, { data: flags }, { data: listingFlags }, { data: log }, { data: notices }, { data: returning }] = await Promise.all([
     supabase
       .from("reports")
       .select(
@@ -64,6 +64,7 @@ export default async function AdminPage() {
       .eq("status", "received")
       .order("due_at", { ascending: true })
       .limit(100),
+    supabase.rpc("admin_returning_account_flags"),
   ]);
   const now = Date.now();
 
@@ -217,6 +218,35 @@ export default async function AdminPage() {
           </ul>
         ) : (
           <p className="text-sm text-muted">Sin señales.</p>
+        )}
+      </section>
+
+      <section aria-labelledby="reabiertas" className="space-y-3">
+        <h2 id="reabiertas" className="text-lg font-semibold">
+          Posibles cuentas reabiertas ({returning?.length ?? 0})
+        </h2>
+        <p className="text-sm text-muted">
+          Cuentas de los últimos 6 meses que comparten conexión (o el mismo navegador) con una cuenta borrada que tenía
+          reseñas negativas. Es un indicio, no una prueba: pueden ser compañeros de piso o una red compartida. Quien vuelve con
+          el mismo email ya recupera su historial solo.
+        </p>
+        {returning?.length ? (
+          <ul className="space-y-1 text-sm">
+            {returning.map((r) => (
+              <li key={`${r.profile_id}-${r.previous_profile_id}`}>
+                <Link className="underline" href={`/perfil/${r.profile_id}`}>
+                  {r.display_name}
+                </Link>{" "}
+                (alta {formatDate(r.created_at)}) · coincide con una cuenta borrada el {formatDate(r.previous_deleted_at)} con{" "}
+                {r.negative_reviews} reseña(s) negativa(s) · misma IP{r.shared_device ? " y mismo navegador" : ""} ·{" "}
+                <Link className="underline" href={`/perfil/${r.previous_profile_id}`}>
+                  ver la cuenta borrada
+                </Link>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="text-sm text-muted">Sin coincidencias.</p>
         )}
       </section>
 

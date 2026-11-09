@@ -108,6 +108,11 @@ export default function PrivacyPage() {
             con el abogado y decidir si se corta también el enlace con la estancia]
           </li>
           <li>Huellas de seguridad de los intentos de acceso: se eliminan a partir de las 24 horas.</li>
+          <li>
+            Tras borrar una cuenta: una huella cifrada del email y de la conexión durante 2 años, para que nadie pueda escapar de
+            sus reseñas creando una cuenta nueva. Si vuelves con el mismo email, recuperas tu historial (interés legítimo:
+            prevención del fraude).
+          </li>
           <li>Huellas anti-abuso de las reseñas: [POR COMPLETAR: plazo, p. ej. 12 meses]</li>
           <li>Denuncias, notificaciones de contenido ilegal y registro de moderación: [POR COMPLETAR: plazo; propuesta en docs/legal/conservacion.md]</li>
           <li>Copias de seguridad: [POR COMPLETAR: plazo según el plan de Supabase]</li>

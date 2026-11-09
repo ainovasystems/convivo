@@ -60,6 +60,11 @@ export default async function AccountPage() {
               corresponde.
             </li>
           </ul>
+          <p>
+            Para que nadie pueda borrar su cuenta y empezar de cero escapando de sus reseñas, guardamos durante 2 años una huella
+            cifrada de tu email (no el email) y de tu conexión. Si vuelves a registrarte con el mismo email, recuperarás tu
+            historial de reseñas.
+          </p>
           <p>Si quieres guardar una copia, descarga antes tus datos.</p>
         </div>
         <DeleteAccountForm />

@@ -54,6 +54,19 @@ test.describe("RGPD: mis datos, borrar la cuenta y textos legales", () => {
     await page.getByLabel("Contraseña", { exact: true }).fill(PASSWORD);
     await page.getByRole("button", { name: "Entrar" }).click();
     await expect(page.getByRole("alert").filter({ hasText: "incorrectos" })).toBeVisible();
+
+    // Si vuelve con el mismo email, su perfil lo dice (y recupera su historial de reseñas).
+    await page.goto("/registro");
+    await page.getByLabel("Nombre").fill(`${name} Bis`);
+    await page.getByLabel("Email").fill(email);
+    await page.getByLabel("Contraseña", { exact: true }).fill(PASSWORD);
+    await page.getByLabel("Tengo 18 años o más.").check();
+    await page.getByLabel(/Acepto las condiciones/).check();
+    await page.getByRole("button", { name: "Crear cuenta" }).click();
+    await expect(page).toHaveURL(/\/perfil\/editar/);
+    await page.goto("/perfil");
+    await expect(page.getByText("Cuenta nueva")).toBeVisible();
+    await expect(page.getByText(/Volvió a Convivo con el mismo email/)).toBeVisible();
   });
 
   test("la descarga de datos exige sesión", async ({ request }) => {
