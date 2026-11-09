@@ -16,6 +16,7 @@
 | Respuestas a reseñas | `review_responses` | Igual que la reseña | Igual que la reseña | — |
 | Avisos in-app | `notifications` | Indefinido | Borrar a los 12 meses | Sin utilidad pasado ese tiempo |
 | Huellas de intentos de acceso | `auth_attempts` | Se borran a partir de las 24 h (limpieza oportunista) | Igual | Seguridad (interés legítimo). Mínimo imprescindible |
+| Huellas de cuentas borradas (email, IP y navegador, HMAC) y n.º de reseñas negativas | `private.deleted_account_traces` | 2 años (`expires_at`); dejan de usarse al caducar, pero aún no se purgan | Igual, más una purga automática | Prevención del fraude: que nadie borre la cuenta para escapar de sus reseñas (interés legítimo). Se informa antes de borrar |
 | Huellas anti-abuso (IP y navegador, HMAC) | `user_signals` | Indefinido | Borrar a los 12 meses del último uso | Detectar autorreseñas en el periodo en que se escriben |
 | Denuncias internas | `reports` | Indefinido. Al borrar la cuenta se quita el texto libre | 3 años desde la resolución | Defensa ante reclamaciones. [Validar] |
 | Notificaciones DSA (nombre y email de quien notifica, explicación) | `legal_notices` | Indefinido | 3 años desde la decisión | Obligación legal (DSA) y defensa ante reclamaciones. [Validar] |
