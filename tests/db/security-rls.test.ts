@@ -456,6 +456,7 @@ describe("superficie expuesta", () => {
       "auth_rate_allowed",
       "auth_rate_failed",
       "listing_review_stats",
+      "profile_lineage",
       "profile_review_stats",
       "review_criteria_for",
       "submit_legal_notice",

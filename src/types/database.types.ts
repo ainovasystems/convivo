@@ -569,6 +569,7 @@ export type Database = {
           languages: string[];
           occupation: string | null;
           phone_verified: boolean;
+          restored_from: string | null;
           roles: Database["public"]["Enums"]["user_role"][];
           updated_at: string;
         };
@@ -587,6 +588,7 @@ export type Database = {
           languages?: string[];
           occupation?: string | null;
           phone_verified?: boolean;
+          restored_from?: string | null;
           roles?: Database["public"]["Enums"]["user_role"][];
           updated_at?: string;
         };
@@ -604,10 +606,19 @@ export type Database = {
           languages?: string[];
           occupation?: string | null;
           phone_verified?: boolean;
+          restored_from?: string | null;
           roles?: Database["public"]["Enums"]["user_role"][];
           updated_at?: string;
         };
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: "profiles_restored_from_fkey";
+            columns: ["restored_from"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
       };
       reports: {
         Row: {
@@ -1076,6 +1087,18 @@ export type Database = {
         Args: { p_action: string; p_flag_id: string; p_note: string };
         Returns: undefined;
       };
+      admin_returning_account_flags: {
+        Args: Record<PropertyKey, never>;
+        Returns: {
+          created_at: string;
+          display_name: string;
+          negative_reviews: number;
+          previous_deleted_at: string;
+          previous_profile_id: string;
+          profile_id: string;
+          shared_device: boolean;
+        }[];
+      };
       admin_review_flags: {
         Args: Record<PropertyKey, never>;
         Returns: {
@@ -1219,6 +1242,7 @@ export type Database = {
           unread: number;
         }[];
       };
+      profile_lineage: { Args: { p_user_id: string }; Returns: string[] };
       profile_review_stats: {
         Args: { p_user_id: string };
         Returns: {
