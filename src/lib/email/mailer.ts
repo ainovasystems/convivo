@@ -26,7 +26,8 @@ export class ResendMailer implements Mailer {
       headers: { Authorization: `Bearer ${this.apiKey}`, "Content-Type": "application/json" },
       body: JSON.stringify({ from: this.from, to: [m.to], subject: m.subject, html: m.html, text: m.text }),
     });
-    if (!res.ok) throw new Error(`Resend respondió ${res.status}`);
+    // El cuerpo explica el motivo (dominio sin verificar, remitente no permitido…): sale en los logs de Vercel.
+    if (!res.ok) throw new Error(`Resend respondió ${res.status}: ${(await res.text()).slice(0, 300)}`);
   }
 }
 
@@ -62,9 +63,21 @@ export class ConsoleMailer implements Mailer {
   }
 }
 
+/**
+ * Se aceptan también `resendkey` y `emailfrom` (algunos paneles no dejan usar
+ * mayúsculas ni guiones bajos). Si existen, mandan los nombres en minúscula,
+ * igual que con el resto de variables.
+ */
+export function emailConfig(env: NodeJS.ProcessEnv = process.env) {
+  return {
+    resendKey: env.resendkey || env.RESEND_API_KEY || "",
+    from: env.emailfrom || env.EMAIL_FROM || DEFAULT_FROM,
+  };
+}
+
 export function getMailer(env: NodeJS.ProcessEnv = process.env): Mailer {
-  const from = env.EMAIL_FROM || DEFAULT_FROM;
-  if (env.RESEND_API_KEY) return new ResendMailer(env.RESEND_API_KEY, from);
+  const { resendKey, from } = emailConfig(env);
+  if (resendKey) return new ResendMailer(resendKey, from);
   if (env.MAILPIT_URL) return new MailpitMailer(env.MAILPIT_URL, from);
   return new ConsoleMailer();
 }

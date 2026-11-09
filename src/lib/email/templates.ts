@@ -17,10 +17,10 @@ function layout(
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td align="center" style="padding:24px">
 <table role="presentation" width="100%" style="max-width:560px;background:#fff;border-radius:12px;padding:32px">
 <tr><td>
-<p style="margin:0 0 24px;font-weight:700;font-size:20px;color:#0f766e">Convivo</p>
+<p style="margin:0 0 24px;font-weight:700;font-size:20px;color:#7b4b2a">Convivo</p>
 <h1 style="margin:0 0 16px;font-size:20px">${escapeHtml(title)}</h1>
 ${body}
-<p style="margin:24px 0"><a href="${escapeHtml(cta.url)}" style="background:#0f766e;color:#fff;padding:12px 20px;border-radius:8px;text-decoration:none;font-weight:600">${escapeHtml(cta.label)}</a></p>
+<p style="margin:24px 0"><a href="${escapeHtml(cta.url)}" style="background:#7b4b2a;color:#fff;padding:12px 22px;border-radius:999px;text-decoration:none;font-weight:600">${escapeHtml(cta.label)}</a></p>
 <p style="margin:24px 0 0;font-size:13px;color:#57534e">Consejo de seguridad: nunca pagues ni envíes dinero antes de ver la vivienda y firmar un contrato.</p>
 </td></tr></table>
 <p style="font-size:12px;color:#57534e">${escapeHtml(footer)}</p>

@@ -40,6 +40,17 @@ async function runChecks(): Promise<Check[]> {
       fix: "Añade en Vercel la variable siteurl con https://tu-web.vercel.app y vuelve a publicar.",
     },
     {
+      label: "Envío de emails (Resend)",
+      ok: Boolean(env.resendkey || env.RESEND_API_KEY) && Boolean(env.emailfrom || env.EMAIL_FROM),
+      detail:
+        env.resendkey || env.RESEND_API_KEY
+          ? env.emailfrom || env.EMAIL_FROM
+            ? `Configurado · remitente: ${env.emailfrom || env.EMAIL_FROM}`
+            : "Falta el remitente (emailfrom o EMAIL_FROM)"
+          : "No configurado: los emails no se envían (solo se anotan en los logs)",
+      fix: "Añade en Vercel resendkey (la API key de Resend) y emailfrom (p. ej. Convivo <hola@tudominio.es>) y vuelve a publicar.",
+    },
+    {
       label: "Secreto de la tarea diaria",
       ok: Boolean(env.CRON_SECRET),
       detail: env.CRON_SECRET
