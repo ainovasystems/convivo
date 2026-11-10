@@ -2,7 +2,7 @@
 
 > **Fuente única de «qué toca ahora».** Solo se trabaja en el bloque marcado como **SIGUIENTE**. Lo que surja por el camino va a «Ideas aparcadas», no se hace en ese momento.
 > La actualiza Claude Code al cerrar cada bloque y se vuelve a subir al proyecto de Claude.
-> Última actualización: **11 de noviembre de 2026**.
+> Última actualización: **10 de noviembre de 2026** (cierre de la Fase 7a).
 
 ## Hecho
 
@@ -14,14 +14,11 @@
 | Ajustes legales | Canal DSA de denuncias, casilla 18+, edad exacta, «solo chicas/chicos», cuentas que vuelven, ponderación, EIPD y tabla de conservación |
 | Contratos · fase 1 | Plantillas, edición, envío, firma de los dos, estancia confirmada, PDF |
 | Contratos · fase 2 | Inventario de entrada y salida con fotos privadas y bloqueo, guía de la fianza por comunidad autónoma |
+| Fase 7a · SEO técnico y auditoría | Páginas de ciudad (`/habitaciones/lugo`, `/pisos/lugo`…), `sitemap.xml`, `robots.txt`, datos estructurados, tarjetas para compartir, indexación apagada con una variable, y `docs/REVISION-FASE-7.md` (Lighthouse, axe y 52 capturas en móvil) |
 
 ## SIGUIENTE (elegir uno con el usuario; recomendación en orden)
 
-1. **Fase 7 · Diseño, SEO y rendimiento.** Hace falta antes del piloto.
-   - Lighthouse ≥ 90 en móvil.
-   - URLs públicas tipo `/habitaciones/lugo`, `sitemap.xml`, `robots.txt` y datos estructurados (JSON-LD).
-   - Accesibilidad revisada con axe.
-   - Revisión visual de todas las pantallas en móvil.
+1. **Fase 7b · Corregir lo que salió en la revisión.** Hace falta antes del piloto. La lista priorizada está en `docs/REVISION-FASE-7.md`; **el usuario decide qué entra** (propuesta: D1 y D2 de la búsqueda y la ficha en móvil, P1 y P2 de rendimiento, A1-A4 de accesibilidad y una pasada manual con teclado y lector de pantalla). Objetivo: Lighthouse ≥ 90 en las cinco pantallas y 0 fallos «graves» de axe.
 2. **Fase 8 · Lanzamiento y operación.**
    - `DEPLOY.md`.
    - Proyecto de Supabase de **producción** separado, sin datos de ejemplo.
@@ -41,6 +38,8 @@
 | Comprobar en Supabase Site URL y Redirect URLs = dominio real + `/auth/callback` | Enlaces de los emails | Alta |
 | Rellenar los `[POR COMPLETAR]` de `/privacidad` y `/terminos`: responsable, NIF, dirección y email de contacto y de reclamaciones | Textos legales | Antes de abrir |
 | Nombre definitivo y dominio | Marca y emails | Antes de abrir |
+| Cuando haya dominio: variable `siteurl` = `https://<dominio>` y, **solo en producción**, `INDEXING_ENABLED=true` (pasos en `CLAUDE.md` → «SEO técnico e indexación») | Que Google indexe la web. En la web de pruebas **no** se enciende | El día del lanzamiento |
+| Dar de alta el sitemap en Google Search Console | Que Google encuentre las páginas de ciudad | Tras encender la indexación |
 | Nombrar admins (SQL en `CLAUDE.md`) | Moderación | Antes del piloto |
 
 ## Preguntas para el abogado (agrupadas)
@@ -76,3 +75,9 @@
 - Liquidación de la fianza dentro de Convivo: descuentos justificados con el inventario.
 - Corregir una prueba e2e de tiempo real que a veces falla en móvil justo tras arrancar.
 - Modo oscuro.
+- Páginas de ciudad para más ciudades (Santiago, Valencia, Sevilla…): basta añadir el nombre a `SEO_CITIES`; decidir cuándo, según haya anuncios.
+- Página de ciudad con texto propio (barrios, precios medios, guía de la zona) para posicionar mejor que la lista de anuncios.
+- Indexar los anuncios «busco» y los perfiles (hoy no, por privacidad): decidir con el abogado.
+- Índice de páginas por barrio (`/habitaciones/lugo/centro`) y filtros populares como páginas propias.
+- Comprobar en Vercel (con dominio) las cifras de Lighthouse y la tarjeta de WhatsApp con un anuncio real con foto.
+- Subir `axe` y Lighthouse a una GitHub Action (parte de la Fase 8).

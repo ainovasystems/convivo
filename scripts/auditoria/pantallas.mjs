@@ -49,7 +49,6 @@ async function shot(page, slug, titulo, { full = true } = {}) {
   await page.screenshot({ path: `${OUT}/${file}`, fullPage: full });
   await page.evaluate(AXE);
   const axe = await page.evaluate(() =>
-    // eslint-disable-next-line no-undef
     axe.run(document, { runOnly: { type: "tag", values: ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "best-practice"] } }),
   );
   const horizontalScroll = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
@@ -87,7 +86,6 @@ async function login(page, email) {
   await page.getByRole("button", { name: "Salir" }).waitFor();
 }
 
-const id = (q) => rest(q).then((r) => r[0]);
 const listings = await rest("listings?select=id,kind,city,owner_id,status&status=eq.active");
 const roomLugo = listings.find((l) => l.kind === "room" && l.city === "Lugo").id;
 const flat = listings.find((l) => l.kind === "flat").id;

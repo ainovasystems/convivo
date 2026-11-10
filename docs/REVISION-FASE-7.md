@@ -62,7 +62,7 @@ Ordenado de más a menos grave. Gravedad: alta / media / baja.
 | A7 | Botones desactivados (chat «Enviar», inventario, asistente) | Se ven muy apagados y no explican por qué están desactivados (en el asistente sí hay una lista de lo que falta; en el chat y el inventario no). | Baja | Texto de ayuda enlazado con `aria-describedby` y estado desactivado con más contraste. | Pequeño | [40](capturas-fase-7/40-chat-pendiente.webp) · [48](capturas-fase-7/48-inventario-vacio.webp) · [38](capturas-fase-7/38-publicar-con-errores.webp) |
 | A8 | Todas | **Sin comprobar a mano:** orden de foco con teclado, lector de pantalla, zoom 200 %, texto grande. | — | Hacer una pasada manual en 7b (30–60 min con VoiceOver o TalkBack en las 5 pantallas clave). | Medio | — |
 
-Pantallas con **0 fallos de axe**: 43 de 52 (ciudad, ficha, perfil, acceso, registro, legales, denunciar, estado, 404, mis reseñas, reseña nueva, estancias, perfil editar, cuenta, contratos, publicar (todos los pasos), mis anuncios, admin, contrato en sus 4 estados e inventario). No hay desbordamiento horizontal en ninguna.
+Pantallas con **0 fallos de axe**: 44 de 52 (ciudad, ficha, perfil, acceso, registro, legales, denunciar, estado, 404, mis reseñas, reseña nueva, estancias, perfil editar, cuenta, contratos, publicar (todos los pasos), mis anuncios, admin, contrato en sus 4 estados e inventario). No hay desbordamiento horizontal en ninguna.
 
 ## 2. Rendimiento
 

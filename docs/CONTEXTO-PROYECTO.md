@@ -1,6 +1,6 @@
 # Convivo · Contexto del proyecto (para planificar)
 
-> Documento para el chat de planificación del proyecto. Estado a **11 de noviembre de 2026**.
+> Documento para el chat de planificación del proyecto. Estado a **10 de noviembre de 2026**.
 > «Convivo» es un nombre provisional. El detalle técnico completo está en `CLAUDE.md` (raíz del repositorio).
 > Qué toca ahora y qué falta: `docs/HOJA-DE-RUTA.md`. Cómo trabajamos: `docs/COMO-TRABAJAMOS.md`.
 
@@ -25,15 +25,15 @@ Plataforma web en español (España) para **vivienda compartida**: un «LinkedIn
 
 - la revisión del abogado;
 - configurar los emails y el dominio;
-- el pulido de diseño, SEO y rendimiento (fase 7);
+- el pulido de diseño, accesibilidad y rendimiento (fase 7b; el SEO técnico ya está hecho en la 7a);
 - la preparación del lanzamiento y la operación (fase 8).
 
 **Datos del entorno:**
 
 - **Web de pruebas:** https://convivo-six.vercel.app (Vercel, funciones en París).
 - **Base de datos:** Supabase, proyecto «Convivo pruebas», en Europa. No hay todavía un proyecto de producción.
-- **Código:** GitHub `ainovasystems/convivo`, rama `claude/new-session-734nfk`, con unos 85 commits.
-- **Pruebas automáticas:** 258 de lógica y base de datos y 41 de recorrido completo en el navegador. Todas pasan.
+- **Código:** GitHub `ainovasystems/convivo`, rama `claude/new-session-734nfk`, con unos 90 commits.
+- **Pruebas automáticas:** 285 de lógica y base de datos, y las de recorrido completo en el navegador (83 pasan en móvil y escritorio, 7 se saltan a propósito). Todas pasan.
 - **Datos de ejemplo:** 8 usuarios `@convivo.test` con la contraseña `convivo-dev-1234`, y anuncios en Lugo, A Coruña, Madrid y Barcelona.
 
 ## 3. Qué puede hacer hoy un usuario
@@ -90,6 +90,14 @@ Plataforma web en español (España) para **vivienda compartida**: un «LinkedIn
 
 - Cualquiera, también sin cuenta, puede notificar contenido ilegal en `/denunciar`, con acuse de recibo y un objetivo de respuesta de 72 h.
 
+**Buscadores y compartir (Fase 7a)**
+
+- Hay páginas públicas por ciudad (Lugo, A Coruña, Madrid y Barcelona), como `/habitaciones/lugo` y `/pisos/lugo`, con sus anuncios, título propio y un mensaje útil si no hay ninguno.
+- Al compartir un anuncio o una ciudad en WhatsApp o redes sale una tarjeta con título, foto (o una imagen de marca) y precio.
+- Existen `sitemap.xml`, `robots.txt` y datos estructurados, sin dirección exacta ni coordenadas.
+- **La web de pruebas no se indexa**: `noindex` en todo y `robots.txt` que bloquea todo. Se enciende con una sola variable (`INDEXING_ENABLED`) en producción el día del lanzamiento. Los perfiles de personas y los anuncios «busco» no se indexan nunca.
+- `docs/REVISION-FASE-7.md` lista los problemas de diseño, accesibilidad y rendimiento (con capturas en móvil) para decidir el bloque 7b.
+
 **Admins (`/admin`)**
 
 - Denuncias y notificaciones DSA.
@@ -121,9 +129,10 @@ Plataforma web en español (España) para **vivienda compartida**: un «LinkedIn
 9. **Firmar el contrato confirma la estancia.** Se firma el texto exacto. La firma es electrónica simple; la avanzada, con un proveedor como Signaturit o DocuSign, queda para más adelante.
 10. **El inventario confirmado por los dos queda bloqueado**: es la prueba para devolver la fianza.
 11. **Datos en Europa** (Vercel en París, Supabase en Europa). Solo cookies técnicas, así que no hay banner de cookies.
-12. **Identidad visual:** blanco y crema, marrón nogal #7b4b2a y acento miel #f4b740, tipografía Plus Jakarta Sans, botones en píldora y estilo startup (Glovo, Too Good To Go, BlaBlaCar). El modo oscuro está desactivado.
+12. **Indexación:** la web de pruebas no se indexa (una variable la enciende en producción); perfiles y anuncios «busco» no se indexan; las páginas de ciudad son solo las del piloto.
+13. **Identidad visual:** blanco y crema, marrón nogal #7b4b2a y acento miel #f4b740, tipografía Plus Jakarta Sans, botones en píldora y estilo startup (Glovo, Too Good To Go, BlaBlaCar). El modo oscuro está desactivado.
 
-Las 51 decisiones técnicas están numeradas en `CLAUDE.md` → «Decisiones tomadas».
+Las 55 decisiones técnicas están numeradas en `CLAUDE.md` → «Decisiones tomadas».
 
 ## 6. Riesgos principales
 
