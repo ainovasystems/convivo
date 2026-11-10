@@ -1,143 +1,142 @@
 # Convivo · Contexto del proyecto (para planificar)
 
-> Documento para dar contexto a un chat de planificación. Estado a **6 de noviembre de 2026**.
-> «Convivo» es un nombre provisional.
+> Documento para el chat de planificación del proyecto. Estado a **11 de noviembre de 2026**.
+> «Convivo» es un nombre provisional. El detalle técnico completo está en `CLAUDE.md` (raíz del repositorio).
+> Qué toca ahora y qué falta: `docs/HOJA-DE-RUTA.md`. Cómo trabajamos: `docs/COMO-TRABAJAMOS.md`.
 
 ## 1. Qué es
 
-Plataforma web en español (España) para **vivienda compartida**, como un «LinkedIn de la vivienda compartida».
+Plataforma web en español (España) para **vivienda compartida**: un «LinkedIn de la vivienda compartida» que además **sustituye a la inmobiliaria** en lo básico, con el contrato, la firma, el inventario y la fianza.
 
-- **Público:** sobre todo jóvenes y universitarios; también caseros e inmobiliarias pequeñas.
-- **Tres tipos de anuncio:**
-  - **Habitación** en un piso compartido.
-  - **Piso entero** en alquiler.
-  - **Busco piso o compañero.**
-- **Perfiles** al estilo LinkedIn: bio, ciudad, ocupación, rango de edad, idiomas, hábitos de convivencia, verificaciones y reputación.
-- **Foso competitivo: reseñas verificadas.** Solo se puede reseñar tras una **estancia confirmada por las dos partes**. Las reseñas van en las cuatro direcciones:
-  - inquilino → inmueble
-  - inquilino → casero
-  - casero → inquilino
-  - compañero ↔ compañero
-- **Reglas de las reseñas**, impuestas por la base de datos y no solo por la app:
-  - **Doble ciego:** una reseña no es pública hasta que la otra parte también reseña o pasan 14 días.
-  - **Inmutables:** no se pueden editar. Solo se borran indicando un motivo, y queda constancia del borrado.
+- **Público:** jóvenes y universitarios; también caseros particulares e inmobiliarias pequeñas.
+- **Tres tipos de anuncio:** habitación en piso compartido, piso entero y «busco piso o compañero».
+- **Perfiles** al estilo LinkedIn: bio, ciudad, ocupación, edad (año de nacimiento, mínimo 18), idiomas, hábitos, verificaciones y reputación.
+- **Lo que nos diferencia: reseñas verificadas.**
+  - Solo se reseña tras una **estancia confirmada por las dos partes**.
+  - Hay reseñas en cuatro direcciones: inquilino → inmueble, inquilino → casero, casero → inquilino y compañero ↔ compañero.
+  - **Firmar el contrato en Convivo confirma la estancia**: cada contrato genera reseñas verificadas.
+- **Reglas de las reseñas**, que impone la base de datos y no solo la web:
+  - **Doble ciego:** una reseña no es pública hasta que la otra parte reseña o pasan 14 días.
+  - **Inmutables:** no se editan. Solo se borran con motivo, y queda constancia.
 
-## 2. Estado actual en una frase
+## 2. Estado en una frase
 
-**El MVP funcional está hecho y publicado en una web de pruebas.** Falta la pasada de seguridad y RGPD, el pulido de diseño, SEO y rendimiento, y preparar el lanzamiento real.
+**El producto completo funciona en una web de pruebas**: anuncios, chat, estancias, reseñas, moderación, seguridad y RGPD, y contratos con firma, inventario y guía de la fianza. Para abrir al público falta lo siguiente:
 
-- **Web de pruebas:** https://convivo-six.vercel.app (alojada en Vercel, con las funciones en París).
-- **Base de datos:** Supabase, proyecto «Convivo pruebas», en Europa.
-- **Código:** GitHub `ainovasystems/convivo`, rama `claude/new-session-734nfk`. Lleva unos 46 commits.
-- **Datos de ejemplo:** 8 usuarios de prueba `@convivo.test` con la contraseña `convivo-dev-1234`. Hay anuncios en Lugo, A Coruña, Madrid y Barcelona.
+- la revisión del abogado;
+- configurar los emails y el dominio;
+- el pulido de diseño, SEO y rendimiento (fase 7);
+- la preparación del lanzamiento y la operación (fase 8).
 
-## 3. Plan de trabajo (paquete de prompts 0-8)
+**Datos del entorno:**
 
-| Fase | Contenido | Estado |
-|---|---|---|
-| 0 | Arranque: stack, estructura, CLAUDE.md | ✅ Hecho |
-| 1 | Modelo de datos, RLS y reglas de reseñas en BD, con tests | ✅ Hecho |
-| 2 | Registro, login (contraseña o enlace mágico) y perfiles con avatar | ✅ Hecho |
-| 3 | Anuncios: asistente de publicación, fotos, búsqueda con filtros, ficha, «mis anuncios» | ✅ Hecho |
-| 4 | «Me interesa», chat en tiempo real, aceptar o rechazar, estancias con doble confirmación, emails | ✅ Hecho |
-| 5 | Reseñas: formulario por relación, «mis reseñas», respuesta pública, denuncias, panel /admin, avisos de ventana | ✅ Hecho |
-| — | Rediseño «marrón y blanco», estilo startup, barra de pestañas en móvil, instalable como app | ✅ Hecho |
-| — | Despliegue de pruebas en Vercel + Supabase y página de diagnóstico `/estado` | ✅ Hecho |
-| 6 | Seguridad y RGPD (detalle abajo) | 🔄 Empezando |
-| 7 | Diseño, SEO y rendimiento: Lighthouse ≥ 90, URLs tipo /habitaciones/lugo, sitemap, JSON-LD, accesibilidad con axe, modo oscuro opcional | ⏳ Pendiente |
-| 8 | Despliegue y operación: DEPLOY.md, staging, GitHub Actions, Sentry, backups, checklist y plan de piloto por ciudad | ⏳ Pendiente |
+- **Web de pruebas:** https://convivo-six.vercel.app (Vercel, funciones en París).
+- **Base de datos:** Supabase, proyecto «Convivo pruebas», en Europa. No hay todavía un proyecto de producción.
+- **Código:** GitHub `ainovasystems/convivo`, rama `claude/new-session-734nfk`, con unos 85 commits.
+- **Pruebas automáticas:** 258 de lógica y base de datos y 41 de recorrido completo en el navegador. Todas pasan.
+- **Datos de ejemplo:** 8 usuarios `@convivo.test` con la contraseña `convivo-dev-1234`, y anuncios en Lugo, A Coruña, Madrid y Barcelona.
 
-### Fase 6 en detalle (lo siguiente)
+## 3. Qué puede hacer hoy un usuario
 
-1. **Auditoría de RLS** con tests que intenten explotar fugas: direcciones, mensajes ajenos, reseñas sin publicar, escrituras cruzadas.
-2. **Protección de la web:** cabeceras de seguridad (CSP, HSTS…) y límites de intentos en login y registro. Los mensajes y las denuncias ya tienen límite.
-3. **Textos legales y datos personales:**
-   - Política de privacidad y términos, como **borrador para revisar con un abogado**.
-   - **Exportar mis datos** (JSON).
-   - **Borrar mi cuenta**: anonimiza las reseñas publicadas, no las elimina.
-   - Banner de cookies solo si se usan cookies no esenciales. Ahora mismo solo hay cookies de sesión.
-4. **Anti-discriminación:** rechazar en los anuncios expresiones como «solo españoles» o «no extranjeros», con un aviso al usuario. Los hábitos ya son una lista cerrada, así que no se puede filtrar por origen, religión, etc.
-5. **Anti-fraude:**
-   - Marcar para revisión los anuncios con un precio muy por debajo de la zona o con textos tipo «Western Union» o «paga por adelantado».
-   - Aviso fijo en el chat: «Nunca pagues antes de ver el piso».
-6. **Registro de auditoría** de las acciones de moderación.
+**Cuenta y perfil**
 
-## 4. Qué puede hacer hoy un usuario
+- Registrarse (declarando 18 años o más y aceptando las condiciones) y entrar con contraseña o enlace mágico.
+- Completar el perfil con foto.
+- Descargar sus datos y borrar su cuenta.
 
-- Registrarse y entrar con contraseña o enlace mágico, y completar su perfil con foto.
-- Buscar anuncios con filtros: tipo, provincia, ciudad, precio, fecha, amueblado, gastos incluidos, mascotas, fumadores y orden. La búsqueda funciona sin JavaScript y se puede compartir por URL.
-- Publicar un anuncio con un asistente por pasos que guarda solo el borrador, con hasta 8 fotos. Las fotos se comprimen en el móvil y se les quitan los datos GPS.
-- Gestionar sus anuncios: pausar, reactivar, cerrar, duplicar y borrar borradores.
-- Pulsar «Me interesa» con un mensaje, lo que abre un chat en tiempo real. El anunciante acepta o rechaza, y **aceptar desbloquea la dirección exacta**. Hasta entonces solo se ve el barrio.
-- Proponer una estancia, que confirma la otra parte. En las habitaciones se pueden añadir compañeros, que también confirman.
-- Reseñar cuando se abre la ventana: a los 30 días de entrar o al terminar la estancia. Cada ventana dura 30 días y hay avisos por email y en la app.
-- Responder públicamente una vez a una reseña recibida y denunciar reseñas. Si alguien denuncia datos personales, la reseña se oculta hasta que la revise un admin.
-- **Admins** (`/admin`): resolver denuncias, borrar reseñas dejando constancia y ver indicios de autorreseña (IP o navegador compartidos, guardados solo como huellas cifradas, nunca en claro).
+**Buscar**
 
-## 5. Tecnología (resumen no técnico)
+- Filtrar por tipo, provincia, ciudad, precio, fecha de entrada, periodo, convivencia «solo chicas/chicos», amueblado, gastos, mascotas, fumadores y orden.
+- La búsqueda funciona sin JavaScript y se comparte por URL.
 
-- **Next.js + TypeScript:** la web.
-- **Supabase:** base de datos, usuarios, fotos y tiempo real. La seguridad está en la propia base de datos: cada usuario solo puede leer y escribir lo suyo, aunque alguien intente saltarse la web.
-- **Vercel:** publicación. Cada cambio subido a GitHub se publica solo.
-- **Tests automáticos:** 133 de lógica y base de datos y 27 de recorrido completo en el navegador, en móvil y en escritorio. Todos pasan.
-- **Emails:** preparados para enviarse con **Resend**, pero aún sin configurar.
-- **Documentación técnica completa:** `CLAUDE.md`, en la raíz del repositorio. Incluye las 36 decisiones tomadas.
+**Publicar**
 
-## 6. Decisiones de producto ya tomadas (las más relevantes)
+- Asistente por pasos con autoguardado del borrador y hasta 8 fotos, que se comprimen y pierden la ubicación GPS.
+- Periodo de alquiler: indefinido, curso universitario o fechas concretas.
+- Si la ciudad es conocida, la provincia se rellena sola.
+- Se rechazan los textos discriminatorios («solo españoles»…). «Solo chicas/chicos» se permite por decisión de producto.
+- Desde «Mis anuncios» se puede pausar, reactivar, cerrar, duplicar y borrar.
 
-- **Estancias retroactivas:** se puede registrar una convivencia pasada, siempre que la confirmen las dos partes. Así se resuelve el «arranque en frío»: se siembra reputación desde el primer día.
-- **Sin mapa:** solo barrio o zona, para no revelar la ubicación exacta.
-- **Dirección exacta oculta** hasta que el anunciante acepta tu interés.
-- **Rango de edad** en vez de fecha de nacimiento, para minimizar datos.
-- **Nunca se pide DNI**, ni nacionalidad, origen, religión o salud.
-- **Los compañeros se añaden con el enlace a su perfil:** no hay buscador de usuarios, para que nadie pueda rastrear perfiles.
-- **Límites anti-spam en la base de datos:** 60 mensajes y 15 «me interesa» por hora, y 10 denuncias al día.
-- **Ocultación cautelar solo por datos personales.** El resto de denuncias no ocultan nada hasta que las revisa un admin.
-- **Identidad visual:**
-  - Colores: blanco, crema, marrón nogal (#7b4b2a) y acento miel (#f4b740).
-  - Tipografía: Plus Jakarta Sans.
-  - Formas: botones en píldora y tarjetas redondeadas.
-  - Referencias: Glovo, Too Good To Go, BlaBlaCar.
-- **Datos en Europa:** Vercel en París y Supabase en Europa.
+**Contactar**
 
-## 7. Configuración pendiente (acciones manuales)
+- «Me interesa» abre un chat en tiempo real. El anunciante acepta o rechaza, y aceptar desbloquea la dirección exacta.
+- El chat lleva un aviso fijo: «Nunca pagues antes de ver el piso».
 
-| Qué | Para qué | Urgencia |
-|---|---|---|
-| Supabase → Authentication → URL Configuration: Site URL y Redirect URLs con la dirección de Vercel | Que los enlaces de los emails no lleven a localhost | Alta (verificar si ya está) |
-| Proveedor de email (Resend) + dominio propio | Que lleguen los correos a cualquier usuario. El SMTP de Supabase solo envía al equipo y muy pocos por hora | Alta antes de abrir |
-| Variable `CRON_SECRET`, con ese nombre exacto, en Vercel | Que los avisos diarios de reseña se envíen solos | Media |
-| Reactivar «Confirm email» en Supabase | Obligatorio antes de abrir al público | Antes de lanzar |
-| Dominio propio | Imagen y emails | Antes de lanzar |
-| Proyecto de Supabase de producción, separado del de pruebas y sin datos de ejemplo | Producción | Fase 8 |
+**Estancia**
 
-## 8. Riesgos y temas abiertos
+- Se propone en el chat y la confirma la otra parte. También se pueden registrar convivencias pasadas.
+- En las habitaciones se añaden compañeros, que también confirman.
 
-- **Legal: revisar con un abogado antes de abrir.** Los temas que exceden lo técnico son:
-  - difamación en reseñas y responsabilidad de la plataforma (LSSI);
-  - discriminación en anuncios;
-  - tratamiento de datos (RGPD: responsable, base legal, encargados como Supabase, Vercel y Resend, plazos de conservación);
-  - LAU y fianzas, si la plataforma llega a intermediar contratos o pagos.
-- **Arranque en frío:** una plataforma de reseñas vale poco sin reseñas.
-  - **Plan propuesto:** piloto en **una sola ciudad** pequeña y densa (por ejemplo Lugo o Santiago, por su población universitaria), con anuncios y usuarios reales antes de abrir al resto.
-  - Reseñas retroactivas verificadas para sembrar reputación desde el principio.
-- **Fraude** típico del sector: pagos por adelantado o el «estoy en el extranjero y te mando las llaves». Se aborda en la fase 6.
-- **Verificación de teléfono:** prevista pero no hecha. El campo existe; falta el flujo.
-- **Nombre definitivo** de la marca: «Convivo» es provisional.
+**Contrato (fase 1)**
 
-## 9. Modelo de negocio (sin decidir)
+- Con el interés aceptado, el casero pulsa «Preparar contrato».
+- Hay tres plantillas en borrador legal: habitación (Código Civil), vivienda habitual (LAU) y temporada (LAU).
+- Se firma escribiendo el nombre completo. Queda constancia de la fecha y la hora y de una huella del texto que impide cambiarlo.
+- Al firmar los dos, la estancia queda confirmada. El contrato se descarga en PDF.
 
-Ideas sobre la mesa, a decidir **después** de validar el uso:
+**Inventario y fianza (fase 2)**
 
-- anuncios destacados para propietarios;
-- verificación premium;
-- herramientas para agencias pequeñas.
+- Con el contrato firmado, las dos partes hacen juntas el inventario de entrada: zona, elemento, estado, notas y fotos privadas.
+- Los dos lo confirman, y entonces queda bloqueado para siempre. Si alguien cambia algo antes, hay que volver a confirmarlo.
+- Al salir, el inventario de salida se compara con el de entrada y marca solo los daños nuevos.
+- Una guía orientativa dice dónde depositar la fianza en cada comunidad autónoma.
 
-## 10. Preguntas útiles para la planificación
+**Reseñas**
 
-1. ¿Qué ciudad será la del piloto y con qué objetivo (n.º de anuncios, usuarios y estancias confirmadas en X semanas)?
-2. ¿Cómo se consiguen los primeros anuncios? Por ejemplo: universidades, residencias, caseros conocidos o grupos de Facebook y WhatsApp.
-3. ¿Fecha objetivo para el piloto? Las fases 6, 7 y 8 y la revisión legal van antes.
-4. ¿Presupuesto mensual? Hoy todo es gratis: Vercel Hobby y Supabase Free. En producción harían falta Supabase Pro (unos 25 $/mes), dominio y Resend.
-5. ¿Quién hará de moderador (admin) al principio?
-6. ¿Nombre definitivo y dominio?
+- La ventana se abre a los 30 días de entrar o al terminar la estancia, y dura 30 días. Hay avisos por email y en la app.
+- El reseñado puede responder una vez en público. Cualquiera puede denunciar; los datos personales se ocultan de forma cautelar.
+
+**Denuncias públicas (DSA)**
+
+- Cualquiera, también sin cuenta, puede notificar contenido ilegal en `/denunciar`, con acuse de recibo y un objetivo de respuesta de 72 h.
+
+**Admins (`/admin`)**
+
+- Denuncias y notificaciones DSA.
+- Anuncios marcados como posible estafa.
+- Indicios de autorreseña y de cuentas reabiertas.
+- Registro de moderación, que no se puede borrar.
+
+## 4. Tecnología (resumen no técnico)
+
+- **Next.js + TypeScript:** la web, instalable como app desde el móvil.
+- **Supabase:** base de datos, usuarios, fotos y tiempo real. La seguridad vive en la propia base de datos: cada usuario solo lee y escribe lo suyo, aunque intente saltarse la web.
+- **Vercel:** publicación automática con cada cambio en GitHub.
+- **Emails:** con Resend; el código está listo pero falta configurarlo.
+- **Trabajo:** el chat de planificación decide y redacta los encargos; Claude Code los ejecuta en el repositorio. Ver `docs/COMO-TRABAJAMOS.md`.
+
+## 5. Decisiones de producto ya tomadas (no reabrir sin motivo)
+
+1. **Reseñas solo tras una estancia confirmada por los dos**, con doble ciego, inmutables y con las reglas en la base de datos.
+2. **Estancias retroactivas** confirmadas por los dos, para resolver el arranque en frío de la reputación.
+3. **Sin mapa y sin dirección exacta** hasta que el anunciante acepta el interés.
+4. **Nunca se pide DNI**, ni nacionalidad, origen, religión o salud.
+5. **Edad exacta**, calculada a partir del año de nacimiento, con un mínimo de 18 años.
+6. **«Solo chicas/chicos» permitido**, en el texto y como filtro, solo en habitaciones y en «busco». Riesgo legal pendiente (Ley 15/2022).
+7. **Borrar la cuenta desvincula, no destruye:**
+   - el perfil queda como «Usuario eliminado» y las reseñas se conservan;
+   - si la persona vuelve con el mismo email, recupera su historial;
+   - una cuenta que comparte conexión con una borrada que tenía malas reseñas genera un aviso para el admin.
+8. **Las marcas de fraude no despublican ni avisan al anunciante**: decide un admin.
+9. **Firmar el contrato confirma la estancia.** Se firma el texto exacto. La firma es electrónica simple; la avanzada, con un proveedor como Signaturit o DocuSign, queda para más adelante.
+10. **El inventario confirmado por los dos queda bloqueado**: es la prueba para devolver la fianza.
+11. **Datos en Europa** (Vercel en París, Supabase en Europa). Solo cookies técnicas, así que no hay banner de cookies.
+12. **Identidad visual:** blanco y crema, marrón nogal #7b4b2a y acento miel #f4b740, tipografía Plus Jakarta Sans, botones en píldora y estilo startup (Glovo, Too Good To Go, BlaBlaCar). El modo oscuro está desactivado.
+
+Las 51 decisiones técnicas están numeradas en `CLAUDE.md` → «Decisiones tomadas».
+
+## 6. Riesgos principales
+
+- **Legal:** nada se abre al público sin la revisión del abogado. Lista de preguntas en `docs/HOJA-DE-RUTA.md`.
+- **Arranque en frío:** una web de reseñas vale poco sin reseñas. Plan: **piloto en una sola ciudad** universitaria (Lugo o Santiago), sembrando reputación con los contratos y las estancias retroactivas.
+- **Fraude** típico del sector: pagos por adelantado y «estoy en el extranjero». Está cubierto con la detección, el aviso en el chat y la moderación, pero hay que vigilarlo en el piloto.
+- **Datos de la guía de la fianza:** son orientativos y hay que verificarlos.
+
+## 7. Modelo de negocio (sin decidir)
+
+Se decidirá **después** de validar el uso en el piloto. Ideas:
+
+- contrato, inventario y firma gratis al principio y de pago más adelante (por ejemplo, firma avanzada);
+- anuncios destacados;
+- herramientas para pequeños caseros e inmobiliarias;
+- pagos de la renta y seguro de impago con socios regulados (fase 3 de contratos).

@@ -2,6 +2,17 @@
 
 > "Convivo" es un nombre provisional.
 
+## Cómo trabajamos (leer primero)
+
+- Se trabaja **por bloques**. El bloque actual lo marca `docs/HOJA-DE-RUTA.md` («SIGUIENTE») o el ENCARGO que pegue el usuario. **No hagas trabajo fuera del encargo:** lo que surja va a «Ideas aparcadas» de la hoja de ruta.
+- Si aparece una decisión de producto, pregunta; no la inventes. No reabras las decisiones ya tomadas.
+- **Al cerrar cada bloque**, siempre:
+  1. pasa las comprobaciones y sube los cambios;
+  2. aplica las migraciones solo a «Convivo pruebas»;
+  3. actualiza este fichero, `docs/HOJA-DE-RUTA.md` y `docs/CONTEXTO-PROYECTO.md`;
+  4. responde con el **PARTE DE CIERRE** de `docs/COMO-TRABAJAMOS.md`.
+- El usuario no es técnico: respuestas en castellano claro y breve.
+
 ## Producto
 
 Plataforma web en español (España) para la oferta y la demanda de vivienda compartida, un "LinkedIn de la vivienda compartida".
