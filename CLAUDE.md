@@ -108,6 +108,20 @@ Antes de cada commit: `npm run lint && npm run typecheck && npm test && npm run 
 - **Emails** (`src/lib/email/`): interfaz `Mailer` con `ResendMailer` (`RESEND_API_KEY` + `EMAIL_FROM`), `MailpitMailer` (`MAILPIT_URL`, en local y en los e2e) y `ConsoleMailer` (sin configurar). Plantillas en español con HTML escapado: nuevo interés, interés aceptado y estancia propuesta. `emailUser()` nunca lanza: un fallo de email no deshace la acción.
 - **Uso de service_role (1 de 2; el otro es la tarea de avisos de reseña):** `src/lib/email/notify.ts` lee el email del destinatario con `auth.admin.getUserById`, porque los emails viven en `auth.users`, que ningún usuario puede leer. No se devuelve nunca al cliente.
 
+## Contratos (fase 1: contrato y firma)
+
+- **Rutas:** `/contratos` (mis contratos) y `/contratos/[id]` (editor del borrador para el casero, lectura y firma, registro de firmas, «Descargar o imprimir (PDF)» con `window.print()`; al imprimir se ocultan cabecera, pie y barra inferior). En la conversación, con el interés aceptado, el casero tiene «Preparar contrato» (acción `createContractDraft`, que rellena el borrador desde el anuncio y su dirección con `buildDraftFromInterest`).
+- **Tabla `contracts`** (`20261110000100_contracts.sql`) con la máquina de estados `draft → sent → signed`, o `draft|sent → cancelled`:
+  - solo el dueño del anuncio lo crea, para un interés **aceptado** y con quien mostró el interés (trigger); un contrato vivo por conversación;
+  - en borrador el casero edita `kind` y `terms` (permisos por columna);
+  - `send_contract(id, texto)` guarda el texto exacto y su SHA-256. Desde ahí el texto es inmutable, y firmado es inmutable el contrato entero, para cualquier rol, también service_role. Las RPC usan la variable de sesión `convivo.contract_rpc`;
+  - `sign_contract(id, nombre, hash)` exige el hash del texto leído y el nombre tal como figura en el contrato (sin distinguir mayúsculas ni espacios). Cuando firman los dos, crea la estancia, o confirma la propuesta del chat, con las dos confirmaciones: **firmar el contrato abre las reseñas verificadas**;
+  - `cancel_contract(id)` lo cancela cualquiera de las partes antes de la firma final. Avisos in-app `contract_to_sign`, `contract_signed` y `contract_cancelled`, y emails `contractToSignEmail` y `contractSignedEmail`.
+- **Plantillas** (`src/lib/contracts/templates.ts`, **BORRADOR pendiente de revisión legal**, con el aviso dentro del propio texto): habitación en vivienda compartida (Código Civil), vivienda habitual (LAU, título II) y temporada (LAU, título III; exige motivo y fecha de fin). El texto lo genera el servidor al enviar (`renderContract` → `contractToText`, determinista). **Si cambias el texto, cambia `TEMPLATE_VERSION`.** Condiciones con Zod en `src/lib/contracts/schema.ts`, con avisos si la fianza supera la legal.
+- **Sin DNI:** las partes se identifican por nombre completo y su identificador de Convivo (pendiente de validar con el abogado).
+- **Firma electrónica simple** (eIDAS): quién, cuándo y huella del texto. Una firma avanzada con proveedor (Signaturit, DocuSign…) queda para una fase posterior.
+- **Borrado de cuenta:** los contratos firmados se conservan (documento entre las partes; el anuncio y la conversación quedan a `null`), los borradores se borran y los pendientes se cancelan.
+
 ## Reseñas (interfaz y moderación)
 
 - **Rutas:** `/mis-resenas` (avisos, pendientes con fecha límite, enviadas con su estado), `/resenas/nueva?estancia=…&sujeto=…` (formulario según la relación) y `/admin` (solo admins; a los demás les devuelve 404).
@@ -227,8 +241,9 @@ SUPABASE_PROJECT_REF=<ref> npm run typegen
 | `listing_flags` | marcas anti-fraude para revisar | admins | trigger al publicar; resuelve un admin por RPC |
 | `moderation_log` | registro de auditoría de moderación (append-only) | admins | solo triggers y RPC; nadie modifica ni borra |
 | `legal_notices` | notificaciones de contenido ilegal (DSA), también de personas sin cuenta | admins | `submit_legal_notice()` (anon incluido); decide un admin por RPC |
+| `contracts` | contratos de alquiler con firma en Convivo | las dos partes (y admins) | el casero en borrador; después, solo `send_contract`, `sign_contract` y `cancel_contract` |
 
-RPC (`supabase.rpc(...)`): `confirm_stay`, `cancel_stay`, `end_stay`, `add_stay_participant`, `confirm_stay_participation`, `decline_stay_participation`, `get_review_window`, `delete_review`, `profile_review_stats`, `listing_review_stats`, `review_criteria_for`, `am_i_admin`, `mark_conversation_read`, `my_unread_counts`, `record_signal`, `admin_review_flags` (admin), `review_window_notices_due` (solo service_role), `auth_rate_allowed` y `auth_rate_failed` (anon incluido: se usan antes de entrar), `delete_my_account`, `admin_resolve_listing_flag`, `admin_close_listing` y `admin_decide_legal_notice` (admin), `submit_legal_notice` (anon incluido), `profile_lineage` (anon incluido), `admin_returning_account_flags` (admin).
+RPC (`supabase.rpc(...)`): `confirm_stay`, `cancel_stay`, `end_stay`, `add_stay_participant`, `confirm_stay_participation`, `decline_stay_participation`, `get_review_window`, `delete_review`, `profile_review_stats`, `listing_review_stats`, `review_criteria_for`, `am_i_admin`, `mark_conversation_read`, `my_unread_counts`, `record_signal`, `admin_review_flags` (admin), `review_window_notices_due` (solo service_role), `auth_rate_allowed` y `auth_rate_failed` (anon incluido: se usan antes de entrar), `delete_my_account`, `admin_resolve_listing_flag`, `admin_close_listing` y `admin_decide_legal_notice` (admin), `submit_legal_notice` (anon incluido), `profile_lineage` (anon incluido), `admin_returning_account_flags` (admin), `send_contract`, `sign_contract`, `cancel_contract`.
 
 ### Reglas de reseñas tal como están implementadas
 
@@ -316,3 +331,6 @@ RPC (`supabase.rpc(...)`): `confirm_stay`, `cancel_stay`, `end_stay`, `add_stay_
 44. **El canal de denuncias está abierto a personas sin cuenta** (DSA art. 16): el caso típico es el de un casero reseñado que no usa Convivo. Se frena el abuso con un límite por IP y email y con la declaración de buena fe.
 45. **Al borrar la cuenta se dice «desvincular», no «anonimizar»:** quien convivió con el autor puede deducir quién escribió la reseña por la estancia, así que es seudonimización. Queda pendiente decidir si se corta también el enlace con la estancia.
 46. **Borrar la cuenta no sirve para escapar de las reseñas:** con el mismo email se recupera el historial (huella HMAC con clave guardada solo en la BD, 2 años). Con otro email, «Cuenta nueva» y el aviso al admin por conexión compartida. Sin pedir DNI ni teléfono no se puede impedir del todo.
+47. **El contrato firmado es la estancia confirmada:** firmar en Convivo crea o confirma la estancia, de modo que cada contrato da reseñas verificadas. Es lo que diferencia a Convivo de una inmobiliaria.
+48. **Se firma el texto exacto, no las condiciones:** al enviar se guarda el texto completo y su SHA-256; firmar exige ese hash. Así lo que se firma es lo que se leyó, aunque cambien las plantillas después.
+49. **Firma electrónica simple en la fase 1**, sin proveedor externo ni DNI. La avanzada (Signaturit, DocuSign…) llegará cuando haya volumen o cuando lo pida el abogado.
