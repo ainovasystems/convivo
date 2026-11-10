@@ -78,6 +78,125 @@ export type Database = {
           },
         ];
       };
+      contracts: {
+        Row: {
+          cancelled_at: string | null;
+          cancelled_by: string | null;
+          created_at: string;
+          document_hash: string | null;
+          document_text: string | null;
+          id: string;
+          interest_id: string | null;
+          kind: Database["public"]["Enums"]["contract_kind"];
+          landlord_id: string;
+          landlord_signature: string | null;
+          landlord_signed_at: string | null;
+          listing_id: string | null;
+          sent_at: string | null;
+          signed_at: string | null;
+          status: Database["public"]["Enums"]["contract_status"];
+          stay_id: string | null;
+          template_version: string;
+          tenant_id: string;
+          tenant_signature: string | null;
+          tenant_signed_at: string | null;
+          terms: NonNullable<Json>;
+          updated_at: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          cancelled_at?: string | null;
+          cancelled_by?: string | null;
+          created_at?: string;
+          document_hash?: string | null;
+          document_text?: string | null;
+          id?: string;
+          interest_id?: string | null;
+          kind: Database["public"]["Enums"]["contract_kind"];
+          landlord_id: string;
+          landlord_signature?: string | null;
+          landlord_signed_at?: string | null;
+          listing_id?: string | null;
+          sent_at?: string | null;
+          signed_at?: string | null;
+          status?: Database["public"]["Enums"]["contract_status"];
+          stay_id?: string | null;
+          template_version: string;
+          tenant_id: string;
+          tenant_signature?: string | null;
+          tenant_signed_at?: string | null;
+          terms?: NonNullable<Json>;
+          updated_at?: string;
+        };
+        Update: {
+          cancelled_at?: string | null;
+          cancelled_by?: string | null;
+          created_at?: string;
+          document_hash?: string | null;
+          document_text?: string | null;
+          id?: string;
+          interest_id?: string | null;
+          kind?: Database["public"]["Enums"]["contract_kind"];
+          landlord_id?: string;
+          landlord_signature?: string | null;
+          landlord_signed_at?: string | null;
+          listing_id?: string | null;
+          sent_at?: string | null;
+          signed_at?: string | null;
+          status?: Database["public"]["Enums"]["contract_status"];
+          stay_id?: string | null;
+          template_version?: string;
+          tenant_id?: string;
+          tenant_signature?: string | null;
+          tenant_signed_at?: string | null;
+          terms?: NonNullable<Json>;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "contracts_cancelled_by_fkey";
+            columns: ["cancelled_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "contracts_interest_id_fkey";
+            columns: ["interest_id"];
+            isOneToOne: false;
+            referencedRelation: "interests";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "contracts_landlord_id_fkey";
+            columns: ["landlord_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "contracts_listing_id_fkey";
+            columns: ["listing_id"];
+            isOneToOne: false;
+            referencedRelation: "listings";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "contracts_stay_id_fkey";
+            columns: ["stay_id"];
+            isOneToOne: false;
+            referencedRelation: "stays";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "contracts_tenant_id_fkey";
+            columns: ["tenant_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       conversation_reads: {
         Row: {
           interest_id: string;
@@ -1115,6 +1234,39 @@ export type Database = {
         Returns: boolean;
       };
       auth_rate_failed: { Args: { p_email_hash: string; p_ip_hash: string }; Returns: undefined };
+      cancel_contract: {
+        Args: { p_contract_id: string };
+        Returns: {
+          cancelled_at: string | null;
+          cancelled_by: string | null;
+          created_at: string;
+          document_hash: string | null;
+          document_text: string | null;
+          id: string;
+          interest_id: string | null;
+          kind: Database["public"]["Enums"]["contract_kind"];
+          landlord_id: string;
+          landlord_signature: string | null;
+          landlord_signed_at: string | null;
+          listing_id: string | null;
+          sent_at: string | null;
+          signed_at: string | null;
+          status: Database["public"]["Enums"]["contract_status"];
+          stay_id: string | null;
+          template_version: string;
+          tenant_id: string;
+          tenant_signature: string | null;
+          tenant_signed_at: string | null;
+          terms: NonNullable<Json>;
+          updated_at: string;
+        };
+        SetofOptions: {
+          from: "*";
+          to: "contracts";
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
       cancel_stay: {
         Args: { p_stay_id: string };
         Returns: {
@@ -1268,6 +1420,72 @@ export type Database = {
           user_id: string;
         }[];
       };
+      send_contract: {
+        Args: { p_contract_id: string; p_document_text: string };
+        Returns: {
+          cancelled_at: string | null;
+          cancelled_by: string | null;
+          created_at: string;
+          document_hash: string | null;
+          document_text: string | null;
+          id: string;
+          interest_id: string | null;
+          kind: Database["public"]["Enums"]["contract_kind"];
+          landlord_id: string;
+          landlord_signature: string | null;
+          landlord_signed_at: string | null;
+          listing_id: string | null;
+          sent_at: string | null;
+          signed_at: string | null;
+          status: Database["public"]["Enums"]["contract_status"];
+          stay_id: string | null;
+          template_version: string;
+          tenant_id: string;
+          tenant_signature: string | null;
+          tenant_signed_at: string | null;
+          terms: NonNullable<Json>;
+          updated_at: string;
+        };
+        SetofOptions: {
+          from: "*";
+          to: "contracts";
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
+      sign_contract: {
+        Args: { p_contract_id: string; p_document_hash: string; p_full_name: string };
+        Returns: {
+          cancelled_at: string | null;
+          cancelled_by: string | null;
+          created_at: string;
+          document_hash: string | null;
+          document_text: string | null;
+          id: string;
+          interest_id: string | null;
+          kind: Database["public"]["Enums"]["contract_kind"];
+          landlord_id: string;
+          landlord_signature: string | null;
+          landlord_signed_at: string | null;
+          listing_id: string | null;
+          sent_at: string | null;
+          signed_at: string | null;
+          status: Database["public"]["Enums"]["contract_status"];
+          stay_id: string | null;
+          template_version: string;
+          tenant_id: string;
+          tenant_signature: string | null;
+          tenant_signed_at: string | null;
+          terms: NonNullable<Json>;
+          updated_at: string;
+        };
+        SetofOptions: {
+          from: "*";
+          to: "contracts";
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
       submit_legal_notice: {
         Args: {
           p_email_hash: string;
@@ -1286,6 +1504,8 @@ export type Database = {
     };
     Enums: {
       cohabitation_preference: "any" | "women" | "men";
+      contract_kind: "room" | "flat_habitual" | "flat_seasonal";
+      contract_status: "draft" | "sent" | "signed" | "cancelled";
       interest_status: "pending" | "accepted" | "declined" | "withdrawn";
       listing_kind: "room" | "flat" | "seeking";
       listing_status: "draft" | "active" | "paused" | "closed";
@@ -1423,6 +1643,8 @@ export const Constants = {
   public: {
     Enums: {
       cohabitation_preference: ["any", "women", "men"],
+      contract_kind: ["room", "flat_habitual", "flat_seasonal"],
+      contract_status: ["draft", "sent", "signed", "cancelled"],
       interest_status: ["pending", "accepted", "declined", "withdrawn"],
       listing_kind: ["room", "flat", "seeking"],
       listing_status: ["draft", "active", "paused", "closed"],

@@ -12,6 +12,7 @@ describe("migraciones", () => {
       "admin_users",
       "auth_attempts",
       "blocks",
+      "contracts",
       "conversation_reads",
       "interests",
       "legal_notices",
