@@ -78,6 +78,58 @@ export type Database = {
           },
         ];
       };
+      contract_inventories: {
+        Row: {
+          contract_id: string;
+          created_at: string;
+          created_by: string | null;
+          id: string;
+          landlord_confirmed_at: string | null;
+          locked_at: string | null;
+          stage: Database["public"]["Enums"]["inventory_stage"];
+          tenant_confirmed_at: string | null;
+          updated_at: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          contract_id: string;
+          created_at?: string;
+          created_by?: string | null;
+          id?: string;
+          landlord_confirmed_at?: string | null;
+          locked_at?: string | null;
+          stage: Database["public"]["Enums"]["inventory_stage"];
+          tenant_confirmed_at?: string | null;
+          updated_at?: string;
+        };
+        Update: {
+          contract_id?: string;
+          created_at?: string;
+          created_by?: string | null;
+          id?: string;
+          landlord_confirmed_at?: string | null;
+          locked_at?: string | null;
+          stage?: Database["public"]["Enums"]["inventory_stage"];
+          tenant_confirmed_at?: string | null;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "contract_inventories_contract_id_fkey";
+            columns: ["contract_id"];
+            isOneToOne: false;
+            referencedRelation: "contracts";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "contract_inventories_created_by_fkey";
+            columns: ["created_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       contracts: {
         Row: {
           cancelled_at: string | null;
@@ -276,6 +328,61 @@ export type Database = {
             columns: ["listing_id"];
             isOneToOne: false;
             referencedRelation: "listings";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      inventory_items: {
+        Row: {
+          area: string;
+          condition: Database["public"]["Enums"]["item_condition"];
+          created_at: string;
+          created_by: string | null;
+          id: string;
+          inventory_id: string;
+          name: string;
+          notes: string;
+          photos: string[];
+          updated_at: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          area: string;
+          condition: Database["public"]["Enums"]["item_condition"];
+          created_at?: string;
+          created_by?: string | null;
+          id?: string;
+          inventory_id: string;
+          name: string;
+          notes?: string;
+          photos?: string[];
+          updated_at?: string;
+        };
+        Update: {
+          area?: string;
+          condition?: Database["public"]["Enums"]["item_condition"];
+          created_at?: string;
+          created_by?: string | null;
+          id?: string;
+          inventory_id?: string;
+          name?: string;
+          notes?: string;
+          photos?: string[];
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "inventory_items_created_by_fkey";
+            columns: ["created_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "inventory_items_inventory_id_fkey";
+            columns: ["inventory_id"];
+            isOneToOne: false;
+            referencedRelation: "contract_inventories";
             referencedColumns: ["id"];
           },
         ];
@@ -1295,6 +1402,26 @@ export type Database = {
           isSetofReturn: false;
         };
       };
+      confirm_inventory: {
+        Args: { p_inventory_id: string };
+        Returns: {
+          contract_id: string;
+          created_at: string;
+          created_by: string | null;
+          id: string;
+          landlord_confirmed_at: string | null;
+          locked_at: string | null;
+          stage: Database["public"]["Enums"]["inventory_stage"];
+          tenant_confirmed_at: string | null;
+          updated_at: string;
+        };
+        SetofOptions: {
+          from: "*";
+          to: "contract_inventories";
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
       confirm_stay: {
         Args: { p_stay_id: string };
         Returns: {
@@ -1507,6 +1634,8 @@ export type Database = {
       contract_kind: "room" | "flat_habitual" | "flat_seasonal";
       contract_status: "draft" | "sent" | "signed" | "cancelled";
       interest_status: "pending" | "accepted" | "declined" | "withdrawn";
+      inventory_stage: "entry" | "exit";
+      item_condition: "new" | "good" | "worn" | "damaged";
       listing_kind: "room" | "flat" | "seeking";
       listing_status: "draft" | "active" | "paused" | "closed";
       rental_term: "indefinite" | "academic_year" | "fixed";
@@ -1646,6 +1775,8 @@ export const Constants = {
       contract_kind: ["room", "flat_habitual", "flat_seasonal"],
       contract_status: ["draft", "sent", "signed", "cancelled"],
       interest_status: ["pending", "accepted", "declined", "withdrawn"],
+      inventory_stage: ["entry", "exit"],
+      item_condition: ["new", "good", "worn", "damaged"],
       listing_kind: ["room", "flat", "seeking"],
       listing_status: ["draft", "active", "paused", "closed"],
       rental_term: ["indefinite", "academic_year", "fixed"],
