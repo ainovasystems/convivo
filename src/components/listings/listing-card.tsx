@@ -8,7 +8,16 @@ import { publicStorageUrl } from "@/lib/storage";
 
 const KIND_ICON = { room: BedIcon, flat: HomeIcon, seeking: UsersIcon } as const;
 
-export function ListingCard({ listing, priority = false }: { listing: ListingCardData; priority?: boolean }) {
+export function ListingCard({
+  listing,
+  priority = false,
+  photoAlt = "",
+}: {
+  listing: ListingCardData;
+  priority?: boolean;
+  /** Texto alternativo de la foto. Vacío (decorativa) salvo que la página lo pida. */
+  photoAlt?: string;
+}) {
   const cover = listing.photos[0];
   const place = [listing.neighborhood, listing.city].filter(Boolean).join(", ");
   const date = listing.kind === "seeking" ? listing.move_in_date : listing.available_from;
@@ -21,7 +30,7 @@ export function ListingCard({ listing, priority = false }: { listing: ListingCar
         {cover ? (
           <Image
             src={publicStorageUrl("listing-photos", cover)}
-            alt=""
+            alt={photoAlt}
             fill
             sizes="(min-width: 1024px) 360px, (min-width: 640px) 50vw, 100vw"
             className="object-cover transition duration-500 group-hover:scale-[1.03]"

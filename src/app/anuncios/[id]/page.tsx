@@ -24,6 +24,11 @@ import {
   STATUS_LABELS,
 } from "@/lib/listings/options";
 import { getListingDetail } from "@/lib/listings/queries";
+import { JsonLdScript } from "@/components/seo/json-ld";
+import { breadcrumbJsonLd, listingJsonLd } from "@/lib/seo/json-ld";
+import { pageMetadata, shareablePhotoUrl, shorten } from "@/lib/seo/metadata";
+import { getBaseUrl } from "@/lib/seo/site";
+import { publicStorageUrl } from "@/lib/storage";
 import { CRITERIA_LABELS, formatMonth, formatRating, overallRating } from "@/lib/reviews/labels";
 
 type Props = {
@@ -39,11 +44,23 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const detail = await getListingDetail(id);
   if (!detail) return {};
   const l = detail.listing;
-  return {
+  const baseUrl = await getBaseUrl();
+  const place = [l.neighborhood, l.city].filter(Boolean).join(", ");
+  const cover = l.photos[0];
+  // «Busco» y los anuncios no activos no se indexan (son personas o ya no existen).
+  const indexable = l.status === "active" && l.kind !== "seeking";
+  return pageMetadata({
+    baseUrl,
     title: l.title,
-    description: `${KIND_LABELS[l.kind]} en ${[l.neighborhood, l.city].filter(Boolean).join(", ")}. ${priceText(l)}.`,
-    robots: l.status === "active" ? undefined : { index: false },
-  };
+    // El precio va primero: es lo que se ve en la tarjeta de WhatsApp y en Google.
+    description: shorten(`${priceText(l)} · ${KIND_LABELS[l.kind]} en ${place}. ${l.description}`, 200),
+    path: `/anuncios/${l.id}`,
+    // Con foto, la propia foto; sin ella (o «busco»), una tarjeta con título y precio.
+    image: cover ? shareablePhotoUrl(baseUrl, publicStorageUrl("listing-photos", cover)) : `/og/anuncios/${l.id}`,
+    imageSized: !cover,
+    imageAlt: cover ? `${KIND_LABELS[l.kind]} en ${place}` : l.title,
+    robots: indexable ? undefined : { index: false, follow: false },
+  });
 }
 
 export default async function ListingPage({ params, searchParams }: Props) {
@@ -59,6 +76,17 @@ export default async function ListingPage({ params, searchParams }: Props) {
   const owner = l.owner;
   const ownerRating = overallRating(ownerStats);
   const place = [l.neighborhood, l.city, l.province].filter(Boolean).join(", ");
+  const baseUrl = await getBaseUrl();
+  // Datos estructurados solo de anuncios públicos y activos; nunca la dirección exacta.
+  const jsonLd =
+    l.status === "active"
+      ? listingJsonLd(
+          baseUrl,
+          l,
+          l.photos.map((p) => publicStorageUrl("listing-photos", p)),
+          stats ? { count: Number(stats.review_count), average: Number(stats.avg_rating) } : null,
+        )
+      : null;
 
   const facts: Array<[string, string]> = [];
   const period =
@@ -91,6 +119,18 @@ export default async function ListingPage({ params, searchParams }: Props) {
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-8">
+      {jsonLd ? (
+        <JsonLdScript
+          data={[
+            jsonLd,
+            breadcrumbJsonLd(baseUrl, [
+              { name: "Inicio", path: "/" },
+              { name: l.kind === "room" ? "Habitaciones" : "Pisos", path: l.kind === "room" ? "/anuncios?tipo=room" : "/anuncios?tipo=flat" },
+              { name: l.title, path: `/anuncios/${l.id}` },
+            ]),
+          ]}
+        />
+      ) : null}
       {sp.publicado === "1" ? (
         <p role="status" className="mb-6 rounded-xl border border-emerald-300 bg-emerald-50 px-3 py-2 text-sm text-emerald-900 dark:border-emerald-800 dark:bg-emerald-950 dark:text-emerald-100">
           ¡Anuncio publicado! Ya aparece en los resultados de búsqueda.

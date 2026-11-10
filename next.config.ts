@@ -34,6 +34,11 @@ function supabaseImagePattern() {
 const nextConfig: NextConfig = {
   env: publicEnv,
   poweredByHeader: false,
+  // Metadatos (título, descripción, canonical, Open Graph) SIEMPRE en el <head>.
+  // Por defecto Next los envía después, dentro del <body>, a los visitantes que
+  // no son buscadores conocidos; WhatsApp, Lighthouse o un rastreador nuevo
+  // podrían no leerlos. Cuesta una fracción de TTFB y asegura el SEO técnico.
+  htmlLimitedBots: /.*/,
   async headers() {
     // La CSP no va aquí: lleva un nonce por petición y la pone src/middleware.ts.
     return [{ source: "/:path*", headers: [...STATIC_SECURITY_HEADERS] }];

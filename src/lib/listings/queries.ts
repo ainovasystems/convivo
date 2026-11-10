@@ -1,6 +1,6 @@
 import "server-only";
 
-import { applyListingFilters, type FilterableQuery, type ListingFilters } from "@/lib/listings/filters";
+import { applyListingFilters, escapeLike, type FilterableQuery, type ListingFilters } from "@/lib/listings/filters";
 import type { RuleKey } from "@/lib/listings/options";
 import { createClient } from "@/lib/supabase/server";
 
@@ -79,4 +79,64 @@ export async function getOwnListingForEdit(id: string, ownerId: string) {
   if (error) throw error;
   if (!listing) return null;
   return { listing, address };
+}
+
+/** Anuncios por página de ciudad (SEO): los más recientes; el resto, en la búsqueda. */
+export const CITY_PAGE_LIMIT = 24;
+
+/**
+ * Datos de una página pública de ciudad: anuncios activos de un tipo en una
+ * ciudad (nombre exacto, sin comodines), cuántos hay, el precio mínimo y
+ * cuántas personas buscan en esa ciudad. Solo columnas públicas.
+ */
+export async function getCityPageData(city: string, kind: "room" | "flat") {
+  const supabase = await createClient();
+  const exact = escapeLike(city);
+  const [list, cheapest, seeking] = await Promise.all([
+    supabase
+      .from("listings")
+      .select(CARD_COLUMNS, { count: "exact" })
+      .eq("status", "active")
+      .eq("kind", kind)
+      .ilike("city", exact)
+      .order("published_at", { ascending: false, nullsFirst: false })
+      .order("id", { ascending: true })
+      .limit(CITY_PAGE_LIMIT),
+    supabase
+      .from("listings")
+      .select("monthly_rent")
+      .eq("status", "active")
+      .eq("kind", kind)
+      .ilike("city", exact)
+      .not("monthly_rent", "is", null)
+      .order("monthly_rent", { ascending: true })
+      .limit(1),
+    supabase
+      .from("listings")
+      .select("id", { count: "exact", head: true })
+      .eq("status", "active")
+      .eq("kind", "seeking")
+      .ilike("city", exact),
+  ]);
+  if (list.error) throw list.error;
+  return {
+    items: list.data ?? [],
+    total: list.count ?? 0,
+    minPrice: cheapest.data?.[0]?.monthly_rent ?? null,
+    seekingCount: seeking.count ?? 0,
+  };
+}
+
+/** Anuncios activos para el sitemap (id y última modificación). Sin «busco»: son personas. */
+export async function getSitemapListings(limit = 5000) {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("listings")
+    .select("id, updated_at")
+    .eq("status", "active")
+    .neq("kind", "seeking")
+    .order("updated_at", { ascending: false })
+    .limit(limit);
+  if (error) throw error;
+  return data ?? [];
 }

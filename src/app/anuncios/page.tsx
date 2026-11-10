@@ -18,6 +18,10 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
   return {
     title: where ? `${what} en ${where}` : what,
     description: `Anuncios de vivienda compartida${where ? ` en ${where}` : ""} con perfiles y reseñas verificadas.`,
+    // Una sola URL canónica; las combinaciones de filtros no se indexan (ver el middleware).
+    alternates: { canonical: "/anuncios" },
+    // Solo si hay filtros: una clave `robots: undefined` taparía la del layout (noindex en pruebas).
+    ...(Object.keys(await searchParams).length ? { robots: { index: false, follow: true } } : {}),
   };
 }
 

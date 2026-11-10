@@ -5,19 +5,41 @@ import Link from "next/link";
 
 import { Logo } from "@/components/brand/logo";
 import { SiteHeader } from "@/components/site-header";
+import { isIndexingEnabled } from "@/lib/seo/indexing";
+import { SITE_NAME } from "@/lib/seo/metadata";
+import { getBaseUrl } from "@/lib/seo/site";
 
 import "./globals.css";
 
-export const metadata: Metadata = {
-  title: {
-    default: "Convivo · Pisos y habitaciones con reseñas reales",
-    template: "%s · Convivo",
-  },
-  description:
-    "Encuentra habitación, piso o compañeros de piso con perfiles y reseñas verificadas tras una estancia real.",
-  applicationName: "Convivo",
-  appleWebApp: { capable: true, title: "Convivo", statusBarStyle: "default" },
-};
+const DESCRIPTION =
+  "Encuentra habitación, piso o compañeros de piso con perfiles y reseñas verificadas tras una estancia real.";
+
+// Dinámico: lee la URL pública y la variable de indexación en cada petición.
+export async function generateMetadata(): Promise<Metadata> {
+  const baseUrl = await getBaseUrl();
+  return {
+    metadataBase: new URL(baseUrl),
+    title: {
+      default: "Convivo · Pisos y habitaciones con reseñas reales",
+      template: "%s · Convivo",
+    },
+    description: DESCRIPTION,
+    applicationName: "Convivo",
+    appleWebApp: { capable: true, title: "Convivo", statusBarStyle: "default" },
+    // Web de pruebas (indexación apagada): ninguna página se indexa. El
+    // middleware repite lo mismo en la cabecera X-Robots-Tag.
+    robots: isIndexingEnabled() ? undefined : { index: false, follow: false },
+    openGraph: {
+      type: "website",
+      siteName: SITE_NAME,
+      locale: "es_ES",
+      title: "Convivo · Pisos y habitaciones con reseñas reales",
+      description: DESCRIPTION,
+      images: [{ url: "/og/inicio", width: 1200, height: 630, alt: "Convivo: tu próximo hogar, con gente de confianza" }],
+    },
+    twitter: { card: "summary_large_image", images: ["/og/inicio"] },
+  };
+}
 
 export const viewport: Viewport = {
   themeColor: "#7b4b2a",

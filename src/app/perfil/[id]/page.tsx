@@ -30,6 +30,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: profile.display_name,
     description: profile.bio?.slice(0, 155) ?? `Perfil de ${profile.display_name} en Convivo.`,
+    // Los perfiles de personas no se indexan nunca, aunque se encienda la indexación.
+    robots: { index: false, follow: false },
   };
 }
 

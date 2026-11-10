@@ -1,9 +1,13 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 
 import { BedIcon, HomeIcon, KeyIcon, SearchIcon, ShieldIcon, StarIcon, UsersIcon } from "@/components/brand/icons";
 import { ListingCard } from "@/components/listings/listing-card";
 import { hasPublicEnv } from "@/lib/env";
 import { searchListings } from "@/lib/listings/queries";
+import { cityPagePath, SEO_CITIES } from "@/lib/seo/cities";
+
+export const metadata: Metadata = { alternates: { canonical: "/" } };
 
 const CITIES = ["Madrid", "Barcelona", "A Coruña", "Lugo", "Valencia", "Sevilla"];
 
@@ -18,6 +22,12 @@ const STEPS = [
   { title: "Conoce", text: "Habla por el chat de Convivo y mira perfiles y reseñas antes de visitar." },
   { title: "Convive y opina", text: "Tras la estancia, os reseñáis mutuamente. Así se construye la confianza." },
 ];
+
+/** Las ciudades con página propia enlazan a ella (SEO); el resto, a la búsqueda. */
+function cityHref(name: string) {
+  const seo = SEO_CITIES.find((c) => c.name === name);
+  return seo ? cityPagePath("habitaciones", seo.slug) : `/anuncios?ciudad=${encodeURIComponent(name)}`;
+}
 
 async function latestListings() {
   if (!hasPublicEnv()) return [];
@@ -83,7 +93,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<Rec
             {CITIES.map((c) => (
               <li key={c}>
                 <Link
-                  href={`/anuncios?ciudad=${encodeURIComponent(c)}`}
+                  href={cityHref(c)}
                   className="inline-block rounded-full bg-white/10 px-3 py-1.5 text-sm font-semibold ring-1 ring-white/20 hover:bg-white/20"
                 >
                   {c}

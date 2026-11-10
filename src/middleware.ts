@@ -1,6 +1,7 @@
 import type { NextRequest } from "next/server";
 
 import { buildCsp, createNonce } from "@/lib/security/headers";
+import { isIndexingEnabled, robotsTagFor } from "@/lib/seo/indexing";
 import { updateSession } from "@/lib/supabase/middleware";
 
 export async function middleware(request: NextRequest) {
@@ -12,6 +13,9 @@ export async function middleware(request: NextRequest) {
   });
   const response = await updateSession(request, { "x-nonce": nonce, "content-security-policy": csp });
   response.headers.set("Content-Security-Policy", csp);
+  // Indexación: apagada = noindex en todo; encendida = solo lo privado y las búsquedas filtradas.
+  const robots = robotsTagFor(request.nextUrl.pathname, request.nextUrl.search, isIndexingEnabled());
+  if (robots) response.headers.set("X-Robots-Tag", robots);
   return response;
 }
 
