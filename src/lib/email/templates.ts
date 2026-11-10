@@ -170,3 +170,33 @@ export function contentRemovedEmail(p: { name: string; what: string; note: strin
     text: `${paragraphs.map(strip).join("\n\n")}`,
   };
 }
+
+/** Contrato pendiente de firma para el inquilino. */
+export function contractToSignEmail(p: { name: string; landlordName: string; listingTitle: string; url: string }): Rendered {
+  const subject = `${p.landlordName} te ha enviado un contrato para firmar`;
+  const paragraphs = [
+    `Hola, ${escapeHtml(p.name)}:`,
+    `<strong>${escapeHtml(p.landlordName)}</strong> te ha enviado el contrato de «${escapeHtml(p.listingTitle)}» para que lo firmes en Convivo.`,
+    "Léelo con calma antes de firmar. Si algo no te cuadra, coméntalo en la conversación: hasta que firméis los dos se puede cancelar y preparar otro.",
+  ];
+  return {
+    subject,
+    html: layout("Tienes un contrato para firmar", paragraphs, { label: "Revisar y firmar", url: p.url }),
+    text: `${paragraphs.map(strip).join("\n\n")}\n\nRevisar y firmar: ${p.url}`,
+  };
+}
+
+/** Contrato firmado por las dos partes. */
+export function contractSignedEmail(p: { name: string; listingTitle: string; url: string }): Rendered {
+  const subject = `Contrato firmado: «${p.listingTitle}»`;
+  const paragraphs = [
+    `Hola, ${escapeHtml(p.name)}:`,
+    `El contrato de «${escapeHtml(p.listingTitle)}» ya está firmado por las dos partes y la estancia ha quedado confirmada.`,
+    "Descarga una copia y guárdala. Cuando llegue el momento, os avisaremos para que podáis dejar vuestras reseñas.",
+  ];
+  return {
+    subject,
+    html: layout("Contrato firmado", paragraphs, { label: "Ver el contrato", url: p.url }),
+    text: `${paragraphs.map(strip).join("\n\n")}\n\nVer el contrato: ${p.url}`,
+  };
+}

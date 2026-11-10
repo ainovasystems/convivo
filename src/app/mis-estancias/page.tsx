@@ -19,7 +19,11 @@ export default async function MyStaysPage() {
     <div className="mx-auto max-w-3xl space-y-6 px-4 py-8 sm:py-12">
       <h1 className="text-2xl font-bold tracking-tight">Mis estancias</h1>
       <p className="text-muted">
-        Las estancias confirmadas por todas las partes son las que permiten dejar y recibir reseñas.
+        Las estancias confirmadas por todas las partes son las que permiten dejar y recibir reseñas. Al firmar un contrato
+        en Convivo, la estancia se confirma sola.{" "}
+        <Link href="/contratos" className="font-semibold text-brand underline">
+          Ver mis contratos
+        </Link>
       </p>
       {stays.length ? (
         <ul className="space-y-3">

@@ -46,7 +46,7 @@ export default function RootLayout({
         </main>
         {/* pb-24 en móvil: deja sitio a la barra de pestañas inferior. Visible
             también en móvil para que privacidad y condiciones estén a mano. */}
-        <footer className="border-t border-border bg-surface pb-24 sm:pb-0">
+        <footer className="border-t border-border bg-surface pb-24 sm:pb-0 print:hidden">
           <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-8 text-sm text-muted">
             <Logo />
             <nav aria-label="Pie de página" className="flex flex-wrap gap-5">

@@ -19,6 +19,10 @@ export default async function AccountPage() {
           Cuenta: <span className="font-semibold text-foreground">{user.email}</span>.{" "}
           <Link href="/perfil/editar" className="font-semibold text-brand underline">
             Editar mi perfil
+          </Link>{" "}
+          ·{" "}
+          <Link href="/contratos" className="font-semibold text-brand underline">
+            Mis contratos
           </Link>
         </p>
       </div>

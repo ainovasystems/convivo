@@ -13,13 +13,13 @@ export function BottomNav({ loggedIn, unread, profileHref }: { loggedIn: boolean
     { href: loggedIn ? "/mensajes" : "/entrar?next=/mensajes", label: "Mensajes", Icon: ChatIcon, match: ["/mensajes"], badge: unread },
     { href: "/publicar", label: "Publicar", Icon: PlusIcon, match: ["/publicar"], primary: true },
     { href: loggedIn ? "/mis-resenas" : "/entrar?next=/mis-resenas", label: "Reseñas", Icon: StarIcon, match: ["/mis-resenas", "/resenas"] },
-    { href: profileHref, label: "Perfil", Icon: UserIcon, match: ["/perfil", "/entrar", "/registro", "/mis-anuncios", "/mis-estancias", "/cuenta"] },
+    { href: profileHref, label: "Perfil", Icon: UserIcon, match: ["/perfil", "/entrar", "/registro", "/mis-anuncios", "/mis-estancias", "/cuenta", "/contratos"] },
   ];
 
   return (
     <nav
       aria-label="Navegación principal"
-      className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur sm:hidden"
+      className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur sm:hidden print:hidden"
     >
       <ul className="grid grid-cols-5">
         {items.map(({ href, label, Icon, match, badge, primary }) => {
