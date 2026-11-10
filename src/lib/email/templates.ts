@@ -200,3 +200,19 @@ export function contractSignedEmail(p: { name: string; listingTitle: string; url
     text: `${paragraphs.map(strip).join("\n\n")}\n\nVer el contrato: ${p.url}`,
   };
 }
+
+/** La otra parte ha confirmado el inventario y falta tu confirmación. */
+export function inventoryToConfirmEmail(p: { stage: "entry" | "exit"; url: string }): Rendered {
+  const label = p.stage === "entry" ? "de entrada" : "de salida";
+  const subject = `Tienes un inventario ${label} por revisar`;
+  const paragraphs = [
+    "Hola:",
+    `La otra parte del contrato ha confirmado el inventario ${label} de la vivienda en Convivo.`,
+    "Revisa cada elemento y sus fotos. Si estás de acuerdo, confírmalo; si no, corrige lo que haga falta (la otra parte tendrá que volver a confirmarlo). Cuando lo confirméis los dos, ya no se podrá cambiar.",
+  ];
+  return {
+    subject,
+    html: layout(`Inventario ${label} por revisar`, paragraphs, { label: "Revisar el inventario", url: p.url }),
+    text: `${paragraphs.map(strip).join("\n\n")}\n\nRevisar el inventario: ${p.url}`,
+  };
+}

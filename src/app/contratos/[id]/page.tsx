@@ -6,8 +6,11 @@ import { z } from "zod";
 import { ContractEditor } from "@/components/contracts/contract-editor";
 import { ContractSign } from "@/components/contracts/contract-sign";
 import { ContractText } from "@/components/contracts/contract-text";
+import { DepositGuide } from "@/components/contracts/deposit-guide";
 import { PrintButton } from "@/components/contracts/print-button";
 import { getCurrentUser } from "@/lib/auth";
+import { STAGE_LABELS, STAGE_SLUGS, INVENTORY_STAGES } from "@/lib/contracts/inventory";
+import { listContractInventories } from "@/lib/contracts/inventory-queries";
 import { getContract } from "@/lib/contracts/queries";
 import { CONTRACT_KIND_LABELS, type ContractKind } from "@/lib/contracts/schema";
 
@@ -28,6 +31,16 @@ export default async function ContractPage({ params }: { params: Promise<{ id: s
   const terms = (c.terms ?? {}) as Record<string, unknown>;
   const myName = String((isLandlord ? terms.landlord_name : terms.tenant_name) ?? "");
   const iSigned = Boolean(isLandlord ? c.landlord_signed_at : c.tenant_signed_at);
+  const inventories = c.status === "signed" ? await listContractInventories(c.id) : [];
+  const entryLocked = inventories.some((i) => i.stage === "entry" && i.locked_at);
+  const inventoryStatus = (stage: (typeof INVENTORY_STAGES)[number]) => {
+    const inv = inventories.find((i) => i.stage === stage);
+    if (!inv) return stage === "exit" && !entryLocked ? "Disponible tras confirmar la entrada" : "Sin empezar";
+    if (inv.locked_at) return "Confirmado por los dos";
+    const mine = isLandlord ? inv.landlord_confirmed_at : inv.tenant_confirmed_at;
+    const theirs = isLandlord ? inv.tenant_confirmed_at : inv.landlord_confirmed_at;
+    return mine ? "Falta la otra parte" : theirs ? "Te toca confirmarlo" : "En curso";
+  };
 
   return (
     <div className="mx-auto max-w-6xl space-y-6 px-4 py-6 sm:py-10">
@@ -76,6 +89,25 @@ export default async function ContractPage({ params }: { params: Promise<{ id: s
                 <p className="text-sm">La estancia ha quedado confirmada. Cuando llegue el momento, podréis dejar vuestras reseñas.</p>
                 <PrintButton />
               </div>
+            ) : null}
+            {c.status === "signed" ? (
+              <section aria-label="Inventario" className="space-y-3 rounded-3xl border border-border p-5 text-sm print:hidden">
+                <h2 className="font-bold">Inventario con fotos</h2>
+                <p className="text-muted">Anotad juntos el estado de la vivienda al entrar y al salir. Sirve para devolver la fianza sin discusiones.</p>
+                <ul className="space-y-2">
+                  {INVENTORY_STAGES.map((stage) => (
+                    <li key={stage}>
+                      <Link href={`/contratos/${c.id}/inventario/${STAGE_SLUGS[stage]}`} className="font-semibold text-brand underline">
+                        {STAGE_LABELS[stage]}
+                      </Link>{" "}
+                      <span className="text-muted">· {inventoryStatus(stage)}</span>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            ) : null}
+            {c.status === "signed" || c.status === "sent" ? (
+              <DepositGuide province={c.listing?.province ?? null} deposit={Number(terms.deposit ?? 0)} isRoom={c.kind === "room"} />
             ) : null}
             {c.status === "cancelled" ? (
               <p className="rounded-2xl bg-surface p-4 text-sm text-muted">Este contrato se canceló y ya no se puede firmar.</p>

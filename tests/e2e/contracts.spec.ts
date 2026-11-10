@@ -92,6 +92,37 @@ test.describe("contrato firmado en Convivo", () => {
     await expect(host.getByRole("button", { name: /Descargar o imprimir/ })).toBeVisible();
     await expect.poll(mailpitSubjects).toContainEqual(expect.stringContaining("Contrato firmado"));
 
+    // Guía de la fianza según la comunidad (A Coruña → Galicia, IGVS).
+    await expect(host.getByRole("region", { name: "Qué hacer con la fianza" }).getByText(/En Galicia, la parte arrendadora la deposita en IGVS/)).toBeVisible();
+
+    // Inventario de entrada: el inquilino añade un elemento con foto y confirma; luego el casero.
+    await guest.goto(contractUrl);
+    await guest.getByRole("link", { name: "Inventario de entrada" }).click();
+    await guest.getByRole("button", { name: "Empezar el inventario" }).click();
+    await guest.getByLabel("Zona").fill("Habitación");
+    await guest.getByLabel("Elemento", { exact: true }).fill("Colchón");
+    await guest.getByLabel("Estado").selectOption("good");
+    await guest.getByLabel(/Fotos/).setInputFiles("tests/e2e/fixtures/piso.png");
+    await expect(guest.getByAltText("Foto 1 sin guardar")).toBeVisible();
+    await guest.getByRole("button", { name: "Añadir al inventario" }).click();
+    await expect(guest.getByAltText("Colchón, foto 1")).toBeVisible();
+    await guest.getByRole("button", { name: /Confirmo que el inventario es correcto/ }).click();
+    await expect(guest.getByText("Ya lo has confirmado.")).toBeVisible();
+    await expect.poll(mailpitSubjects).toContainEqual(expect.stringContaining("inventario de entrada por revisar"));
+
+    await host.goto(`${contractUrl}/inventario/entrada`);
+    await expect(host.getByAltText("Colchón, foto 1")).toBeVisible();
+    await host.getByRole("button", { name: /Confirmo que el inventario es correcto/ }).click();
+    await expect(host.getByText(/Confirmado por las dos partes el/)).toBeVisible();
+    await expect(host.getByRole("button", { name: "Quitar" })).toHaveCount(0);
+    await expect(host.getByRole("button", { name: "Añadir al inventario" })).toHaveCount(0);
+
+    // Salida: se copian los elementos de la entrada y se compara.
+    await host.goto(`${contractUrl}/inventario/salida`);
+    await host.getByRole("button", { name: "Empezar el inventario" }).click();
+    await host.getByRole("button", { name: /Copiar los elementos del inventario de entrada/ }).click();
+    await expect(host.getByText("A la entrada: Buen estado")).toBeVisible();
+
     await guest.goto("/mis-estancias");
     await expect(guest.getByText("Activa", { exact: true })).toBeVisible();
     await guest.goto("/contratos");

@@ -5,7 +5,7 @@ import { RULE_KEYS, RULE_LABELS, type RuleKey } from "@/lib/listings/options";
 import { createClient } from "@/lib/supabase/server";
 
 const CONTRACT_COLUMNS =
-  "id, listing_id, interest_id, landlord_id, tenant_id, kind, template_version, terms, status, document_text, document_hash, sent_at, landlord_signed_at, landlord_signature, tenant_signed_at, tenant_signature, signed_at, cancelled_at, stay_id, created_at, listing:listings!contracts_listing_id_fkey(id, title, city), landlord:profiles!contracts_landlord_id_fkey(id, display_name), tenant:profiles!contracts_tenant_id_fkey(id, display_name)";
+  "id, listing_id, interest_id, landlord_id, tenant_id, kind, template_version, terms, status, document_text, document_hash, sent_at, landlord_signed_at, landlord_signature, tenant_signed_at, tenant_signature, signed_at, cancelled_at, stay_id, created_at, listing:listings!contracts_listing_id_fkey(id, title, city, province), landlord:profiles!contracts_landlord_id_fkey(id, display_name), tenant:profiles!contracts_tenant_id_fkey(id, display_name)";
 
 export async function getContract(id: string) {
   const supabase = await createClient();
