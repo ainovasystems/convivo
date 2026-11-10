@@ -14,6 +14,7 @@
 | Estancias | `stays`, `stay_participants` | Se conservan: sostienen las reseñas | Igual mientras haya reseñas | Base de la reputación verificada |
 | Reseñas | `reviews` | Indefinido. Al borrar la cuenta se desvinculan («Usuario eliminado») | [Decidir con el abogado] Plazo máximo, p. ej. 5 años desde la estancia | Interés legítimo y libertad de información (art. 17.3.a RGPD). Proporcionalidad: una reseña muy antigua aporta poco |
 | Respuestas a reseñas | `review_responses` | Igual que la reseña | Igual que la reseña | — |
+| Contratos firmados e inventarios con fotos | `contracts`, `contract_inventories`, `inventory_items`, bucket privado `inventory-photos` | Indefinido. Se conservan aunque una parte borre la cuenta | [Decidir con el abogado] p. ej. 6 años desde el fin del contrato y después borrar las fotos | Documento entre las partes y prueba para la fianza durante la prescripción de acciones. [Validar plazo] |
 | Avisos in-app | `notifications` | Indefinido | Borrar a los 12 meses | Sin utilidad pasado ese tiempo |
 | Huellas de intentos de acceso | `auth_attempts` | Se borran a partir de las 24 h (limpieza oportunista) | Igual | Seguridad (interés legítimo). Mínimo imprescindible |
 | Huellas de cuentas borradas (email, IP y navegador, HMAC) y n.º de reseñas negativas | `private.deleted_account_traces` | 2 años (`expires_at`); dejan de usarse al caducar, pero aún no se purgan | Igual, más una purga automática | Prevención del fraude: que nadie borre la cuenta para escapar de sus reseñas (interés legítimo). Se informa antes de borrar |

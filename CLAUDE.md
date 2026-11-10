@@ -122,6 +122,16 @@ Antes de cada commit: `npm run lint && npm run typecheck && npm test && npm run 
 - **Firma electrónica simple** (eIDAS): quién, cuándo y huella del texto. Una firma avanzada con proveedor (Signaturit, DocuSign…) queda para una fase posterior.
 - **Borrado de cuenta:** los contratos firmados se conservan (documento entre las partes; el anuncio y la conversación quedan a `null`), los borradores se borran y los pendientes se cancelan.
 
+## Contratos (fase 2: inventario y fianza)
+
+- **Inventario con fotos** (`20261111000100_contract_inventories.sql`, rutas `/contratos/[id]/inventario/entrada|salida`): con el contrato **firmado**, cualquiera de las dos partes lo abre y añade elementos (zona, elemento, estado `new|good|worn|damaged`, notas y hasta 6 fotos). Tablas `contract_inventories` (una por contrato y etapa) e `inventory_items`.
+  - Las dos partes lo confirman con `confirm_inventory(id)`. **Cualquier cambio anula las confirmaciones** (trigger), así que nadie confirma algo que no ha visto. Confirmado por los dos queda **bloqueado** (`locked_at`): inmutable para cualquier rol, también service_role, y ya no se suben ni se borran sus fotos.
+  - La salida solo se abre con la entrada bloqueada. «Copiar los elementos del inventario de entrada» (`copyEntryItems`) y la comparación marcan solo los **daños nuevos**: el desgaste por el uso normal no se descuenta de la fianza (`compareWithEntry`).
+  - **Fotos en un bucket PRIVADO** `inventory-photos` (5 MB, solo webp), con la ruta `{contract_id}/{inventory_id}/{uuid}.webp`. Se comprimen en el navegador (sin GPS) y se suben con el cliente del navegador. RLS de Storage (`private.inventory_photo_access`) deja leerlas solo a las partes y subirlas o borrarlas solo con el inventario abierto. Se muestran con URL firmada de 1 h. Las fotos que se suben y no se guardan se borran (`discardInventoryPhotos`).
+  - Avisos `inventory_to_confirm` e `inventory_confirmed`, y email `inventoryToConfirmEmail`. Al borrar la cuenta de una parte, el inventario se conserva, como el contrato firmado.
+- **Guía de la fianza** (`src/lib/contracts/deposits.ts`, componente `deposit-guide.tsx`): por provincia del anuncio → comunidad autónoma → organismo, plazo, cómo se hace, si alcanza a las habitaciones, norma y enlace. **ORIENTATIVA y pendiente de verificar**: se recopiló en noviembre de 2026 desde buscadores, sin poder abrir las webs oficiales. Revísala al menos una vez al año (Andalucía suprimió el depósito en 2026, Navarra lo crea desde 2027 y Cataluña lo extendió a las habitaciones en 2026). Se muestra en el contrato enviado y en el firmado, junto con el plazo de devolución (un mes desde la entrega de llaves, art. 36.4 LAU).
+- **Mis datos** incluye los contratos, los inventarios y sus elementos.
+
 ## Reseñas (interfaz y moderación)
 
 - **Rutas:** `/mis-resenas` (avisos, pendientes con fecha límite, enviadas con su estado), `/resenas/nueva?estancia=…&sujeto=…` (formulario según la relación) y `/admin` (solo admins; a los demás les devuelve 404).
@@ -242,8 +252,10 @@ SUPABASE_PROJECT_REF=<ref> npm run typegen
 | `moderation_log` | registro de auditoría de moderación (append-only) | admins | solo triggers y RPC; nadie modifica ni borra |
 | `legal_notices` | notificaciones de contenido ilegal (DSA), también de personas sin cuenta | admins | `submit_legal_notice()` (anon incluido); decide un admin por RPC |
 | `contracts` | contratos de alquiler con firma en Convivo | las dos partes (y admins) | el casero en borrador; después, solo `send_contract`, `sign_contract` y `cancel_contract` |
+| `contract_inventories` | inventario de entrada o salida de un contrato firmado | las dos partes (y admins) | alta por una parte; confirmación solo por `confirm_inventory`; bloqueado, inmutable |
+| `inventory_items` | elementos del inventario (zona, estado, notas, fotos) | las dos partes (y admins) | las dos partes, mientras el inventario no esté bloqueado |
 
-RPC (`supabase.rpc(...)`): `confirm_stay`, `cancel_stay`, `end_stay`, `add_stay_participant`, `confirm_stay_participation`, `decline_stay_participation`, `get_review_window`, `delete_review`, `profile_review_stats`, `listing_review_stats`, `review_criteria_for`, `am_i_admin`, `mark_conversation_read`, `my_unread_counts`, `record_signal`, `admin_review_flags` (admin), `review_window_notices_due` (solo service_role), `auth_rate_allowed` y `auth_rate_failed` (anon incluido: se usan antes de entrar), `delete_my_account`, `admin_resolve_listing_flag`, `admin_close_listing` y `admin_decide_legal_notice` (admin), `submit_legal_notice` (anon incluido), `profile_lineage` (anon incluido), `admin_returning_account_flags` (admin), `send_contract`, `sign_contract`, `cancel_contract`.
+RPC (`supabase.rpc(...)`): `confirm_stay`, `cancel_stay`, `end_stay`, `add_stay_participant`, `confirm_stay_participation`, `decline_stay_participation`, `get_review_window`, `delete_review`, `profile_review_stats`, `listing_review_stats`, `review_criteria_for`, `am_i_admin`, `mark_conversation_read`, `my_unread_counts`, `record_signal`, `admin_review_flags` (admin), `review_window_notices_due` (solo service_role), `auth_rate_allowed` y `auth_rate_failed` (anon incluido: se usan antes de entrar), `delete_my_account`, `admin_resolve_listing_flag`, `admin_close_listing` y `admin_decide_legal_notice` (admin), `submit_legal_notice` (anon incluido), `profile_lineage` (anon incluido), `admin_returning_account_flags` (admin), `send_contract`, `sign_contract`, `cancel_contract`, `confirm_inventory`.
 
 ### Reglas de reseñas tal como están implementadas
 
@@ -334,3 +346,5 @@ RPC (`supabase.rpc(...)`): `confirm_stay`, `cancel_stay`, `end_stay`, `add_stay_
 47. **El contrato firmado es la estancia confirmada:** firmar en Convivo crea o confirma la estancia, de modo que cada contrato da reseñas verificadas. Es lo que diferencia a Convivo de una inmobiliaria.
 48. **Se firma el texto exacto, no las condiciones:** al enviar se guarda el texto completo y su SHA-256; firmar exige ese hash. Así lo que se firma es lo que se leyó, aunque cambien las plantillas después.
 49. **Firma electrónica simple en la fase 1**, sin proveedor externo ni DNI. La avanzada (Signaturit, DocuSign…) llegará cuando haya volumen o cuando lo pida el abogado.
+50. **Inventario confirmado por los dos y bloqueado**, con fotos en un bucket privado: es la prueba del estado de la vivienda para devolver la fianza. Si alguien cambia algo, las confirmaciones se anulan.
+51. **Guía de la fianza como datos en el código** y no en la BD: cambia poco, se revisa con el abogado y lleva tests que obligan a rellenar organismo y plazo cuando el depósito es obligatorio.
