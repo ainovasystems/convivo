@@ -1,0 +1,561 @@
+[
+  {
+    "file": "01-inicio.webp",
+    "slug": "inicio",
+    "titulo": "Inicio",
+    "url": "/",
+    "horizontalScroll": 0,
+    "smallTargets": 10,
+    "violations": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "help": "Elements must meet minimum color contrast ratio thresholds",
+        "nodes": 1,
+        "sample": [
+          ".text-brand\\/70 > .font-semibold.text-sm"
+        ]
+      }
+    ]
+  },
+  {
+    "file": "02-buscar.webp",
+    "slug": "buscar",
+    "titulo": "Búsqueda de anuncios",
+    "url": "/anuncios",
+    "horizontalScroll": 0,
+    "smallTargets": 15,
+    "violations": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "help": "Elements must meet minimum color contrast ratio thresholds",
+        "nodes": 3,
+        "sample": [
+          "li:nth-child(3) > article > .aspect-\\[4\\/3\\].bg-brand-soft.overflow-hidden > .text-brand\\/70.justify-center.gap-2 > .font-semibold",
+          "li:nth-child(8) > article > .aspect-\\[4\\/3\\].bg-brand-soft.overflow-hidden > .text-brand\\/70.justify-center.gap-2 > .font-semibold"
+        ]
+      },
+      {
+        "id": "heading-order",
+        "impact": "moderate",
+        "help": "Heading levels should only increase by one",
+        "nodes": 1,
+        "sample": [
+          "li:nth-child(1) > article > .flex-1.p-4.gap-1\\.5 > h3"
+        ]
+      }
+    ]
+  },
+  {
+    "file": "03-buscar-filtrada.webp",
+    "slug": "buscar-filtrada",
+    "titulo": "Búsqueda filtrada (Lugo, hasta 300 €)",
+    "url": "/anuncios?ciudad=Lugo&precio_max=300",
+    "horizontalScroll": 0,
+    "smallTargets": 12,
+    "violations": [
+      {
+        "id": "heading-order",
+        "impact": "moderate",
+        "help": "Heading levels should only increase by one",
+        "nodes": 1,
+        "sample": [
+          "h3"
+        ]
+      }
+    ]
+  },
+  {
+    "file": "04-buscar-sin-resultados.webp",
+    "slug": "buscar-sin-resultados",
+    "titulo": "Búsqueda sin resultados",
+    "url": "/anuncios?ciudad=Zamora&precio_max=50",
+    "horizontalScroll": 0,
+    "smallTargets": 11,
+    "violations": []
+  },
+  {
+    "file": "05-ciudad-habitaciones-lugo.webp",
+    "slug": "ciudad-habitaciones-lugo",
+    "titulo": "Página de ciudad: habitaciones en Lugo",
+    "url": "/habitaciones/lugo",
+    "horizontalScroll": 0,
+    "smallTargets": 11,
+    "violations": []
+  },
+  {
+    "file": "06-ciudad-pisos-coruna.webp",
+    "slug": "ciudad-pisos-coruna",
+    "titulo": "Página de ciudad: pisos en A Coruña",
+    "url": "/pisos/a-coruna",
+    "horizontalScroll": 0,
+    "smallTargets": 11,
+    "violations": []
+  },
+  {
+    "file": "07-ciudad-vacia.webp",
+    "slug": "ciudad-vacia",
+    "titulo": "Página de ciudad sin anuncios (pisos en Barcelona)",
+    "url": "/pisos/barcelona",
+    "horizontalScroll": 0,
+    "smallTargets": 9,
+    "violations": []
+  },
+  {
+    "file": "08-ficha-habitacion.webp",
+    "slug": "ficha-habitacion",
+    "titulo": "Ficha de habitación (sin sesión)",
+    "url": "/anuncios/b0000000-0000-4000-8000-000000000001",
+    "horizontalScroll": 0,
+    "smallTargets": 11,
+    "violations": []
+  },
+  {
+    "file": "09-ficha-piso.webp",
+    "slug": "ficha-piso",
+    "titulo": "Ficha de piso entero",
+    "url": "/anuncios/b0000000-0000-4000-8000-000000000004",
+    "horizontalScroll": 0,
+    "smallTargets": 9,
+    "violations": []
+  },
+  {
+    "file": "10-ficha-busco.webp",
+    "slug": "ficha-busco",
+    "titulo": "Ficha «busco compañero»",
+    "url": "/anuncios/b0000000-0000-4000-8000-000000000011",
+    "horizontalScroll": 0,
+    "smallTargets": 9,
+    "violations": []
+  },
+  {
+    "file": "11-perfil-publico.webp",
+    "slug": "perfil-publico",
+    "titulo": "Perfil público",
+    "url": "/perfil/a0000000-0000-4000-8000-000000000001",
+    "horizontalScroll": 0,
+    "smallTargets": 10,
+    "violations": []
+  },
+  {
+    "file": "12-entrar.webp",
+    "slug": "entrar",
+    "titulo": "Entrar",
+    "url": "/entrar",
+    "horizontalScroll": 0,
+    "smallTargets": 8,
+    "violations": []
+  },
+  {
+    "file": "13-registro.webp",
+    "slug": "registro",
+    "titulo": "Crear cuenta",
+    "url": "/registro",
+    "horizontalScroll": 0,
+    "smallTargets": 11,
+    "violations": []
+  },
+  {
+    "file": "14-privacidad.webp",
+    "slug": "privacidad",
+    "titulo": "Privacidad (borrador)",
+    "url": "/privacidad",
+    "horizontalScroll": 0,
+    "smallTargets": 8,
+    "violations": []
+  },
+  {
+    "file": "15-terminos.webp",
+    "slug": "terminos",
+    "titulo": "Condiciones (borrador)",
+    "url": "/terminos",
+    "horizontalScroll": 0,
+    "smallTargets": 8,
+    "violations": []
+  },
+  {
+    "file": "16-denunciar.webp",
+    "slug": "denunciar",
+    "titulo": "Denunciar contenido (DSA)",
+    "url": "/denunciar",
+    "horizontalScroll": 0,
+    "smallTargets": 8,
+    "violations": []
+  },
+  {
+    "file": "17-estado.webp",
+    "slug": "estado",
+    "titulo": "Estado del servicio",
+    "url": "/estado",
+    "horizontalScroll": 0,
+    "smallTargets": 7,
+    "violations": []
+  },
+  {
+    "file": "18-404.webp",
+    "slug": "404",
+    "titulo": "Página no encontrada",
+    "url": "/esta-pagina-no-existe",
+    "horizontalScroll": 0,
+    "smallTargets": 7,
+    "violations": []
+  },
+  {
+    "file": "19-registro-errores.webp",
+    "slug": "registro-errores",
+    "titulo": "Crear cuenta con errores de validación",
+    "url": "/registro",
+    "horizontalScroll": 0,
+    "smallTargets": 11,
+    "violations": []
+  },
+  {
+    "file": "20-sesion-inicio.webp",
+    "slug": "sesion-inicio",
+    "titulo": "Inicio con sesión iniciada",
+    "url": "/",
+    "horizontalScroll": 0,
+    "smallTargets": 10,
+    "violations": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "help": "Elements must meet minimum color contrast ratio thresholds",
+        "nodes": 1,
+        "sample": [
+          ".text-brand\\/70 > .font-semibold.text-sm"
+        ]
+      }
+    ]
+  },
+  {
+    "file": "21-sesion-ficha-habitacion.webp",
+    "slug": "sesion-ficha-habitacion",
+    "titulo": "Ficha con sesión: formulario «Me interesa»",
+    "url": "/anuncios/b0000000-0000-4000-8000-000000000001",
+    "horizontalScroll": 0,
+    "smallTargets": 10,
+    "violations": []
+  },
+  {
+    "file": "22-mis-resenas.webp",
+    "slug": "mis-resenas",
+    "titulo": "Mis reseñas",
+    "url": "/mis-resenas",
+    "horizontalScroll": 0,
+    "smallTargets": 8,
+    "violations": []
+  },
+  {
+    "file": "23-mis-estancias.webp",
+    "slug": "mis-estancias",
+    "titulo": "Mis estancias",
+    "url": "/mis-estancias",
+    "horizontalScroll": 0,
+    "smallTargets": 8,
+    "violations": []
+  },
+  {
+    "file": "24-mensajes.webp",
+    "slug": "mensajes",
+    "titulo": "Mensajes (bandeja)",
+    "url": "/mensajes",
+    "horizontalScroll": 0,
+    "smallTargets": 8,
+    "violations": [
+      {
+        "id": "label-content-name-mismatch",
+        "impact": "serious",
+        "help": "Elements must have their visible text as part of their accessible name",
+        "nodes": 1,
+        "sample": [
+          ".items-start"
+        ]
+      }
+    ]
+  },
+  {
+    "file": "25-perfil-editar.webp",
+    "slug": "perfil-editar",
+    "titulo": "Editar perfil",
+    "url": "/perfil/editar",
+    "horizontalScroll": 0,
+    "smallTargets": 22,
+    "violations": []
+  },
+  {
+    "file": "26-cuenta.webp",
+    "slug": "cuenta",
+    "titulo": "Mi cuenta y mis datos",
+    "url": "/cuenta",
+    "horizontalScroll": 0,
+    "smallTargets": 9,
+    "violations": []
+  },
+  {
+    "file": "27-contratos-vacio.webp",
+    "slug": "contratos-vacio",
+    "titulo": "Mis contratos (vacío)",
+    "url": "/contratos",
+    "horizontalScroll": 0,
+    "smallTargets": 7,
+    "violations": []
+  },
+  {
+    "file": "28-publicar-tipo.webp",
+    "slug": "publicar-tipo",
+    "titulo": "Publicar: elegir tipo",
+    "url": "/publicar",
+    "horizontalScroll": 0,
+    "smallTargets": 7,
+    "violations": []
+  },
+  {
+    "file": "29-mis-resenas-pendientes.webp",
+    "slug": "mis-resenas-pendientes",
+    "titulo": "Mis reseñas con reseñas pendientes (diego)",
+    "url": "/mis-resenas",
+    "horizontalScroll": 0,
+    "smallTargets": 9,
+    "violations": []
+  },
+  {
+    "file": "30-resena-nueva.webp",
+    "slug": "resena-nueva",
+    "titulo": "Escribir una reseña",
+    "url": "/resenas/nueva?estancia=d0000000-0000-4000-8000-000000000002&sujeto=a0000000-0000-4000-8000-000000000005",
+    "horizontalScroll": 0,
+    "smallTargets": 32,
+    "violations": []
+  },
+  {
+    "file": "31-mis-anuncios.webp",
+    "slug": "mis-anuncios",
+    "titulo": "Mis anuncios",
+    "url": "/mis-anuncios",
+    "horizontalScroll": 0,
+    "smallTargets": 8,
+    "violations": []
+  },
+  {
+    "file": "32-publicar-datos.webp",
+    "slug": "publicar-datos",
+    "titulo": "Asistente de publicación: datos",
+    "url": "/publicar/b0000000-0000-4000-8000-000000000001?paso=datos",
+    "horizontalScroll": 0,
+    "smallTargets": 7,
+    "violations": []
+  },
+  {
+    "file": "33-publicar-fotos.webp",
+    "slug": "publicar-fotos",
+    "titulo": "Asistente de publicación: fotos",
+    "url": "/publicar/b0000000-0000-4000-8000-000000000001?paso=fotos",
+    "horizontalScroll": 0,
+    "smallTargets": 7,
+    "violations": []
+  },
+  {
+    "file": "34-publicar-revision.webp",
+    "slug": "publicar-revision",
+    "titulo": "Asistente de publicación: revisión",
+    "url": "/publicar/b0000000-0000-4000-8000-000000000001?paso=revision",
+    "horizontalScroll": 0,
+    "smallTargets": 7,
+    "violations": []
+  },
+  {
+    "file": "35-perfil-propio.webp",
+    "slug": "perfil-propio",
+    "titulo": "Perfil propio",
+    "url": "/perfil/a0000000-0000-4000-8000-000000000001",
+    "horizontalScroll": 0,
+    "smallTargets": 11,
+    "violations": []
+  },
+  {
+    "file": "36-admin.webp",
+    "slug": "admin",
+    "titulo": "Moderación (admin)",
+    "url": "/admin",
+    "horizontalScroll": 0,
+    "smallTargets": 11,
+    "violations": []
+  },
+  {
+    "file": "37-publicar-borrador-nuevo.webp",
+    "slug": "publicar-borrador-nuevo",
+    "titulo": "Asistente: borrador nuevo, vacío",
+    "url": "/publicar/5ba45f74-ddf6-4d50-86be-780931c174a7?paso=datos",
+    "horizontalScroll": 0,
+    "smallTargets": 7,
+    "violations": []
+  },
+  {
+    "file": "38-publicar-con-errores.webp",
+    "slug": "publicar-con-errores",
+    "titulo": "Asistente: revisión de un borrador vacío (qué falta para publicar)",
+    "url": "/publicar/5ba45f74-ddf6-4d50-86be-780931c174a7?paso=revision",
+    "horizontalScroll": 0,
+    "smallTargets": 12,
+    "violations": []
+  },
+  {
+    "file": "39-perfil-editar-nuevo.webp",
+    "slug": "perfil-editar-nuevo",
+    "titulo": "Perfil recién creado (primer paso tras registrarse)",
+    "url": "/perfil/editar?bienvenida=1",
+    "horizontalScroll": 0,
+    "smallTargets": 22,
+    "violations": []
+  },
+  {
+    "file": "40-chat-pendiente.webp",
+    "slug": "chat-pendiente",
+    "titulo": "Conversación (interesado, pendiente de respuesta)",
+    "url": "/mensajes/401955fa-b873-41ce-ae43-2eaa24724bbc",
+    "horizontalScroll": 0,
+    "smallTargets": 8,
+    "violations": [
+      {
+        "id": "list",
+        "impact": "serious",
+        "help": "<ul> and <ol> must only directly contain <li>, <script> or <template> elements",
+        "nodes": 1,
+        "sample": [
+          "ol"
+        ]
+      }
+    ]
+  },
+  {
+    "file": "41-chat-aceptado.webp",
+    "slug": "chat-aceptado",
+    "titulo": "Conversación (casero, interés aceptado)",
+    "url": "/mensajes/401955fa-b873-41ce-ae43-2eaa24724bbc",
+    "horizontalScroll": 0,
+    "smallTargets": 8,
+    "violations": [
+      {
+        "id": "list",
+        "impact": "serious",
+        "help": "<ul> and <ol> must only directly contain <li>, <script> or <template> elements",
+        "nodes": 1,
+        "sample": [
+          "ol"
+        ]
+      }
+    ]
+  },
+  {
+    "file": "42-mensajes-con-conversaciones.webp",
+    "slug": "mensajes-con-conversaciones",
+    "titulo": "Bandeja de mensajes con conversaciones",
+    "url": "/mensajes",
+    "horizontalScroll": 0,
+    "smallTargets": 8,
+    "violations": [
+      {
+        "id": "label-content-name-mismatch",
+        "impact": "serious",
+        "help": "Elements must have their visible text as part of their accessible name",
+        "nodes": 2,
+        "sample": [
+          "li:nth-child(1) > .items-start.gap-3.p-4",
+          "li:nth-child(2) > .items-start.gap-3.p-4"
+        ]
+      }
+    ]
+  },
+  {
+    "file": "43-contrato-borrador.webp",
+    "slug": "contrato-borrador",
+    "titulo": "Contrato: editor del borrador (casero)",
+    "url": "/contratos/34f58a46-91a3-4e58-8aa3-5471eb8b806e",
+    "horizontalScroll": 0,
+    "smallTargets": 11,
+    "violations": []
+  },
+  {
+    "file": "44-contrato-enviado-casero.webp",
+    "slug": "contrato-enviado-casero",
+    "titulo": "Contrato enviado (vista del casero)",
+    "url": "/contratos/34f58a46-91a3-4e58-8aa3-5471eb8b806e",
+    "horizontalScroll": 0,
+    "smallTargets": 12,
+    "violations": []
+  },
+  {
+    "file": "45-contrato-por-firmar.webp",
+    "slug": "contrato-por-firmar",
+    "titulo": "Contrato por firmar (vista del inquilino)",
+    "url": "/contratos/34f58a46-91a3-4e58-8aa3-5471eb8b806e",
+    "horizontalScroll": 0,
+    "smallTargets": 12,
+    "violations": []
+  },
+  {
+    "file": "46-contrato-firmado.webp",
+    "slug": "contrato-firmado",
+    "titulo": "Contrato firmado por las dos partes (+ guía de la fianza)",
+    "url": "/contratos/34f58a46-91a3-4e58-8aa3-5471eb8b806e",
+    "horizontalScroll": 0,
+    "smallTargets": 12,
+    "violations": []
+  },
+  {
+    "file": "47-contratos-lista.webp",
+    "slug": "contratos-lista",
+    "titulo": "Mis contratos (con un contrato firmado)",
+    "url": "/contratos",
+    "horizontalScroll": 0,
+    "smallTargets": 7,
+    "violations": []
+  },
+  {
+    "file": "48-inventario-vacio.webp",
+    "slug": "inventario-vacio",
+    "titulo": "Inventario de entrada recién abierto",
+    "url": "/contratos/34f58a46-91a3-4e58-8aa3-5471eb8b806e/inventario/entrada",
+    "horizontalScroll": 0,
+    "smallTargets": 8,
+    "violations": []
+  },
+  {
+    "file": "49-inventario-con-elementos.webp",
+    "slug": "inventario-con-elementos",
+    "titulo": "Inventario de entrada con un elemento",
+    "url": "/contratos/34f58a46-91a3-4e58-8aa3-5471eb8b806e/inventario/entrada",
+    "horizontalScroll": 0,
+    "smallTargets": 9,
+    "violations": []
+  },
+  {
+    "file": "50-inventario-bloqueado.webp",
+    "slug": "inventario-bloqueado",
+    "titulo": "Inventario de entrada confirmado y bloqueado",
+    "url": "/contratos/34f58a46-91a3-4e58-8aa3-5471eb8b806e/inventario/entrada",
+    "horizontalScroll": 0,
+    "smallTargets": 8,
+    "violations": []
+  },
+  {
+    "file": "51-inventario-salida.webp",
+    "slug": "inventario-salida",
+    "titulo": "Inventario de salida con comparación",
+    "url": "/contratos/34f58a46-91a3-4e58-8aa3-5471eb8b806e/inventario/salida",
+    "horizontalScroll": 0,
+    "smallTargets": 9,
+    "violations": []
+  },
+  {
+    "file": "52-mis-estancias-activa.webp",
+    "slug": "mis-estancias-activa",
+    "titulo": "Mis estancias con una estancia activa",
+    "url": "/mis-estancias",
+    "horizontalScroll": 0,
+    "smallTargets": 9,
+    "violations": []
+  }
+]

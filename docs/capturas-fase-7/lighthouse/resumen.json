@@ -1,0 +1,217 @@
+{
+ "antes": {
+  "anuncios": {
+   "rendimiento": 93,
+   "accesibilidad": 95,
+   "buenasPracticas": 96,
+   "seo": 91,
+   "LCP": "2.9 s",
+   "TBT": "150 ms",
+   "CLS": "0",
+   "fallos": [
+    "performance: Largest Contentful Paint (2.9 s)",
+    "performance: Eliminate render-blocking resources (Est savings of 0 ms)",
+    "performance: Avoid serving legacy JavaScript to modern browsers (Est savings of 11 KiB)",
+    "performance: Largest Contentful Paint element (2,860 ms)",
+    "accessibility: Background and foreground colors do not have a sufficient contrast ratio.",
+    "accessibility: Heading elements are not in a sequentially-descending order",
+    "best-practices: Browser errors were logged to the console",
+    "seo: Document does not have a meta description"
+   ]
+  },
+  "anuncios_b0000000-0000-4000-8000-000000000001": {
+   "rendimiento": 91,
+   "accesibilidad": 100,
+   "buenasPracticas": 93,
+   "seo": 91,
+   "LCP": "3.0 s",
+   "TBT": "200 ms",
+   "CLS": "0",
+   "fallos": [
+    "performance: Largest Contentful Paint (3.0 s)",
+    "performance: Eliminate render-blocking resources (Est savings of 0 ms)",
+    "performance: Reduce unused JavaScript (Est savings of 21 KiB)",
+    "performance: Avoid serving legacy JavaScript to modern browsers (Est savings of 11 KiB)",
+    "performance: Largest Contentful Paint element (3,020 ms)",
+    "best-practices: Browser errors were logged to the console",
+    "best-practices: Issues were logged in the `Issues` panel in Chrome Devtools",
+    "seo: Document does not have a meta description"
+   ]
+  },
+  "anuncios_ciudad_Lugo": {
+   "rendimiento": 93,
+   "accesibilidad": 95,
+   "buenasPracticas": 96,
+   "seo": 91,
+   "LCP": "3.0 s",
+   "TBT": "150 ms",
+   "CLS": "0",
+   "fallos": [
+    "performance: Largest Contentful Paint (3.0 s)",
+    "performance: Eliminate render-blocking resources (Est savings of 0 ms)",
+    "performance: Avoid serving legacy JavaScript to modern browsers (Est savings of 11 KiB)",
+    "performance: Largest Contentful Paint element (2,980 ms)",
+    "accessibility: Background and foreground colors do not have a sufficient contrast ratio.",
+    "accessibility: Heading elements are not in a sequentially-descending order",
+    "best-practices: Browser errors were logged to the console",
+    "seo: Document does not have a meta description"
+   ]
+  },
+  "inicio": {
+   "rendimiento": 86,
+   "accesibilidad": 96,
+   "buenasPracticas": 96,
+   "seo": 100,
+   "LCP": "2.2 s",
+   "TBT": "490 ms",
+   "CLS": "0",
+   "fallos": [
+    "performance: Total Blocking Time (490 ms)",
+    "performance: Avoid serving legacy JavaScript to modern browsers (Est savings of 11 KiB)",
+    "performance: Minimize main-thread work (2.4 s)",
+    "accessibility: Background and foreground colors do not have a sufficient contrast ratio.",
+    "best-practices: Browser errors were logged to the console"
+   ]
+  },
+  "perfil_a0000000-0000-4000-8000-000000000001": {
+   "rendimiento": 73,
+   "accesibilidad": 100,
+   "buenasPracticas": 93,
+   "seo": 90,
+   "LCP": "3.3 s",
+   "TBT": "160 ms",
+   "CLS": "0.371",
+   "fallos": [
+    "performance: Largest Contentful Paint (3.3 s)",
+    "performance: Cumulative Layout Shift (0.371)",
+    "performance: Eliminate render-blocking resources (Est savings of 0 ms)",
+    "performance: Reduce unused JavaScript (Est savings of 22 KiB)",
+    "performance: Avoid serving legacy JavaScript to modern browsers (Est savings of 11 KiB)",
+    "performance: Largest Contentful Paint element (3,280 ms)",
+    "performance: Avoid large layout shifts (1 layout shift found)",
+    "best-practices: Browser errors were logged to the console",
+    "best-practices: Issues were logged in the `Issues` panel in Chrome Devtools",
+    "seo: Document does not have a meta description"
+   ]
+  }
+ },
+ "despues": {
+  "anuncios": {
+   "rendimiento": 94,
+   "accesibilidad": 95,
+   "buenasPracticas": 96,
+   "seo": 100,
+   "LCP": "2.9 s",
+   "TBT": "90 ms",
+   "CLS": "0",
+   "fallos": [
+    "performance: Largest Contentful Paint (2.9 s)",
+    "performance: Eliminate render-blocking resources (Est savings of 0 ms)",
+    "performance: Avoid serving legacy JavaScript to modern browsers (Est savings of 11 KiB)",
+    "performance: Largest Contentful Paint element (2,940 ms)",
+    "accessibility: Background and foreground colors do not have a sufficient contrast ratio.",
+    "accessibility: Heading elements are not in a sequentially-descending order",
+    "best-practices: Browser errors were logged to the console"
+   ]
+  },
+  "anuncios_b0000000-0000-4000-8000-000000000001": {
+   "rendimiento": 91,
+   "accesibilidad": 100,
+   "buenasPracticas": 93,
+   "seo": 100,
+   "LCP": "3.3 s",
+   "TBT": "130 ms",
+   "CLS": "0",
+   "fallos": [
+    "performance: Largest Contentful Paint (3.3 s)",
+    "performance: Reduce unused JavaScript (Est savings of 21 KiB)",
+    "performance: Avoid serving legacy JavaScript to modern browsers (Est savings of 11 KiB)",
+    "performance: Largest Contentful Paint element (3,280 ms)",
+    "best-practices: Browser errors were logged to the console",
+    "best-practices: Issues were logged in the `Issues` panel in Chrome Devtools"
+   ]
+  },
+  "habitaciones_lugo": {
+   "rendimiento": 99,
+   "accesibilidad": 100,
+   "buenasPracticas": 96,
+   "seo": 100,
+   "LCP": "2.2 s",
+   "TBT": "40 ms",
+   "CLS": "0",
+   "fallos": [
+    "performance: Reduce unused JavaScript (Est savings of 21 KiB)",
+    "performance: Avoid serving legacy JavaScript to modern browsers (Est savings of 11 KiB)",
+    "best-practices: Browser errors were logged to the console"
+   ]
+  },
+  "inicio": {
+   "rendimiento": 99,
+   "accesibilidad": 96,
+   "buenasPracticas": 96,
+   "seo": 100,
+   "LCP": "2.0 s",
+   "TBT": "40 ms",
+   "CLS": "0",
+   "fallos": [
+    "performance: Reduce unused JavaScript (Est savings of 21 KiB)",
+    "performance: Avoid serving legacy JavaScript to modern browsers (Est savings of 11 KiB)",
+    "accessibility: Background and foreground colors do not have a sufficient contrast ratio.",
+    "best-practices: Browser errors were logged to the console"
+   ]
+  },
+  "perfil_a0000000-0000-4000-8000-000000000001": {
+   "rendimiento": 75,
+   "accesibilidad": 100,
+   "buenasPracticas": 93,
+   "seo": 63,
+   "LCP": "3.0 s",
+   "TBT": "140 ms",
+   "CLS": "0.371",
+   "fallos": [
+    "performance: Largest Contentful Paint (3.0 s)",
+    "performance: Cumulative Layout Shift (0.371)",
+    "performance: Reduce unused JavaScript (Est savings of 22 KiB)",
+    "performance: Avoid serving legacy JavaScript to modern browsers (Est savings of 11 KiB)",
+    "performance: Largest Contentful Paint element (3,050 ms)",
+    "performance: Avoid large layout shifts (1 layout shift found)",
+    "best-practices: Browser errors were logged to the console",
+    "best-practices: Issues were logged in the `Issues` panel in Chrome Devtools",
+    "seo: Page is blocked from indexing"
+   ]
+  }
+ },
+ "despues-indexacion-apagada": {
+  "habitaciones_lugo": {
+   "rendimiento": 98,
+   "accesibilidad": 100,
+   "buenasPracticas": 96,
+   "seo": 69,
+   "LCP": "2.2 s",
+   "TBT": "90 ms",
+   "CLS": "0",
+   "fallos": [
+    "performance: Reduce unused JavaScript (Est savings of 21 KiB)",
+    "performance: Avoid serving legacy JavaScript to modern browsers (Est savings of 11 KiB)",
+    "best-practices: Browser errors were logged to the console",
+    "seo: Page is blocked from indexing"
+   ]
+  },
+  "inicio": {
+   "rendimiento": 99,
+   "accesibilidad": 96,
+   "buenasPracticas": 96,
+   "seo": 69,
+   "LCP": "2.0 s",
+   "TBT": "60 ms",
+   "CLS": "0",
+   "fallos": [
+    "performance: Reduce unused JavaScript (Est savings of 21 KiB)",
+    "performance: Avoid serving legacy JavaScript to modern browsers (Est savings of 11 KiB)",
+    "accessibility: Background and foreground colors do not have a sufficient contrast ratio.",
+    "best-practices: Browser errors were logged to the console",
+    "seo: Page is blocked from indexing"
+   ]
+  }
+ }
+}

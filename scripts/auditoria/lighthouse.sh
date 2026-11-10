@@ -2,7 +2,7 @@
 # Lighthouse en móvil (emulación por defecto) sobre las pantallas públicas.
 # Uso: scripts/auditoria/lighthouse.sh <etiqueta> <carpeta-con-lighthouse> <url-base> <ruta>...
 # La carpeta debe tener `npm i lighthouse@12` (no es dependencia del proyecto).
-# Deja los JSON en docs/capturas-fase-7/lighthouse/<etiqueta>/ y un resumen por pantalla.
+# Deja los JSON en docs/capturas-fase-7/lighthouse/<etiqueta>/ (los de la Fase 7 se resumieron en resumen.json y se borraron por tamaño).
 set -euo pipefail
 label="$1"; lh="$2"; base="$3"; shift 3
 out="docs/capturas-fase-7/lighthouse/$label"
