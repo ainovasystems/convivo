@@ -25,3 +25,14 @@ test.describe("Sentry apagado sin clave", () => {
     expect(errors).toEqual([]);
   });
 });
+
+test.describe("comprobación de disponibilidad", () => {
+  test("/api/salud responde 200 sin dar detalles ni guardarse en caché", async ({ request }) => {
+    test.skip(!process.env.NEXT_PUBLIC_SUPABASE_URL, "Necesita Supabase");
+    const res = await request.get("/api/salud");
+    expect(res.status()).toBe(200);
+    expect(await res.json()).toEqual({ ok: true });
+    expect(res.headers()["cache-control"]).toContain("no-store");
+    expect(res.headers()["x-robots-tag"]).toContain("noindex");
+  });
+});
