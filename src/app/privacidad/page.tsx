@@ -92,6 +92,12 @@ export default function PrivacyPage() {
           <li><strong>Supabase</strong>: base de datos, cuentas y almacenamiento de fotos. Servidores en la Unión Europea. [POR COMPLETAR: región exacta y contrato de encargo]</li>
           <li><strong>Vercel</strong>: alojamiento de la web. Funciones en París (UE). [POR COMPLETAR: transferencias internacionales y cláusulas contractuales tipo]</li>
           <li><strong>Resend</strong>: envío de emails. [POR COMPLETAR: ubicación y garantías de transferencia]</li>
+          <li>
+            <strong>Sentry</strong>: avisos de errores y vigilancia de las tareas programadas de la web. Solo recibe la configuración y
+            avisos técnicos (por ejemplo, que una tarea ha fallado), sin datos de personas: los avisos de errores se limpian antes
+            de enviarse. Sus servidores de configuración y de avisos de tareas programadas están en EE. UU. [POR COMPLETAR:
+            contrato de encargo, cláusulas contractuales tipo y garantías de transferencia]
+          </li>
         </ul>
         <p>Otros usuarios ven lo que haces público: tu perfil, tus anuncios y tus reseñas publicadas.</p>
       </section>
