@@ -43,7 +43,7 @@ export async function buildDraftFromInterest(interestId: string, landlordId: str
   const supabase = await createClient();
   const { data: interest } = await supabase
     .from("interests")
-    .select("id, status, from_user, listing:listings!interests_listing_id_fkey(id, owner_id, kind, city, rental_term, available_from, available_until, monthly_rent, deposit, bills_included, furnished, rules), guest:profiles!interests_from_user_fkey(display_name)")
+    .select("id, status, from_user, listing:listings!interests_listing_id_fkey(id, owner_id, kind, city, province, rental_term, available_from, available_until, monthly_rent, deposit, bills_included, furnished, rules), guest:profiles!interests_from_user_fkey(display_name)")
     .eq("id", interestId)
     .maybeSingle();
   const listing = interest?.listing;
@@ -77,7 +77,7 @@ export async function buildDraftFromInterest(interestId: string, landlordId: str
     house_rules: houseRules ? `${houseRules}.` : "",
     seasonal_reason: listing.rental_term === "academic_year" ? "estudios durante el curso académico" : "",
   };
-  return { listing, interestId: interest.id, tenantId: interest.from_user, kind, terms };
+  return { listing, province: listing.province, interestId: interest.id, tenantId: interest.from_user, kind, terms };
 }
 
 /** Condiciones guardadas → valores válidos (o los errores). */

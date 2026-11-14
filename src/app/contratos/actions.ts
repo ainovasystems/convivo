@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 
 import { getCurrentUser } from "@/lib/auth";
+import { contractAvailability } from "@/lib/contracts/availability";
 import { CONTRACT_KINDS, contractKindErrors, contractTermsSchema, TEMPLATE_VERSION, type ContractKind } from "@/lib/contracts/schema";
 import { buildDraftFromInterest, getContract } from "@/lib/contracts/queries";
 import { contractToText, renderContract } from "@/lib/contracts/templates";
@@ -36,6 +37,10 @@ export async function createContractDraft(formData: FormData): Promise<void> {
 
   const draft = await buildDraftFromInterest(interestId.data, user.id);
   if (!draft) redirect(`/mensajes/${interestId.data}`);
+  // El contrato de habitación solo se ofrece en Galicia (fuera, se confirma la estancia en el chat).
+  if (!contractAvailability(draft.listing.kind === "room" ? "room" : "flat", draft.province).available) {
+    redirect(`/mensajes/${interestId.data}`);
+  }
   const { data, error } = await supabase
     .from("contracts")
     .insert({

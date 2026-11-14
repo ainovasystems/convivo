@@ -9,6 +9,7 @@ import { StaysPanel } from "@/components/conversations/stays-panel";
 import { createContractDraft } from "@/app/contratos/actions";
 import { Avatar } from "@/components/profile/avatar";
 import { getCurrentUser } from "@/lib/auth";
+import { contractAvailability } from "@/lib/contracts/availability";
 import { getContractForInterest } from "@/lib/contracts/queries";
 import { getConversation } from "@/lib/conversations/queries";
 import { INTEREST_STATUS_LABELS, interestActions } from "@/lib/conversations/state";
@@ -29,6 +30,7 @@ export default async function ConversationPage({ params }: { params: Promise<{ i
   const other = role === "owner" ? interest.guest : listing.owner;
   const actions = interestActions(interest.status, role);
   const contract = listing.kind !== "seeking" ? await getContractForInterest(interest.id) : null;
+  const availability = listing.kind !== "seeking" ? contractAvailability(listing.kind, listing.province) : null;
 
   const names: Record<string, string> = {};
   if (interest.guest) names[interest.guest.id] = interest.guest.display_name;
@@ -96,15 +98,17 @@ export default async function ConversationPage({ params }: { params: Promise<{ i
                   ? role === "owner"
                     ? "Tienes un borrador de contrato a medias."
                     : `${listing.owner?.display_name} está preparando el contrato.`
-                  : role === "owner"
-                    ? "¿Os habéis puesto de acuerdo? Prepara el contrato y firmadlo aquí: la estancia quedará confirmada."
-                    : "Cuando os pongáis de acuerdo, el anunciante podrá enviarte el contrato para firmarlo aquí."}
+                  : availability && !availability.available
+                    ? availability.message
+                    : role === "owner"
+                      ? "¿Os habéis puesto de acuerdo? Prepara el contrato y firmadlo aquí: la estancia quedará confirmada."
+                      : "Cuando os pongáis de acuerdo, el anunciante podrá enviarte el contrato para firmarlo aquí."}
           </p>
           {contract && (contract.status !== "draft" || role === "owner") ? (
             <Link href={`/contratos/${contract.id}`} className="rounded-full bg-brand px-4 py-2 text-sm font-bold text-brand-foreground">
               Ver contrato
             </Link>
-          ) : !contract && role === "owner" && interest.status === "accepted" ? (
+          ) : !contract && role === "owner" && interest.status === "accepted" && availability?.available ? (
             <form action={createContractDraft}>
               <input type="hidden" name="interestId" value={interest.id} />
               <button className="rounded-full bg-brand px-4 py-2 text-sm font-bold text-brand-foreground">Preparar contrato</button>

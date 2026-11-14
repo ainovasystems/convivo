@@ -3,7 +3,7 @@ import "server-only";
 import { createClient } from "@/lib/supabase/server";
 
 const INTEREST_COLUMNS =
-  "id, status, message, created_at, decided_at, from_user, listing:listings!interests_listing_id_fkey(id, title, kind, city, owner_id, owner:profiles!listings_owner_id_fkey(id, display_name, avatar_path)), guest:profiles!interests_from_user_fkey(id, display_name, avatar_path)";
+  "id, status, message, created_at, decided_at, from_user, listing:listings!interests_listing_id_fkey(id, title, kind, city, province, owner_id, owner:profiles!listings_owner_id_fkey(id, display_name, avatar_path)), guest:profiles!interests_from_user_fkey(id, display_name, avatar_path)";
 
 /** Total de mensajes sin leer (para el contador de la cabecera). */
 export async function getUnreadTotal(): Promise<number> {
