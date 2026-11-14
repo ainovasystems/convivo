@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 
-import { DEPOSIT_RULES, depositRuleFor, PROVINCE_CCAA } from "@/lib/contracts/deposits";
+import * as depositsModule from "@/lib/contracts/deposits";
+import { depositGuideFor } from "@/lib/contracts/deposits";
 import { compareWithEntry, groupByArea, inventoryItemSchema, isInventoryPhotoPath, stageFromSlug } from "@/lib/contracts/inventory";
-import { PROVINCES } from "@/lib/listings/options";
 
 const C = "11111111-1111-4111-8111-111111111111";
 const I = "22222222-2222-4222-8222-222222222222";
@@ -48,20 +48,37 @@ describe("inventario", () => {
 });
 
 describe("guía de la fianza", () => {
-  it("todas las provincias tienen comunidad y todas las comunidades, regla", () => {
-    for (const p of PROVINCES) expect(DEPOSIT_RULES[PROVINCE_CCAA[p]]).toBeDefined();
+  it("solo tiene dos versiones: Galicia y resto de España", () => {
+    for (const p of ["A Coruña", "Lugo", "Ourense", "Pontevedra"]) expect(depositGuideFor(p).version).toBe("galicia");
+    for (const p of ["Madrid", "Sevilla", "Barcelona", "Navarra", null, undefined, "Atlántida"]) {
+      expect(depositGuideFor(p).version).toBe("other");
+    }
+    // Ya no hay datos por comunidad autónoma.
+    expect(Object.keys(depositsModule).sort()).toEqual(["DEPOSIT_NOTICE", "DEPOSIT_RETURN_TEXT", "depositGuideFor"]);
   });
 
-  it("si hay que depositarla, dice dónde y en qué plazo", () => {
-    for (const rule of Object.values(DEPOSIT_RULES)) {
-      if (rule.required) {
-        expect(rule.organism).toBeTruthy();
-        expect(rule.deadline).toBeTruthy();
-      }
+  it("Galicia: IGVS, gratuito y sin intereses, copia del justificante en un mes, y dice lo que no está confirmado", () => {
+    const g = depositGuideFor("Lugo");
+    const text = [...g.paragraphs, ...g.unconfirmed].join(" ");
+    expect(text).toMatch(/Instituto Galego da Vivenda e Solo \(IGVS\)/);
+    expect(text).toMatch(/gratuito y no genera intereses/);
+    expect(text).toMatch(/copia del justificante.*un mes/);
+    expect(g.unconfirmed.join(" ")).toMatch(/plazo de un mes.*fuentes secundarias.*no lo hemos confirmado/);
+    expect(g.unconfirmed.join(" ")).toMatch(/habitaciones/);
+    expect(g.law).toMatch(/Decreto 42\/2011/);
+  });
+
+  it("resto de España: texto genérico, sin organismos ni plazos por comunidad", () => {
+    const g = depositGuideFor("Madrid");
+    expect(g.paragraphs.join(" ")).toMatch(/organismo de vivienda de tu comunidad/);
+    expect(g.paragraphs.join(" ")).toMatch(/no es obligatorio/);
+    expect(g.paragraphs.join(" ")).not.toMatch(/Agencia|IGVS|plazo de/i);
+    expect(g.url).toBeUndefined();
+  });
+
+  it("siempre lleva el aviso de «orientativo» y de consultar el organismo", () => {
+    for (const p of ["Lugo", "Madrid", null]) {
+      expect(depositGuideFor(p).notice).toMatch(/orientativa.*consulta el organismo de vivienda/);
     }
-    expect(depositRuleFor("Lugo")?.rule.organism).toMatch(/IGVS/);
-    expect(depositRuleFor("Sevilla")?.rule.required).toBe(false);
-    expect(depositRuleFor(null)).toBeNull();
-    expect(depositRuleFor("Atlántida")).toBeNull();
   });
 });

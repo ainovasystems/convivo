@@ -106,8 +106,8 @@ export default async function ContractPage({ params }: { params: Promise<{ id: s
                 </ul>
               </section>
             ) : null}
-            {c.status === "signed" || c.status === "sent" ? (
-              <DepositGuide province={c.listing?.province ?? null} deposit={Number(terms.deposit ?? 0)} isRoom={c.kind === "room"} />
+            {isLandlord && (c.status === "signed" || c.status === "sent") ? (
+              <DepositGuide province={c.listing?.province ?? null} deposit={Number(terms.deposit ?? 0)} />
             ) : null}
             {c.status === "cancelled" ? (
               <p className="rounded-2xl bg-surface p-4 text-sm text-muted">Este contrato se canceló y ya no se puede firmar.</p>
