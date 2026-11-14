@@ -32,12 +32,13 @@ export function ListingCard({
             src={publicStorageUrl("listing-photos", cover)}
             alt={photoAlt}
             fill
-            sizes="(min-width: 1024px) 360px, (min-width: 640px) 50vw, 100vw"
+            // En móvil se pide como mucho la versión de 828 px (276 px × 3), no la de 1.200 (ver docs/PESO-DE-LAS-FOTOS.md).
+            sizes="(min-width: 1024px) 360px, (min-width: 640px) 50vw, 276px"
             className="object-cover transition duration-500 group-hover:scale-[1.03]"
             priority={priority}
           />
         ) : (
-          <div className="flex h-full flex-col items-center justify-center gap-2 text-brand/70" aria-hidden="true">
+          <div className="flex h-full flex-col items-center justify-center gap-2 text-brand" aria-hidden="true">
             <KindIcon className="size-12" />
             <span className="text-sm font-semibold">{listing.kind === "seeking" ? "Busca hogar" : "Sin fotos aún"}</span>
           </div>
