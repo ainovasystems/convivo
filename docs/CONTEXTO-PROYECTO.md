@@ -25,7 +25,7 @@ Plataforma web en español (España) para **vivienda compartida**: un «LinkedIn
 
 - la revisión del abogado;
 - configurar los emails y el dominio;
-- el pulido de diseño, accesibilidad y rendimiento (fase 7b; el SEO técnico ya está hecho en la 7a);
+- repasar a mano la accesibilidad con teclado y lector de pantalla (A8; la 7b ya corrigió lo que midió axe);
 - **montar producción**: la operación ya está preparada en la 8a (CI, Sentry, copias y guía paso a paso en `docs/DEPLOY.md`). Lo que falta, con responsable, está en `docs/CHECKLIST-LANZAMIENTO.md`.
 
 **Datos del entorno:**
@@ -46,7 +46,7 @@ Plataforma web en español (España) para **vivienda compartida**: un «LinkedIn
 
 **Buscar**
 
-- Filtrar por tipo, provincia, ciudad, precio, fecha de entrada, periodo, amueblado, gastos, mascotas, fumadores y orden.
+- La búsqueda arranca con los filtros plegados (resumen y chips que se quitan con un toque). Filtrar por tipo, provincia, ciudad, precio, fecha de entrada, periodo, amueblado, gastos, mascotas, fumadores y orden.
 - La búsqueda funciona sin JavaScript y se comparte por URL.
 
 **Publicar**
@@ -54,6 +54,7 @@ Plataforma web en español (España) para **vivienda compartida**: un «LinkedIn
 - Asistente por pasos con autoguardado del borrador y hasta 8 fotos, que se comprimen y pierden la ubicación GPS.
 - Periodo de alquiler: indefinido, curso universitario o fechas concretas.
 - Si la ciudad es conocida, la provincia se rellena sola.
+- La ficha repite el botón de contacto tras «Datos clave» (en móvil) y carga solo la primera foto de la galería hasta que se desliza.
 - Se rechazan los textos discriminatorios («solo españoles»…). El campo y el filtro «solo chicas/chicos» se quitaron (Ley 15/2022); lo que cada anunciante escriba en su descripción sigue siendo libre.
 - Desde «Mis anuncios» se puede pausar, reactivar, cerrar, duplicar y borrar.
 
@@ -135,7 +136,7 @@ Plataforma web en español (España) para **vivienda compartida**: un «LinkedIn
 12. **Indexación:** la web de pruebas no se indexa (una variable la enciende en producción); perfiles y anuncios «busco» no se indexan; las páginas de ciudad son solo las del piloto.
 13. **Identidad visual:** blanco y crema, marrón nogal #7b4b2a y acento miel #f4b740, tipografía Plus Jakarta Sans, botones en píldora y estilo startup (Glovo, Too Good To Go, BlaBlaCar). El modo oscuro está desactivado.
 
-Las 62 decisiones técnicas están numeradas en `CLAUDE.md` → «Decisiones tomadas».
+Las 63 decisiones técnicas están numeradas en `CLAUDE.md` → «Decisiones tomadas».
 
 ## 6. Riesgos principales
 

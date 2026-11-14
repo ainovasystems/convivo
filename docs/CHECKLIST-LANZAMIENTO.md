@@ -53,8 +53,9 @@
 | Tarea | Responsable | Estado | Cuándo |
 |---|---|---|---|
 | **Control previo de datos personales** en reseñas y anuncios (prioritario) | Claude Code | ⏳ | Antes del piloto |
-| Fase 7b: búsqueda y ficha en móvil, rendimiento y accesibilidad (`docs/REVISION-FASE-7.md`) | Claude Code | ⏳ | Antes del piloto |
-| Fotos más ligeras en las tarjetas y la galería del móvil (`docs/PESO-DE-LAS-FOTOS.md`, recomendaciones 1 y 2; entra en la 7b) | Claude Code | ⏳ | Antes del piloto |
+| Fase 7b: búsqueda y ficha en móvil, rendimiento y accesibilidad (`docs/REVISION-FASE-7.md`) | Claude Code | ✅ | Hecho (14 nov 2026); falta confirmar el CLS del perfil con Supabase real |
+| Fotos más ligeras en las tarjetas y la galería del móvil (`docs/PESO-DE-LAS-FOTOS.md`, recomendaciones 1 y 2; hechas en la 7b) | Claude Code | ✅ | Hecho (14 nov 2026); repetir la medición con fotos reales |
+| Pasada manual con teclado y lector de pantalla (A8) en las 5 pantallas clave | Usuario | ⏳ | Antes del piloto |
 | Seguimiento de la fianza | Claude Code | ⏳ | Antes del piloto |
 | Plan del piloto en una ciudad: objetivos, captación de anuncios y moderación | Usuario (en la planificación) | ⏳ | Antes del piloto |
 | Moderador con tiempo para mirar `/admin` a diario: objetivo de 72 h para las notificaciones DSA | Usuario | ⏳ | Antes del piloto |

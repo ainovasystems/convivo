@@ -102,3 +102,22 @@ Pantallas revisadas sin hallazgos relevantes: inicio, páginas de ciudad (nuevas
 3. **A1–A4**: todos pequeños, y limpian los «graves» de axe.
 4. **A5** y una **pasada manual de teclado y lector de pantalla** (A8).
 5. El resto, según el tiempo.
+
+---
+
+## 5. Estado tras la 7b (14 de noviembre de 2026)
+
+**Hechos:** D1, D2, D3, D4, D6, D7, D9, P1, P2, A1, A2, A3, A4, A5, A6 (más las fotos de `docs/PESO-DE-LAS-FOTOS.md`, recomendaciones 1 y 2). **Aparcados** tal cual (ver «Ideas aparcadas» de la hoja de ruta): D5, D8, D10, D11, P3, P4, P5, P6, A7. **A8** (pasada manual con teclado y lector de pantalla) es tarea del usuario.
+
+**Cómo se midió esta vez y qué límites tiene.** La sesión no tenía Docker, así que **no se pudo levantar el Supabase local de la 7a**. En su lugar se midió contra un servidor falso que imita la API de datos con 6 anuncios y 1 perfil (una foto de ejemplo de 120 KB en todos). Sirve para comparar antes y después **con el mismo entorno**, pero NO es comparable con las cifras de la 7a ni representa el peso de fotos reales. Lighthouse móvil 12 y axe (WCAG 2 A/AA, 2.1 y 2.2 AA y buenas prácticas) a 375 px, con la indexación apagada (por eso el SEO sale 69/63 en ambos).
+
+| Pantalla | Antes (rend / acc / bp) | Después | LCP antes → después | CLS |
+|---|---|---|---|---|
+| Búsqueda | 94 / 98 / 96 | 95 / 100 / 96 | 2,9 s → 2,9 s | 0 → 0 |
+| Ficha | 98 / 100 / 93 | 97 / 100 / 93 | 2,4 s → 2,4 s | 0 → 0 |
+| Perfil | 98 / 100 / 93 | 97 / 100 / 93 | 1,9 s → 1,9 s | 0 → 0 |
+
+- **Fotos en móvil (DPR 3):** tarjetas de búsqueda, 6 peticiones de **1.200 px → 828 px** (la mitad de píxeles); ficha, **4 peticiones → 1** al entrar (las otras 3 salen al deslizar).
+- **axe:** búsqueda 1 fallo (orden de encabezados) → **0**; ficha, perfil y acceso, 0 → 0.
+- **No verificado:** el **CLS del perfil (0,37 en la 7a)** no se reproduce con datos falsos (da 0 antes y después, porque el servidor falso responde al instante). La causa documentada era el esqueleto de carga y se ha quitado, pero hay que **confirmarlo con Supabase real** (CI o la web de pruebas). Tampoco se ha medido el peso real de las fotos ni el LCP en Vercel, ni la mediana de 5 pasadas, ni se han ejecutado los e2e (los verifica la CI de GitHub).
+- El rendimiento ≥ 90 se cumple en las tres pantallas medidas (con datos falsos y en local, cifras orientativas).

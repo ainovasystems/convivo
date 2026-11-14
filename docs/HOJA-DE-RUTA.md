@@ -2,7 +2,7 @@
 
 > **Fuente única de «qué toca ahora».** Solo se trabaja en el bloque marcado como **SIGUIENTE**. Lo que surja por el camino va a «Ideas aparcadas», no se hace en ese momento.
 > La actualiza Claude Code al cerrar cada bloque y se vuelve a subir al proyecto de Claude.
-> Última actualización: **14 de noviembre de 2026** (cierre de «Correcciones legales»).
+> Última actualización: **14 de noviembre de 2026** (cierre de la 7b).
 > Lo que falta antes de abrir, con responsable y estado: `docs/CHECKLIST-LANZAMIENTO.md`.
 
 ## Hecho
@@ -16,14 +16,14 @@
 | Contratos · fase 1 | Plantillas, edición, envío, firma de los dos, estancia confirmada, PDF |
 | Contratos · fase 2 | Inventario de entrada y salida con fotos privadas y bloqueo, guía de la fianza por comunidad autónoma |
 | Fase 8a · Operación sin dominio | CI en GitHub Actions (lint, tipos, pruebas, build y e2e con Supabase local en cada cambio), Sentry preparado (apagado sin clave, UE, sin datos personales, límite de envíos, monitor de la tarea diaria), `/api/salud` para el monitor de disponibilidad, `docs/DEPLOY.md`, `docs/COPIAS-DE-SEGURIDAD.md`, `docs/CHECKLIST-LANZAMIENTO.md` y medición del peso de las fotos (`docs/PESO-DE-LAS-FOTOS.md`) |
+| Fase 7b · Arreglos de diseño, accesibilidad y rendimiento | D1-D4, D6, D7, D9, P1, P2, A1-A6 y fotos más ligeras (ver `docs/REVISION-FASE-7.md` §5): filtros plegados con resumen y chips, botón de contacto repetido en la ficha, perfil sin esqueleto, tarjetas ≤ 828 px y galería que carga solo la primera foto |
 | Correcciones legales | Quitado el campo y el filtro «solo chicas/chicos»; contrato de habitación solo para anuncios en Galicia (fuera, aviso y la estancia se confirma en el chat); guía de la fianza con dos versiones (Galicia y resto de España) y solo para el casero, tras el botón «¿Ayuda con la fianza?»; línea «DNI/NIE» en blanco por parte en los contratos; Sentry en `/privacidad` |
 | Fase 7a · SEO técnico y auditoría | Páginas de ciudad (`/habitaciones/lugo`, `/pisos/lugo`…), `sitemap.xml`, `robots.txt`, datos estructurados, tarjetas para compartir, indexación apagada con una variable, y `docs/REVISION-FASE-7.md` (Lighthouse, axe y 52 capturas en móvil) |
 
 ## SIGUIENTE (en este orden, decidido en la planificación)
 
-1. **Fase 7b · Corregir lo que salió en la revisión** (`docs/REVISION-FASE-7.md`). El usuario decide qué entra; la propuesta es D1, D2, P1, P2, A1-A4 y la pasada manual con teclado y lector de pantalla. Incluir las **fotos más ligeras** de `docs/PESO-DE-LAS-FOTOS.md` (parte de la 8a): **tarjetas de búsqueda en móvil pidiendo como mucho 828 px** (recomendación 1) y **en la ficha, cargar solo la primera foto de la galería** (recomendación 2). Objetivo: Lighthouse ≥ 90 en las cinco pantallas y 0 fallos «graves» de axe.
-2. **Seguimiento de la fianza** (alcance a definir en la planificación). Parte de lo que ya hay: la guía solo para el casero, con dos versiones.
-3. **Piloto** en una ciudad (Galicia, que es donde hay contrato de habitación): montar producción con `docs/DEPLOY.md`, completar `docs/CHECKLIST-LANZAMIENTO.md`, objetivos y captación.
+1. **Seguimiento de la fianza**: nivel 1 para todos, más la **liquidación de salida** (descuentos justificados con el inventario) y la **negociación documentada**. Sin tocar dinero. Alcance fino a cerrar en la planificación.
+2. **Piloto** en una ciudad (Galicia, que es donde hay contrato de habitación): montar producción con `docs/DEPLOY.md`, completar `docs/CHECKLIST-LANZAMIENTO.md`, objetivos y captación.
 
 Después del piloto: contratos · fase 3 / **Fase B de pagos** con socio regulado, y app nativa (Expo / React Native) reutilizando la misma base de datos.
 
@@ -42,6 +42,7 @@ Después del piloto: contratos · fase 3 / **Fase B de pagos** con socio regulad
 | Nombrar admins (SQL en `CLAUDE.md`) | Moderación | Antes del piloto |
 | Comprobar «Hommie» en TMview / OEPM (ojo con «homming») antes de comprar o renombrar nada | Marca | Alta |
 | Montar producción siguiendo `docs/DEPLOY.md` (Supabase Pro en la UE, Vercel Pro, Resend, Sentry en la UE con sus 3 alertas) | Producción | Antes del piloto |
+| **Pasada manual (A8):** probar con teclado y con lector de pantalla (VoiceOver o TalkBack) las 5 pantallas clave: inicio, búsqueda, ficha, perfil y chat (30-60 min) | Accesibilidad real: axe no lo detecta todo | Antes del piloto |
 | Traducir al español las plantillas de email de Supabase Auth | Emails de acceso | Antes de abrir |
 
 ## Preguntas para el abogado (agrupadas)
@@ -79,6 +80,9 @@ Después del piloto: contratos · fase 3 / **Fase B de pagos** con socio regulad
 
 ## Ideas aparcadas (no hacer sin decidirlo antes en la planificación)
 
+- **De la revisión de la 7a, no incluidos en la 7b** (descripción en `docs/REVISION-FASE-7.md`): **D5** contrato e inventario con UUID largos (toca el texto firmado: pendiente del abogado), **D8** pasos del asistente con barra de progreso, **D10** índice en las páginas legales, **D11** estados vacíos con acción, **P3** JS heredado/sin usar (`browserslist`), **P4** rutas pesadas (publicar, chat, editar perfil), **P5** variabilidad del TBT en inicio, **P6** caché de ida y vuelta (bfcache), **A7** botones desactivados con ayuda.
+- **Pendiente de verificar con Supabase real** (CI o web de pruebas): el CLS del perfil tras quitar su esqueleto, y repetir la medición de peso con fotos reales y en Vercel.
+- Calidad de la versión optimizada de las tarjetas (de 75 a ~60): recomendación 3 de `docs/PESO-DE-LAS-FOTOS.md`, opcional.
 - **Control previo de datos personales** en reseñas y anuncios antes de publicar (caso Russmedia). **Prioritario antes del piloto.**
 - Tarea de purga automática de los plazos de conservación.
 - Suspender cuentas desde `/admin`.

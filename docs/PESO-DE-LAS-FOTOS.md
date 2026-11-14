@@ -30,7 +30,9 @@
 - Cuenta aproximada: **1.000 visitas al día en móvil × 2 MB ≈ 60 GB de fotos al mes en Vercel.** Los límites exactos de Vercel (tráfico y número de imágenes optimizadas al mes) **no los he verificado**: hay que mirarlos en el panel de Vercel → Usage.
 - **Cifras de alarma en Supabase** (revisión mensual; están en el checklist): tráfico de salida **> 150 GB/mes** o ficheros **> 60 GB**. El plan Pro incluye 250 GB de tráfico y 100 GB de ficheros. Si saltara la alarma de tráfico con este esquema, lo más probable es que algo se esté sirviendo directamente desde Supabase sin pasar por el optimizador.
 
-## Recomendaciones (no aplicadas; a decidir)
+## Recomendaciones (1 y 2 aplicadas en la 7b; el resto, a decidir)
+
+> **7b (14 nov 2026):** las recomendaciones 1 y 2 están hechas. Tarjetas: `sizes` de 276 px en móvil (el optimizador pide 828 px en vez de 1.200; en la medición con datos de prueba, 6 tarjetas pasaron de 6×1.200 px a 6×828 px). Ficha: solo se descarga la primera foto al entrar y las demás al deslizar (de 4 peticiones a 1). Falta repetir la medición de peso real con fotos de verdad (ver `docs/REVISION-FASE-7.md`).
 
 1. **Tarjetas en móvil: pedir como mucho unos 828 px** en vez de 1.200. Basta con ajustar el `sizes` de la tarjeta o limitar los anchos del optimizador. Ahorra en torno a un 40-50 % en la búsqueda: de 1,1 MB a unos 0,6 MB al entrar. Es el cambio con más efecto y entra bien en la **7b (P2)**.
 2. **Galería de la ficha: cargar solo la primera foto** y las demás cuando el usuario deslice. Ahorra unos 550 KB por ficha en móvil.
