@@ -34,7 +34,7 @@
 | Riesgo | Probabilidad e impacto | Medidas existentes | Riesgo residual |
 |---|---|---|---|
 | Reseña difamatoria o con datos personales de un tercero | Media / alto | Solo tras estancia confirmada, doble ciego, denuncia interna, ocultación cautelar por datos personales, canal DSA abierto a quien no tiene cuenta, decisión humana motivada y registrada | Medio. Valorar la detección previa de datos personales (doctrina Russmedia) |
-| Discriminación en anuncios | Media / alto | Validación de exclusiones por origen, religión, etc.; hábitos con claves cerradas. La preferencia de sexo («solo chicas») se permite por decisión de producto en vivienda compartida | Medio: pendiente de criterio legal (Ley 15/2022) |
+| Discriminación en anuncios | Media / alto | Validación de exclusiones por origen, religión, etc.; hábitos con claves cerradas. El campo cerrado de preferencia de sexo («solo chicas/chicos») se quitó por la Ley 15/2022; lo que cada anunciante escriba en su descripción sigue siendo libre | Medio-bajo: pendiente de criterio legal sobre el texto libre |
 | Estafas a inquilinos | Media / alto | Marcas anti-fraude con revisión humana, aviso fijo en el chat, dirección oculta | Medio |
 | Revelar la dirección exacta | Baja / alto | RLS: solo el dueño y los interesados aceptados | Bajo |
 | Acceso indebido a datos de otros usuarios | Baja / alto | RLS en todas las tablas con tests de atacante, CSP con nonce, límites de intentos de acceso | Bajo |

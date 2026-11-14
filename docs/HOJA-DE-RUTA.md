@@ -2,7 +2,7 @@
 
 > **Fuente única de «qué toca ahora».** Solo se trabaja en el bloque marcado como **SIGUIENTE**. Lo que surja por el camino va a «Ideas aparcadas», no se hace en ese momento.
 > La actualiza Claude Code al cerrar cada bloque y se vuelve a subir al proyecto de Claude.
-> Última actualización: **14 de noviembre de 2026** (cierre de la Fase 8a).
+> Última actualización: **14 de noviembre de 2026** (cierre de «Correcciones legales»).
 > Lo que falta antes de abrir, con responsable y estado: `docs/CHECKLIST-LANZAMIENTO.md`.
 
 ## Hecho
@@ -16,17 +16,14 @@
 | Contratos · fase 1 | Plantillas, edición, envío, firma de los dos, estancia confirmada, PDF |
 | Contratos · fase 2 | Inventario de entrada y salida con fotos privadas y bloqueo, guía de la fianza por comunidad autónoma |
 | Fase 8a · Operación sin dominio | CI en GitHub Actions (lint, tipos, pruebas, build y e2e con Supabase local en cada cambio), Sentry preparado (apagado sin clave, UE, sin datos personales, límite de envíos, monitor de la tarea diaria), `/api/salud` para el monitor de disponibilidad, `docs/DEPLOY.md`, `docs/COPIAS-DE-SEGURIDAD.md`, `docs/CHECKLIST-LANZAMIENTO.md` y medición del peso de las fotos (`docs/PESO-DE-LAS-FOTOS.md`) |
+| Correcciones legales | Quitado el campo y el filtro «solo chicas/chicos»; contrato de habitación solo para anuncios en Galicia (fuera, aviso y la estancia se confirma en el chat); guía de la fianza con dos versiones (Galicia y resto de España) y solo para el casero, tras el botón «¿Ayuda con la fianza?»; línea «DNI/NIE» en blanco por parte en los contratos; Sentry en `/privacidad` |
 | Fase 7a · SEO técnico y auditoría | Páginas de ciudad (`/habitaciones/lugo`, `/pisos/lugo`…), `sitemap.xml`, `robots.txt`, datos estructurados, tarjetas para compartir, indexación apagada con una variable, y `docs/REVISION-FASE-7.md` (Lighthouse, axe y 52 capturas en móvil) |
 
 ## SIGUIENTE (en este orden, decidido en la planificación)
 
-1. **Correcciones legales** (el siguiente bloque):
-   - quitar el campo y el filtro «solo chicas/chicos» (`listings.cohabitation`, filtro `convivencia`, textos y pruebas). Decisión 41 revocada;
-   - plantilla de contrato de habitación **solo para Galicia**;
-   - guía de la fianza **solo para Galicia** y un texto general para el «resto de España».
-2. **Fase 7b · Corregir lo que salió en la revisión** (`docs/REVISION-FASE-7.md`). El usuario decide qué entra; la propuesta es D1, D2, P1, P2, A1-A4 y la pasada manual con teclado y lector de pantalla. Incluir las **fotos más ligeras** de `docs/PESO-DE-LAS-FOTOS.md` (recomendaciones 1 y 2). Objetivo: Lighthouse ≥ 90 en las cinco pantallas y 0 fallos «graves» de axe.
-3. **Seguimiento de la fianza** (alcance a definir en la planificación).
-4. **Piloto** en una ciudad: montar producción con `docs/DEPLOY.md`, completar `docs/CHECKLIST-LANZAMIENTO.md`, objetivos y captación.
+1. **Fase 7b · Corregir lo que salió en la revisión** (`docs/REVISION-FASE-7.md`). El usuario decide qué entra; la propuesta es D1, D2, P1, P2, A1-A4 y la pasada manual con teclado y lector de pantalla. Incluir las **fotos más ligeras** de `docs/PESO-DE-LAS-FOTOS.md` (parte de la 8a): **tarjetas de búsqueda en móvil pidiendo como mucho 828 px** (recomendación 1) y **en la ficha, cargar solo la primera foto de la galería** (recomendación 2). Objetivo: Lighthouse ≥ 90 en las cinco pantallas y 0 fallos «graves» de axe.
+2. **Seguimiento de la fianza** (alcance a definir en la planificación). Parte de lo que ya hay: la guía solo para el casero, con dos versiones.
+3. **Piloto** en una ciudad (Galicia, que es donde hay contrato de habitación): montar producción con `docs/DEPLOY.md`, completar `docs/CHECKLIST-LANZAMIENTO.md`, objetivos y captación.
 
 Después del piloto: contratos · fase 3 / **Fase B de pagos** con socio regulado, y app nativa (Expo / React Native) reutilizando la misma base de datos.
 
@@ -53,15 +50,15 @@ Después del piloto: contratos · fase 3 / **Fase B de pagos** con socio regulad
 
 1. ¿Son válidas las tres plantillas de contrato? ¿Qué cláusulas faltan o sobran?
 2. Habitación en vivienda compartida: ¿Código Civil o LAU, según el caso?
-3. ¿Basta con identificar a las partes por su nombre completo y su cuenta de Convivo, sin DNI ni domicilio?
-4. ¿Son correctos los datos de la guía de la fianza (`src/lib/contracts/deposits.ts`)? Sobre todo Andalucía (suprimido en 2026), Navarra (desde 2027) y Cataluña (habitaciones desde 2026).
+3. ¿Basta con identificar a las partes por su nombre completo y su cuenta de Convivo, sin DNI ni domicilio? (Hoy cada contrato lleva una línea «DNI/NIE» en blanco para rellenar a mano: ver pregunta 19.)
+4. **Solo Galicia:** ¿es correcta la guía de la fianza de Galicia (`src/lib/contracts/deposits.ts`: IGVS, depósito gratuito y sin intereses, copia del justificante en un mes)? Sin confirmar: el plazo de un mes para depositar y si la obligación alcanza a las habitaciones. Fuera de Galicia ya no damos datos por comunidad.
 5. ¿Plazo de conservación de los contratos y los inventarios? Hoy se conservan sin límite.
 
 **Digital y protección de datos**
 
 6. ¿Sirve la firma electrónica simple (eIDAS) para estos contratos, o hace falta la avanzada?
 7. Responsabilidad por las reseñas (LSSI/DSA, difamación) y si el canal DSA y la moderación actuales bastan.
-8. «Solo chicas/chicos» frente a la Ley 15/2022: ¿mantener, limitar o quitar?
+8. «Solo chicas/chicos» frente a la Ley 15/2022: **ya se quitó el campo y el filtro** (producto, noviembre de 2026). ¿Es seguro dejar que cada anunciante lo escriba libremente en la descripción, o hay que filtrarlo también en el texto?
 9. ¿Es suficiente la ponderación del interés legítimo para conservar las reseñas tras borrar la cuenta y para enlazar las cuentas que vuelven (huella del email durante 2 años)?
 10. Plazos de la tabla `docs/legal/conservacion.md` y bloqueo del art. 32 LOPDGDD.
 11. Revisión de `/privacidad`, `/terminos`, la EIPD ligera y la edad mínima de 18 años.
@@ -69,6 +66,16 @@ Después del piloto: contratos · fase 3 / **Fase B de pagos** con socio regulad
 **Pagos (solo para la fase 3)**
 
 12. ¿Qué licencia o socio hace falta para cobrar rentas o fianzas y ofrecer un seguro de impago?
+
+**Nuevas (bloque «Correcciones legales»)**
+
+13. (a) **Sentry como encargado del tratamiento en EE. UU.** (configuración y avisos de tareas programadas, sin datos de personas, con la organización en la UE): ¿bastan las cláusulas contractuales tipo y la mención añadida en `/privacidad`?
+14. (b) ¿Puede un **socio regulado retener fondos** (reserva o primer mes) y qué licencia hace falta (entidad de pago, agente de una entidad…)?
+15. (c) **Límite de cobrar a casero e inquilino** por intermediar o formalizar el contrato (art. 20 LAU).
+16. (d) **Fianza legal frente a garantía adicional en Galicia**, y si la obligación de depositar alcanza a las habitaciones.
+17. (e) Si la **negociación documentada dentro de la app** vale como MASC (LO 1/2025).
+18. (f) El nombre **Hommie** frente a «homming» (marca): ¿riesgo de confusión?
+19. (g) **Validez de un contrato con el DNI/NIE en blanco** para el trámite de la fianza: ¿basta que lo rellene cada parte a mano al presentar el trámite, sin que Convivo lo recoja?
 
 ## Ideas aparcadas (no hacer sin decidirlo antes en la planificación)
 

@@ -41,9 +41,9 @@
 | Tarea | Responsable | Estado | Cuándo |
 |---|---|---|---|
 | Revisión de las **12 preguntas** de la hoja de ruta: plantillas de contrato, Código Civil o LAU, sin DNI, guía de la fianza, firma simple, reseñas y DSA, «solo chicas/chicos», interés legítimo, plazos de conservación, textos legales y pagos | Abogado | ⏳ | Antes de abrir |
-| **Correcciones legales** ya decididas: quitar el campo y el filtro «solo chicas/chicos», plantilla de habitación solo para Galicia y guía de la fianza solo para Galicia y «resto de España» | Claude Code | ⏳ | Siguiente bloque |
+| **Correcciones legales** ya decididas: quitar el campo y el filtro «solo chicas/chicos», plantilla de habitación solo para Galicia y guía de la fianza con dos versiones (Galicia y «resto de España») | Claude Code | ✅ | Hecho (14 nov 2026) |
 | Rellenar los `[POR COMPLETAR]` de `/privacidad` y `/terminos`: responsable, NIF, dirección, email de contacto y de reclamaciones | Usuario | ⏳ | Antes de abrir |
-| Añadir **Sentry** (y Resend, si no está) a la lista de encargados de la política de privacidad, mencionando que Sentry guarda en EE. UU. la configuración y los avisos de las tareas (sin datos de personas) | Claude Code + Abogado | ⏳ | Antes de abrir, si se usa Sentry |
+| Añadir **Sentry** (y Resend, si no está) a la lista de encargados de la política de privacidad, mencionando que Sentry guarda en EE. UU. la configuración y los avisos de las tareas (sin datos de personas) | Claude Code + Abogado | 🔄 | Mención añadida en `/privacidad` (borrador); falta que el abogado la valide (pregunta 13) |
 | Aceptar o firmar los **contratos de encargado del tratamiento** (DPA) de Supabase, Vercel, Resend y Sentry, y guardar una copia | Usuario | ⏳ | Antes de abrir |
 | Registro de actividades de tratamiento y EIPD ligera revisados (`docs/legal/`) | Abogado | ⏳ | Antes de abrir |
 | Quitar el aviso «Borrador pendiente de revisión legal» solo cuando el abogado lo apruebe: textos legales, plantillas de contrato y guía de la fianza | Claude Code (tras el abogado) | ➖ | Después de la revisión |
@@ -68,5 +68,5 @@
 | Vercel → **Usage** (tráfico y optimización de imágenes) y cuota de Sentry | Usuario | Mensual |
 | **Copia propia** de la base de datos y las fotos, cifrada, conservando las 3 últimas (`docs/COPIAS-DE-SEGURIDAD.md` §2) | Responsable técnico | Mensual |
 | **Prueba de restauración** en un proyecto temporal (§3.3) | Responsable técnico | Trimestral |
-| Revisar la guía de la fianza (`src/lib/contracts/deposits.ts`) | Claude Code + Abogado | Anual |
+| Revisar la guía de la fianza (`src/lib/contracts/deposits.ts`, solo Galicia y resto de España) | Claude Code + Abogado | Anual |
 | Revisar que la CI sigue en verde en GitHub (pestaña Actions) antes de publicar | Usuario | En cada publicación |

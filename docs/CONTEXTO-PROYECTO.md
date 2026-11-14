@@ -21,11 +21,10 @@ Plataforma web en español (España) para **vivienda compartida**: un «LinkedIn
 
 ## 2. Estado en una frase
 
-**El producto completo funciona en una web de pruebas**: anuncios, chat, estancias, reseñas, moderación, seguridad y RGPD, y contratos con firma, inventario y guía de la fianza. Para abrir al público falta lo siguiente:
+**El producto completo funciona en una web de pruebas**: anuncios, chat, estancias, reseñas, moderación, seguridad y RGPD, y contratos con firma, inventario y ayuda con la fianza. Para abrir al público falta lo siguiente:
 
 - la revisión del abogado;
 - configurar los emails y el dominio;
-- las **correcciones legales** ya decididas («solo chicas/chicos» fuera; contrato de habitación y guía de la fianza solo para Galicia);
 - el pulido de diseño, accesibilidad y rendimiento (fase 7b; el SEO técnico ya está hecho en la 7a);
 - **montar producción**: la operación ya está preparada en la 8a (CI, Sentry, copias y guía paso a paso en `docs/DEPLOY.md`). Lo que falta, con responsable, está en `docs/CHECKLIST-LANZAMIENTO.md`.
 
@@ -47,7 +46,7 @@ Plataforma web en español (España) para **vivienda compartida**: un «LinkedIn
 
 **Buscar**
 
-- Filtrar por tipo, provincia, ciudad, precio, fecha de entrada, periodo, convivencia «solo chicas/chicos», amueblado, gastos, mascotas, fumadores y orden.
+- Filtrar por tipo, provincia, ciudad, precio, fecha de entrada, periodo, amueblado, gastos, mascotas, fumadores y orden.
 - La búsqueda funciona sin JavaScript y se comparte por URL.
 
 **Publicar**
@@ -55,7 +54,7 @@ Plataforma web en español (España) para **vivienda compartida**: un «LinkedIn
 - Asistente por pasos con autoguardado del borrador y hasta 8 fotos, que se comprimen y pierden la ubicación GPS.
 - Periodo de alquiler: indefinido, curso universitario o fechas concretas.
 - Si la ciudad es conocida, la provincia se rellena sola.
-- Se rechazan los textos discriminatorios («solo españoles»…). «Solo chicas/chicos» se permite por decisión de producto.
+- Se rechazan los textos discriminatorios («solo españoles»…). El campo y el filtro «solo chicas/chicos» se quitaron (Ley 15/2022); lo que cada anunciante escriba en su descripción sigue siendo libre.
 - Desde «Mis anuncios» se puede pausar, reactivar, cerrar, duplicar y borrar.
 
 **Contactar**
@@ -70,8 +69,9 @@ Plataforma web en español (España) para **vivienda compartida**: un «LinkedIn
 
 **Contrato (fase 1)**
 
-- Con el interés aceptado, el casero pulsa «Preparar contrato».
-- Hay tres plantillas en borrador legal: habitación (Código Civil), vivienda habitual (LAU) y temporada (LAU).
+- Con el interés aceptado, el casero pulsa «Preparar contrato». **El de habitación solo está disponible en Galicia**: fuera sale un aviso, y la estancia y las reseñas funcionan igual (se confirman en el chat).
+- Hay tres plantillas en borrador legal: habitación (Código Civil, solo Galicia), vivienda habitual (LAU) y temporada (LAU).
+- Cada parte lleva una línea «DNI/NIE» en blanco para rellenar a mano al presentar el trámite de la fianza; Convivo no lo recoge.
 - Se firma escribiendo el nombre completo. Queda constancia de la fecha y la hora y de una huella del texto que impide cambiarlo.
 - Al firmar los dos, la estancia queda confirmada. El contrato se descarga en PDF.
 
@@ -80,7 +80,7 @@ Plataforma web en español (España) para **vivienda compartida**: un «LinkedIn
 - Con el contrato firmado, las dos partes hacen juntas el inventario de entrada: zona, elemento, estado, notas y fotos privadas.
 - Los dos lo confirman, y entonces queda bloqueado para siempre. Si alguien cambia algo antes, hay que volver a confirmarlo.
 - Al salir, el inventario de salida se compara con el de entrada y marca solo los daños nuevos.
-- Una guía orientativa dice dónde depositar la fianza en cada comunidad autónoma.
+- El casero tiene el botón «¿Ayuda con la fianza?», con una guía orientativa de dos versiones: Galicia y resto de España. El inquilino no la ve por ahora.
 
 **Reseñas**
 
@@ -121,9 +121,9 @@ Plataforma web en español (España) para **vivienda compartida**: un «LinkedIn
 1. **Reseñas solo tras una estancia confirmada por los dos**, con doble ciego, inmutables y con las reglas en la base de datos.
 2. **Estancias retroactivas** confirmadas por los dos, para resolver el arranque en frío de la reputación.
 3. **Sin mapa y sin dirección exacta** hasta que el anunciante acepta el interés.
-4. **Nunca se pide DNI**, ni nacionalidad, origen, religión o salud.
+4. **Nunca se pide DNI**, ni nacionalidad, origen, religión o salud. Los contratos solo llevan una línea «DNI/NIE» en blanco para que cada parte la rellene a mano al hacer el trámite de la fianza.
 5. **Edad exacta**, calculada a partir del año de nacimiento, con un mínimo de 18 años.
-6. **«Solo chicas/chicos»: decisión REVOCADA.** Se quitan el campo y el filtro en el bloque «Correcciones legales», que es el siguiente. Hoy siguen en la web.
+6. **«Solo chicas/chicos»: quitado** (noviembre de 2026, bloque «Correcciones legales»): ni campo ni filtro. La decisión anterior queda revocada por riesgo con la Ley 15/2022.
 7. **Borrar la cuenta desvincula, no destruye:**
    - el perfil queda como «Usuario eliminado» y las reseñas se conservan;
    - si la persona vuelve con el mismo email, recupera su historial;
@@ -135,14 +135,14 @@ Plataforma web en español (España) para **vivienda compartida**: un «LinkedIn
 12. **Indexación:** la web de pruebas no se indexa (una variable la enciende en producción); perfiles y anuncios «busco» no se indexan; las páginas de ciudad son solo las del piloto.
 13. **Identidad visual:** blanco y crema, marrón nogal #7b4b2a y acento miel #f4b740, tipografía Plus Jakarta Sans, botones en píldora y estilo startup (Glovo, Too Good To Go, BlaBlaCar). El modo oscuro está desactivado.
 
-Las 60 decisiones técnicas están numeradas en `CLAUDE.md` → «Decisiones tomadas».
+Las 62 decisiones técnicas están numeradas en `CLAUDE.md` → «Decisiones tomadas».
 
 ## 6. Riesgos principales
 
 - **Legal:** nada se abre al público sin la revisión del abogado. Lista de preguntas en `docs/HOJA-DE-RUTA.md`.
 - **Arranque en frío:** una web de reseñas vale poco sin reseñas. Plan: **piloto en una sola ciudad** universitaria (Lugo o Santiago), sembrando reputación con los contratos y las estancias retroactivas.
 - **Fraude** típico del sector: pagos por adelantado y «estoy en el extranjero». Está cubierto con la detección, el aviso en el chat y la moderación, pero hay que vigilarlo en el piloto.
-- **Datos de la guía de la fianza:** son orientativos y hay que verificarlos.
+- **Fianza:** la ayuda es orientativa y solo tiene dos versiones (Galicia y resto de España). Lo de Galicia (plazo de un mes para depositar y que alcance a habitaciones) no está confirmado y lo dice el propio texto.
 
 ## 7. Modelo de negocio (sin decidir)
 
