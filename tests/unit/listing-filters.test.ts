@@ -122,8 +122,10 @@ describe("applyListingFilters", () => {
     expect(parseFilters({ ciudad: "Pueblo inventado", provincia: "Madrid" }).provincia).toBe("Madrid");
   });
 
-  it("filtra por convivencia: «chicas» incluye los indiferentes", () => {
-    expect(run({ convivencia: "chicas" })).toContainEqual(["in", "cohabitation", ["women", "any"]]);
-    expect(parseFilters({ convivencia: "otros" }).convivencia).toBeUndefined();
+  it("ya no existe el filtro de convivencia: se ignora y no llega a la consulta ni a la URL", () => {
+    const f = parseFilters({ convivencia: "chicas" });
+    expect("convivencia" in f).toBe(false);
+    expect(run({ convivencia: "chicas" } as never).flat().join(" ")).not.toMatch(/cohabitation/);
+    expect(serializeFilters(f)).not.toMatch(/convivencia/);
   });
 });

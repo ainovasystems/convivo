@@ -10,9 +10,9 @@ import { z } from "zod";
  * gitanos"…). No se busca la palabra suelta, sino la exclusión: "hablamos
  * español" o "barrio chino" no son discriminatorios.
  *
- * Sexo: "solo chicas/chicos" está PERMITIDO (decisión de producto: quien
- * comparte casa elige con quién convive). Además existe el campo cerrado
- * listings.cohabitation para habitaciones y «busco», que se puede filtrar.
+ * Sexo: este filtro no lo toca, y lo que cada anunciante escriba en su
+ * descripción sigue siendo libre. El campo cerrado y el filtro «solo
+ * chicas/chicos» se quitaron (riesgo con la Ley 15/2022; decisión 41 revocada).
  */
 
 /** Grupos que nunca se pueden exigir ("solo …"). */

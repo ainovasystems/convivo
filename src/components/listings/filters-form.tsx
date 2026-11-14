@@ -83,14 +83,6 @@ export function FiltersForm({ filters }: { filters: ListingFilters }) {
           <input name="desde" type="date" defaultValue={filters.desde ?? ""} className={inputClass} />
         </label>
         <label className="block space-y-1 text-sm font-medium">
-          Convivencia
-          <select name="convivencia" defaultValue={filters.convivencia ?? ""} className={inputClass}>
-            <option value="">Cualquiera</option>
-            <option value="chicas">Para chicas</option>
-            <option value="chicos">Para chicos</option>
-          </select>
-        </label>
-        <label className="block space-y-1 text-sm font-medium">
           Periodo
           <select name="periodo" defaultValue={filters.periodo ?? ""} className={inputClass}>
             <option value="">Cualquiera</option>

@@ -10,8 +10,6 @@ import { LISTING_KINDS, PROVINCES } from "@/lib/listings/options";
  */
 /** Periodo en la URL (en español) → valor de listings.rental_term. */
 export const PERIODS = { indefinido: "indefinite", curso: "academic_year", fechas: "fixed" } as const;
-/** Convivencia en la URL → valores de listings.cohabitation que encajan. */
-export const COHABITATION_FILTERS = { chicas: ["women", "any"], chicos: ["men", "any"] } as const;
 export const SORTS = ["recientes", "precio_asc", "precio_desc"] as const;
 export const PAGE_SIZE = 12;
 
@@ -30,7 +28,6 @@ export const filtersSchema = z.object({
   precio_max: money,
   desde: z.iso.date().optional().catch(undefined),
   periodo: z.enum(Object.keys(PERIODS) as [keyof typeof PERIODS]).optional().catch(undefined),
-  convivencia: z.enum(["chicas", "chicos"]).optional().catch(undefined),
   amueblado: flag,
   gastos: flag,
   mascotas: flag,
@@ -102,8 +99,6 @@ export function applyListingFilters<Q extends FilterableQuery<Q>>(query: Q, f: L
 
   if (f.desde && f.tipo !== "seeking") q = q.lte("available_from", f.desde);
   if (f.periodo) q = q.eq("rental_term", PERIODS[f.periodo]);
-  // «Soy chica»: anuncios solo para chicas o indiferentes (los pisos enteros siempre lo son).
-  if (f.convivencia) q = q.in("cohabitation", COHABITATION_FILTERS[f.convivencia]);
   if (f.amueblado) q = q.eq("furnished", true);
   if (f.gastos) q = q.eq("bills_included", true);
   if (f.mascotas) q = q.eq("rules->>pets", "true");

@@ -5,7 +5,7 @@ import type { RuleKey } from "@/lib/listings/options";
 import { createClient } from "@/lib/supabase/server";
 
 export const CARD_COLUMNS =
-  "id, kind, title, city, province, neighborhood, monthly_rent, max_budget, available_from, move_in_date, rental_term, available_until, cohabitation, furnished, bills_included, photos, published_at";
+  "id, kind, title, city, province, neighborhood, monthly_rent, max_budget, available_from, move_in_date, rental_term, available_until, furnished, bills_included, photos, published_at";
 
 export async function searchListings(filters: ListingFilters) {
   const supabase = await createClient();

@@ -559,7 +559,6 @@ export type Database = {
           bedrooms: number | null;
           bills_included: boolean | null;
           city: string | null;
-          cohabitation: Database["public"]["Enums"]["cohabitation_preference"];
           created_at: string;
           current_flatmates: number | null;
           deposit: number | null;
@@ -592,7 +591,6 @@ export type Database = {
           bedrooms?: number | null;
           bills_included?: boolean | null;
           city?: string | null;
-          cohabitation?: Database["public"]["Enums"]["cohabitation_preference"];
           created_at?: string;
           current_flatmates?: number | null;
           deposit?: number | null;
@@ -624,7 +622,6 @@ export type Database = {
           bedrooms?: number | null;
           bills_included?: boolean | null;
           city?: string | null;
-          cohabitation?: Database["public"]["Enums"]["cohabitation_preference"];
           created_at?: string;
           current_flatmates?: number | null;
           deposit?: number | null;
@@ -1630,7 +1627,6 @@ export type Database = {
       };
     };
     Enums: {
-      cohabitation_preference: "any" | "women" | "men";
       contract_kind: "room" | "flat_habitual" | "flat_seasonal";
       contract_status: "draft" | "sent" | "signed" | "cancelled";
       interest_status: "pending" | "accepted" | "declined" | "withdrawn";
@@ -1771,7 +1767,6 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      cohabitation_preference: ["any", "women", "men"],
       contract_kind: ["room", "flat_habitual", "flat_seasonal"],
       contract_status: ["draft", "sent", "signed", "cancelled"],
       interest_status: ["pending", "accepted", "declined", "withdrawn"],

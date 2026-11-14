@@ -46,15 +46,6 @@ export const PROVINCES = [
 ] as const;
 export type Province = (typeof PROVINCES)[number];
 
-/** Con quién se quiere convivir (columna listings.cohabitation). Solo habitaciones y «busco». */
-export const COHABITATIONS = ["any", "women", "men"] as const;
-export type Cohabitation = (typeof COHABITATIONS)[number];
-export const COHABITATION_LABELS: Record<Cohabitation, string> = {
-  any: "Indiferente",
-  women: "Solo chicas",
-  men: "Solo chicos",
-};
-
 /** Periodo de alquiler (columna listings.rental_term). */
 export const RENTAL_TERMS = ["indefinite", "academic_year", "fixed"] as const;
 export type RentalTerm = (typeof RENTAL_TERMS)[number];

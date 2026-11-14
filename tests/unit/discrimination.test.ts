@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { findDiscriminatoryTerms, hasGenderRestriction, normalizeForMatching } from "@/lib/listings/discrimination";
-import { listingDraftSchema, publishErrors, toListingRow } from "@/lib/listings/schema";
+import { listingDraftSchema, publishErrors } from "@/lib/listings/schema";
 
 describe("normalización", () => {
   it("quita mayúsculas, tildes, signos y espacios de más", () => {
@@ -71,11 +71,5 @@ describe("al publicar", () => {
       expect(hasGenderRestriction(d.description)).toBe(true);
       for (const kind of ["room", "flat"] as const) expect(publishErrors(kind, d)).toEqual({});
     }
-  });
-
-  it("la preferencia de convivencia nunca se guarda en un piso entero", () => {
-    const d = listingDraftSchema.parse({ ...base, cohabitation: "women" });
-    expect(toListingRow("room", d).cohabitation).toBe("women");
-    expect(toListingRow("flat", d).cohabitation).toBe("any");
   });
 });

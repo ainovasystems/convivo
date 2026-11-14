@@ -17,9 +17,6 @@ import {
   RULE_KEYS,
   RULE_LABELS,
   type ListingKind,
-  type Cohabitation,
-  COHABITATION_LABELS,
-  COHABITATIONS,
   type ListingStatus,
   type RentalTerm,
   type RuleKey,
@@ -51,7 +48,6 @@ export type WizardValues = {
   moveInDate: string;
   rentalTerm: RentalTerm;
   availableUntil: string;
-  cohabitation: Cohabitation;
   addressLine: string;
   floorDoor: string;
   postalCode: string;
@@ -88,7 +84,6 @@ export function toDraftInput(v: WizardValues) {
     moveInDate: v.moveInDate,
     rentalTerm: v.rentalTerm,
     availableUntil: v.rentalTerm === "indefinite" ? "" : v.availableUntil,
-    cohabitation: v.cohabitation,
     rules: Object.fromEntries(
       Object.entries(v.rules)
         .map(([k, val]) => [k, triToBool(val ?? "")])
@@ -220,18 +215,6 @@ export function ListingWizard({
     </div>
   );
 
-  const cohabitationField = (
-    <SelectField
-      id="cohabitation"
-      label={isSeeking ? "¿Con quién quieres convivir?" : "¿Con quién buscáis convivir?"}
-      options={COHABITATIONS.map((c) => ({ value: c, label: COHABITATION_LABELS[c] }))}
-      placeholder="Elige una opción"
-      value={values.cohabitation}
-      onChange={(e) => set("cohabitation", (e.target.value || "any") as Cohabitation)}
-      hint="Se puede filtrar en la búsqueda."
-    />
-  );
-
   const stepIndex = steps.indexOf(step);
   const STEP_LABELS: Record<Step, string> = { datos: "Datos", fotos: "Fotos", revision: "Revisión" };
 
@@ -314,7 +297,6 @@ export function ListingWizard({
                 {text("moveInDate", "Fecha de entrada", { type: "date" })}
               </div>
               {periodFields("moveInDate")}
-              {cohabitationField}
               {text("zones", "Zonas que te interesan", { hint: "Separadas por comas. Ej.: Centro, Milagrosa" })}
             </fieldset>
           ) : (
@@ -330,7 +312,6 @@ export function ListingWizard({
                   {tri("furnished", "¿Amueblado?")}
                 </div>
                 {periodFields("availableFrom")}
-                {listing.kind === "room" ? cohabitationField : null}
               </fieldset>
               <fieldset className="space-y-4">
                 <legend className="text-lg font-semibold">La vivienda</legend>

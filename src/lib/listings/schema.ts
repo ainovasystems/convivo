@@ -2,7 +2,7 @@ import { z } from "zod";
 
 import { findCity } from "@/lib/listings/cities";
 import { listingTextSchema } from "@/lib/listings/discrimination";
-import { COHABITATIONS, LISTING_KINDS, MAX_PHOTOS, PROVINCES, RENTAL_TERMS, RULE_KEYS } from "@/lib/listings/options";
+import { LISTING_KINDS, MAX_PHOTOS, PROVINCES, RENTAL_TERMS, RULE_KEYS } from "@/lib/listings/options";
 
 /**
  * Esquemas de anuncio. Reflejan los CHECK de la tabla public.listings:
@@ -60,7 +60,6 @@ export const listingDraftSchema = z.object({
   moveInDate: optionalDate.default(null),
   rentalTerm: z.enum(RENTAL_TERMS).catch("indefinite").default("indefinite"),
   availableUntil: optionalDate.default(null),
-  cohabitation: z.enum(COHABITATIONS).catch("any").default("any"),
   address: addressSchema.default({ addressLine: "", floorDoor: "", postalCode: "" }),
 });
 
@@ -123,8 +122,6 @@ export function toListingRow(kind: (typeof LISTING_KINDS)[number], d: ListingDra
     city: known?.name ?? d.city,
     province: known?.province ?? d.province,
     rental_term: d.rentalTerm,
-    // En piso entero no se convive con quien alquila: siempre indiferente.
-    cohabitation: kind === "flat" ? ("any" as const) : d.cohabitation,
     // En borradores puede quedar incoherente mientras se escribe: no se guarda.
     available_until: until && start && until <= start ? null : until,
     neighborhood: d.neighborhood,

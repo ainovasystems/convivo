@@ -33,16 +33,16 @@ describe("edad del perfil", () => {
   });
 });
 
-describe("preferencia de convivencia", () => {
-  it("«solo chicas» o «solo chicos» en habitaciones; un piso entero siempre es indiferente", async () => {
+describe("preferencia de convivencia (eliminada)", () => {
+  it("la columna y el tipo ya no existen: nadie puede guardar «solo chicas/chicos»", async () => {
     const owner = await createUser(db, "Casera Convivencia");
     const room = (await createActiveListing(db, owner, "room")).id;
-    const flat = (await createActiveListing(db, owner, "flat")).id;
-    const set = (id: string, v: string) =>
-      as(db, owner, (tx) => tx.query("update public.listings set cohabitation = $2::public.cohabitation_preference where id = $1", [id, v]));
-    await set(room, "women");
-    await expect(set(flat, "women")).rejects.toThrow(/listings_cohabitation_shared/);
-    const { rows } = await db.query<{ cohabitation: string }>("select cohabitation from public.listings where id = $1", [flat]);
-    expect(rows[0].cohabitation).toBe("any");
+    await expect(
+      as(db, owner, (tx) => tx.query("update public.listings set cohabitation = 'women' where id = $1", [room])),
+    ).rejects.toThrow(/cohabitation/);
+    const { rows } = await db.query<{ n: number }>(
+      "select count(*)::int as n from pg_type where typname = 'cohabitation_preference'",
+    );
+    expect(rows[0].n).toBe(0);
   });
 });
