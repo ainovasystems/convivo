@@ -21,7 +21,7 @@ export function DeleteAccountForm() {
         required
         error={state.errors?.confirm}
       />
-      <SubmitButton pendingText="Borrando tu cuenta…">Borrar mi cuenta para siempre</SubmitButton>
+      <SubmitButton tone="danger" pendingText="Borrando tu cuenta…">Borrar mi cuenta para siempre</SubmitButton>
     </form>
   );
 }

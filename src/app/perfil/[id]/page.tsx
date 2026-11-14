@@ -86,12 +86,12 @@ export default async function ProfilePage({ params }: Props) {
             ) : null}
           </div>
           {facts.length ? <p className="text-muted">{facts.join(" · ")}</p> : null}
-          <p className="text-sm text-muted">
-            En Convivo desde {formatMonth(profile.created_at)}
-            {isNewAccount && !profile.deleted_at ? (
-              <span className="ml-2 rounded-full bg-accent/30 px-2 py-0.5 text-xs font-bold text-foreground">Cuenta nueva</span>
-            ) : null}
-          </p>
+          <p className="text-sm text-muted">En Convivo desde {formatMonth(profile.created_at)}</p>
+          {isNewAccount && !profile.deleted_at ? (
+            <p>
+              <span className="inline-block rounded-full bg-accent/30 px-2 py-0.5 text-xs font-bold text-foreground">Cuenta nueva</span>
+            </p>
+          ) : null}
           {profile.restored_from ? (
             <p className="text-sm text-muted">
               Volvió a Convivo con el mismo email: sus reseñas incluyen las de su cuenta anterior.
@@ -239,7 +239,7 @@ export default async function ProfilePage({ params }: Props) {
         )}
       </section>
       <p className="text-center text-xs text-muted">
-        <Link href={`/denunciar?url=/perfil/${profile.id}`} className="underline">
+        <Link href={`/denunciar?url=/perfil/${profile.id}`} className="inline-block py-2 underline">
           Notificar este perfil como ilegal
         </Link>
       </p>

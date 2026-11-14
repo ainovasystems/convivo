@@ -97,7 +97,7 @@ export async function copyEntryItems(exitInventoryId: string): Promise<Inventory
     .from("inventory_items")
     .insert(entryItems.map((i) => ({ inventory_id: inv.id, area: i.area, name: i.name, condition: i.condition, notes: "" })));
   if (error) return { ok: false, message: error.message };
-  return { ok: true, message: `${entryItems.length} elementos copiados. Revisa el estado de cada uno y añade fotos.` };
+  return { ok: true, message: `${entryItems.length === 1 ? "1 elemento copiado" : `${entryItems.length} elementos copiados`}. Revisa el estado de cada uno y añade fotos.` };
 }
 
 /** Confirma el inventario por la parte que llama; si es la primera, avisa por email a la otra. */
