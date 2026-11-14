@@ -157,6 +157,6 @@ test.describe("contrato firmado en Convivo", () => {
     await expect(section.getByText(/las reseñas funcionan igual/)).toBeVisible();
     await expect(host.getByRole("button", { name: "Preparar contrato" })).toHaveCount(0);
     // La estancia se puede proponer igualmente desde el chat.
-    await expect(host.getByRole("heading", { name: "Estancia" })).toBeVisible();
+    await expect(host.getByRole("heading", { name: "Estancia", exact: true })).toBeVisible();
   });
 });

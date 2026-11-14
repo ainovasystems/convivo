@@ -83,17 +83,32 @@ test.describe("anuncios", () => {
     await expect(page.getByRole("status").filter({ hasText: "Guardado." })).toBeVisible();
   });
 
-  test("la ficha repite la llamada a contactar tras «Datos clave» (sin barra pegajosa)", async ({ page }) => {
-    await page.goto("/anuncios/b0000000-0000-4000-8000-000000000005");
-    // Una vez en la columna lateral (escritorio) o al final, y otra tras los datos clave (solo móvil).
-    await expect(page.getByRole("link", { name: "Entra para contactar" })).toHaveCount(2);
+  test("la ficha repite la llamada a contactar tras «Datos clave» solo en móvil (sin barra pegajosa)", async ({ page }) => {
+    // El enlace repetido es `lg:hidden` (decisión 63): en móvil hay dos (tras los datos clave y en el
+    // bloque de contacto) y en escritorio solo el del bloque lateral, porque el otro está oculto.
+    const isMobile = (page.viewportSize()?.width ?? 1280) < 1024;
     const datos = page.getByRole("region", { name: "Datos clave" });
+
+    // Sin sesión: «Entra para contactar» lleva a entrar y vuelve a la ficha.
+    await page.goto("/anuncios/b0000000-0000-4000-8000-000000000005");
     await expect(datos).toBeVisible();
-    if ((page.viewportSize()?.width ?? 1280) < 1024) {
-      const second = page.getByRole("link", { name: "Entra para contactar" }).first();
-      const [d, c] = [await datos.boundingBox(), await second.boundingBox()];
+    const entra = page.getByRole("link", { name: "Entra para contactar" });
+    await expect(entra).toHaveCount(isMobile ? 2 : 1);
+    if (isMobile) {
+      // El primero (en el orden del documento) es el repetido, y queda por debajo de «Datos clave».
+      await expect(entra.first()).toHaveAttribute("href", /\/entrar\?next=\/anuncios\/b0000000-0000-4000-8000-000000000005/);
+      const [d, c] = [await datos.boundingBox(), await entra.first().boundingBox()];
       expect(c!.y).toBeGreaterThan(d!.y);
     }
+
+    // Con sesión (quien no es el dueño): en móvil, «Me interesa» lleva al formulario de más abajo (#contactar).
+    await login(page, "farid@convivo.test");
+    await page.goto("/anuncios/b0000000-0000-4000-8000-000000000005");
+    await expect(datos).toBeVisible();
+    const meInteresa = page.getByRole("link", { name: "Me interesa" });
+    await expect(meInteresa).toHaveCount(isMobile ? 1 : 0);
+    if (isMobile) await expect(meInteresa).toHaveAttribute("href", "#contactar");
+    await expect(page.locator("#contactar")).toBeVisible();
   });
 
   test("la búsqueda arranca con los filtros plegados y, al buscar, resume y deja chips que se quitan", async ({ page }) => {

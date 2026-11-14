@@ -68,11 +68,21 @@ test.describe("canal público de denuncias (DSA)", () => {
     await expect(item.getByText(/Responder antes del/)).toBeVisible();
     await item.getByLabel(/Motivo de la decisión/).fill("Pedir la fianza por Western Union antes de la visita es una estafa típica.");
     await item.getByLabel(/Cerrar el anuncio/).check();
+    // El mensaje «Decisión registrada y comunicada.» vive dentro del propio elemento de la lista y es
+    // pasajero: en cuanto la acción termina, el formulario pide `router.refresh()` y la notificación,
+    // ya decidida, desaparece de las pendientes. Esperar al texto es una carrera con ese refresco
+    // (a veces ya no está cuando Playwright mira). Lo estable es la respuesta de la acción y su efecto.
+    const decided = ana.waitForResponse((r) => r.request().method() === "POST" && new URL(r.url()).pathname === "/admin");
     await item.getByRole("button", { name: "Es ilícito: actuar" }).click();
-    await expect(ana.getByText("Decisión registrada y comunicada.")).toBeVisible();
+    expect((await decided).ok()).toBe(true);
 
+    await expect
+      .poll(async () => (await admin.from("legal_notices").select("status").eq("reference", reference).single()).data?.status)
+      .toBe("actioned");
     const { data: after } = await admin.from("listings").select("status").eq("id", listing!.id).single();
     expect(after?.status).toBe("closed");
+    // Ya no está entre las pendientes (tras el refresco de la página).
+    await expect(ana.getByRole("listitem").filter({ hasText: reference }).getByText(/Responder antes del/)).toHaveCount(0);
     await expect.poll(mailpitSubjects).toContainEqual(`Decisión sobre tu notificación (ref. ${reference})`);
     await expect.poll(mailpitSubjects).toContainEqual(`Hemos retirado tu anuncio «${title}» en Convivo`);
   });

@@ -81,6 +81,7 @@ Después del piloto: contratos · fase 3 / **Fase B de pagos** con socio regulad
 ## Ideas aparcadas (no hacer sin decidirlo antes en la planificación)
 
 - **De la revisión de la 7a, no incluidos en la 7b** (descripción en `docs/REVISION-FASE-7.md`): **D5** contrato e inventario con UUID largos (toca el texto firmado: pendiente del abogado), **D8** pasos del asistente con barra de progreso, **D10** índice en las páginas legales, **D11** estados vacíos con acción, **P3** JS heredado/sin usar (`browserslist`), **P4** rutas pesadas (publicar, chat, editar perfil), **P5** variabilidad del TBT en inicio, **P6** caché de ida y vuelta (bfcache), **A7** botones desactivados con ayuda.
+- **Pruebas e2e posiblemente frágiles por el mismo motivo** que arregló el cierre de la CI (mensaje de éxito dentro de un elemento que `router.refresh()` retira): revisar `listing-flag-form.tsx` y otros formularios de `/admin` que hacen `router.refresh()` tras el éxito y cuyas pruebas esperen su mensaje. Nota de producto: el aviso de «Decisión registrada» se ve un instante antes de que la notificación salga de las pendientes.
 - **Pendiente de verificar con Supabase real** (CI o web de pruebas): el CLS del perfil tras quitar su esqueleto, y repetir la medición de peso con fotos reales y en Vercel.
 - Calidad de la versión optimizada de las tarjetas (de 75 a ~60): recomendación 3 de `docs/PESO-DE-LAS-FOTOS.md`, opcional.
 - **Control previo de datos personales** en reseñas y anuncios antes de publicar (caso Russmedia). **Prioritario antes del piloto.**
