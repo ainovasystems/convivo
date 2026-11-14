@@ -1,6 +1,7 @@
 import Link from "next/link";
 
-import { SORTS, type ListingFilters } from "@/lib/listings/filters";
+import { SearchIcon } from "@/components/brand/icons";
+import { filterChips, SORTS, type ListingFilters } from "@/lib/listings/filters";
 import { KIND_LABELS, LISTING_KINDS, PROVINCES } from "@/lib/listings/options";
 import { inputClass } from "@/components/ui/field";
 
@@ -24,7 +25,7 @@ const CHECKS = [
 export function FiltersForm({ filters }: { filters: ListingFilters }) {
   return (
     <form method="get" action="/anuncios" className="space-y-4" aria-label="Filtros de búsqueda">
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         <label className="block space-y-1 text-sm font-medium">
           Tipo
           <select name="tipo" defaultValue={filters.tipo ?? ""} className={inputClass}>
@@ -102,16 +103,16 @@ export function FiltersForm({ filters }: { filters: ListingFilters }) {
           </select>
         </label>
       </div>
-      <fieldset className="space-y-2">
-        <legend className="text-sm font-medium">Características</legend>
+      <fieldset className="grid gap-x-6 sm:grid-cols-2">
+        <legend className="mb-1 text-sm font-medium">Características</legend>
         {CHECKS.map(([name, label]) => (
-          <label key={name} className="flex items-center gap-2 text-sm">
+          <label key={name} className="flex items-center gap-3 py-1.5 text-sm">
             <input
               type="checkbox"
               name={name}
               value="1"
               defaultChecked={Boolean(filters[name])}
-              className="size-4 accent-[var(--brand)]"
+              className="size-5 accent-[var(--brand)]"
             />
             {label}
           </label>
@@ -124,10 +125,55 @@ export function FiltersForm({ filters }: { filters: ListingFilters }) {
         >
           Buscar
         </button>
-        <Link href="/anuncios" className="rounded-full px-3 py-2.5 text-sm font-semibold text-brand underline">
+        <Link href="/anuncios" className="rounded-full px-3 py-3 text-sm font-semibold text-brand underline">
           Limpiar
         </Link>
       </div>
     </form>
+  );
+}
+
+/**
+ * Panel de filtros: PLEGADO por defecto (la búsqueda arranca limpia). La
+ * cabecera resume lo aplicado y debajo van los chips, que se quitan con un
+ * toque. Es un <details>: se despliega sin JavaScript. Se rellena desde la
+ * URL, así que tras buscar vuelve a quedar plegado con el resumen.
+ */
+export function FiltersPanel({ filters }: { filters: ListingFilters }) {
+  const chips = filterChips(filters);
+  const summary = chips.length ? chips.map((c) => c.label).join(" · ") : "Sin filtros";
+  return (
+    <section aria-label="Filtros de búsqueda" className="space-y-3">
+      <details className="group rounded-2xl border border-border bg-background p-4 shadow-[var(--shadow-card)]">
+        <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 font-bold [&::-webkit-details-marker]:hidden">
+          <span className="min-w-0">
+            <span className="inline-flex items-center gap-2">
+              <SearchIcon className="size-5 text-brand" /> Filtros y orden
+            </span>
+            <span className="block truncate text-sm font-normal text-muted">{summary}</span>
+          </span>
+          <span aria-hidden="true" className="text-brand transition group-open:rotate-180">⌄</span>
+        </summary>
+        <div className="pt-4">
+          <FiltersForm filters={filters} />
+        </div>
+      </details>
+      {chips.length ? (
+        <ul aria-label="Filtros aplicados" className="flex flex-wrap gap-2">
+          {chips.map((c) => (
+            <li key={c.key}>
+              <Link
+                href={c.removeHref}
+                aria-label={`Quitar filtro: ${c.label}`}
+                className="inline-flex min-h-8 items-center gap-1.5 rounded-full bg-brand-soft px-3 py-1 text-sm font-medium text-brand-strong hover:bg-brand/20 focus-visible:outline-2 focus-visible:outline-offset-2"
+              >
+                {c.label}
+                <span aria-hidden="true" className="text-base leading-none">×</span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      ) : null}
+    </section>
   );
 }

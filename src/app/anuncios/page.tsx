@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import { SearchIcon } from "@/components/brand/icons";
-import { FiltersForm } from "@/components/listings/filters-form";
+import { FiltersPanel } from "@/components/listings/filters-form";
 import { ListingCard } from "@/components/listings/listing-card";
 import { Pagination } from "@/components/listings/pagination";
 import { parseFilters } from "@/lib/listings/filters";
@@ -30,21 +29,8 @@ export default async function ListingsPage({ searchParams }: Props) {
   const { items, total } = await searchListings(filters);
 
   return (
-    <div className="mx-auto grid max-w-6xl gap-8 px-4 py-8 lg:grid-cols-[260px_1fr]">
-      <aside>
-        <h2 className="sr-only">Filtros</h2>
-        <details className="group rounded-2xl border border-border bg-background p-4 shadow-[var(--shadow-card)] lg:border-0 lg:p-0 lg:shadow-none" open>
-          <summary className="flex cursor-pointer list-none items-center justify-between font-bold lg:hidden [&::-webkit-details-marker]:hidden">
-            <span className="inline-flex items-center gap-2">
-              <SearchIcon className="size-5 text-brand" /> Filtros y orden
-            </span>
-            <span aria-hidden="true" className="text-brand transition group-open:rotate-180">⌄</span>
-          </summary>
-          <div className="pt-4 lg:pt-0">
-            <FiltersForm filters={filters} />
-          </div>
-        </details>
-      </aside>
+    <div className="mx-auto max-w-6xl space-y-6 px-4 py-8">
+      <FiltersPanel filters={filters} />
       <section aria-labelledby="resultados" className="space-y-6">
         <div className="flex flex-wrap items-baseline justify-between gap-2">
           <h1 id="resultados" className="text-2xl font-bold tracking-tight">
@@ -54,11 +40,12 @@ export default async function ListingsPage({ searchParams }: Props) {
             {total === 1 ? "1 anuncio" : `${total} anuncios`}
           </p>
         </div>
+        {items.length ? <h2 className="sr-only">Resultados</h2> : null}
         {items.length ? (
           <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
             {items.map((l, i) => (
               <li key={l.id}>
-                <ListingCard listing={l} priority={i < 3} />
+                <ListingCard listing={l} priority={i === 0} />
               </li>
             ))}
           </ul>

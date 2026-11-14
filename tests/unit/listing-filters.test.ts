@@ -5,6 +5,7 @@ import {
   escapeLike,
   type FilterableQuery,
   parseFilters,
+  filterChips,
   serializeFilters,
 } from "@/lib/listings/filters";
 
@@ -127,5 +128,27 @@ describe("applyListingFilters", () => {
     expect("convivencia" in f).toBe(false);
     expect(run({ convivencia: "chicas" } as never).flat().join(" ")).not.toMatch(/cohabitation/);
     expect(serializeFilters(f)).not.toMatch(/convivencia/);
+  });
+});
+
+describe("filterChips (resumen y chips quitables)", () => {
+  it("sin filtros no hay chips", () => {
+    expect(filterChips({})).toEqual([]);
+    expect(filterChips(parseFilters({ pagina: "3", orden: "recientes" }))).toEqual([]);
+  });
+
+  it("cada filtro es un chip cuyo enlace quita solo ese filtro y la página", () => {
+    const f = parseFilters({ tipo: "room", ciudad: "Lugo", precio_max: "300", amueblado: "1", pagina: "2" });
+    const chips = filterChips(f);
+    expect(chips.map((c) => c.label)).toEqual(["Habitación", "Lugo", "Hasta 300 €", "Amueblado"]);
+    const byKey = Object.fromEntries(chips.map((c) => [c.key, c.removeHref]));
+    expect(byKey.tipo).toBe("/anuncios?ciudad=Lugo&precio_max=300&amueblado=1");
+    expect(byKey.precio).toBe("/anuncios?tipo=room&ciudad=Lugo&amueblado=1");
+  });
+
+  it("el precio es un único chip aunque haya mínimo y máximo, y el orden solo si no es el de por defecto", () => {
+    const chips = filterChips(parseFilters({ precio_min: "200", precio_max: "400", orden: "precio_asc" }));
+    expect(chips.map((c) => c.label)).toEqual(["200–400 €", "Precio: menor primero"]);
+    expect(chips[0].removeHref).toBe("/anuncios?orden=precio_asc");
   });
 });

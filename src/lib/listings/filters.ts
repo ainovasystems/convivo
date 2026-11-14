@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 import { findCity } from "@/lib/listings/cities";
-import { LISTING_KINDS, PROVINCES } from "@/lib/listings/options";
+import { formatShortDate, KIND_LABELS, LISTING_KINDS, PROVINCES } from "@/lib/listings/options";
 
 /**
  * Filtros del listado /anuncios. Viven en la URL (searchParams): se pueden
@@ -64,6 +64,48 @@ export function serializeFilters(f: ListingFilters): string {
   }
   const s = sp.toString();
   return s ? `?${s}` : "";
+}
+
+export type FilterChip = { key: string; label: string; removeHref: string };
+
+const PERIOD_CHIP_LABELS = { curso: "Curso universitario", fechas: "Fechas concretas", indefinido: "Sin fecha de fin" } as const;
+const SORT_CHIP_LABELS = { recientes: "Más recientes", precio_asc: "Precio: menor primero", precio_desc: "Precio: mayor primero" } as const;
+
+/**
+ * Filtros aplicados → chips que se quitan con un toque (cada uno es un enlace
+ * a la misma búsqueda sin ese filtro y sin la página). El precio es un solo
+ * chip. Sirven también de resumen del panel plegado.
+ */
+export function filterChips(f: ListingFilters): FilterChip[] {
+  const without = (...keys: Array<keyof ListingFilters>) => {
+    const next: ListingFilters = { ...f, pagina: undefined };
+    for (const k of keys) delete next[k];
+    return `/anuncios${serializeFilters(next)}`;
+  };
+  const chips: FilterChip[] = [];
+  const add = (key: string, label: string, ...remove: Array<keyof ListingFilters>) =>
+    chips.push({ key, label, removeHref: without(...remove) });
+
+  if (f.tipo) add("tipo", KIND_LABELS[f.tipo], "tipo");
+  if (f.ciudad) add("ciudad", f.ciudad, "ciudad");
+  if (f.provincia) add("provincia", f.provincia, "provincia");
+  if (f.precio_min !== undefined || f.precio_max !== undefined) {
+    const label =
+      f.precio_min !== undefined && f.precio_max !== undefined
+        ? `${f.precio_min}–${f.precio_max} €`
+        : f.precio_max !== undefined
+          ? `Hasta ${f.precio_max} €`
+          : `Desde ${f.precio_min} €`;
+    add("precio", label, "precio_min", "precio_max");
+  }
+  if (f.desde) add("desde", `Disponible el ${formatShortDate(f.desde)}`, "desde");
+  if (f.periodo) add("periodo", PERIOD_CHIP_LABELS[f.periodo], "periodo");
+  if (f.amueblado) add("amueblado", "Amueblado", "amueblado");
+  if (f.gastos) add("gastos", "Gastos incluidos", "gastos");
+  if (f.mascotas) add("mascotas", "Admite mascotas", "mascotas");
+  if (f.fumadores) add("fumadores", "Se puede fumar", "fumadores");
+  if (f.orden && f.orden !== "recientes") add("orden", SORT_CHIP_LABELS[f.orden], "orden");
+  return chips;
 }
 
 /** Interfaz mínima del query builder de Supabase que usamos (facilita los tests). */
