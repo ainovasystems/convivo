@@ -92,8 +92,16 @@ test.describe("contrato firmado en Convivo", () => {
     await expect(host.getByRole("button", { name: /Descargar o imprimir/ })).toBeVisible();
     await expect.poll(mailpitSubjects).toContainEqual(expect.stringContaining("Contrato firmado"));
 
-    // Guía de la fianza según la comunidad (A Coruña → Galicia, IGVS).
-    await expect(host.getByRole("region", { name: "Qué hacer con la fianza" }).getByText(/En Galicia, la parte arrendadora la deposita en IGVS/)).toBeVisible();
+    // Ayuda con la fianza: solo el casero, plegada (A Coruña → versión de Galicia).
+    const help = host.getByTestId("deposit-help");
+    await expect(help.getByText(/Instituto Galego da Vivenda e Solo/)).toBeHidden();
+    await help.getByText("¿Ayuda con la fianza?").click();
+    await expect(help.getByText(/gratuito y no genera intereses/)).toBeVisible();
+    await expect(help.getByText(/no lo hemos confirmado/)).toBeVisible();
+    await expect(help.getByText(/consulta el organismo de vivienda/)).toBeVisible();
+    await guest.goto(contractUrl);
+    await expect(guest.getByTestId("deposit-help")).toHaveCount(0);
+    await expect(guest.getByText("¿Ayuda con la fianza?")).toHaveCount(0);
 
     // Inventario de entrada: el inquilino añade un elemento con foto y confirma; luego el casero.
     await guest.goto(contractUrl);
@@ -127,5 +135,28 @@ test.describe("contrato firmado en Convivo", () => {
     await expect(guest.getByText("Activa", { exact: true })).toBeVisible();
     await guest.goto("/contratos");
     await expect(guest.getByText("Firmado", { exact: true })).toBeVisible();
+  });
+
+  test("fuera de Galicia no hay contrato de habitación: aviso claro, y la estancia sigue en el chat", async ({ browser }, info) => {
+    test.skip(info.project.name === "movil", "Un navegador basta.");
+    const guest = await newUser(browser, `Mar ${Math.random().toString(36).slice(2, 7)}`);
+    // Habitación en Chamberí (Madrid), de Farid.
+    await guest.goto("/anuncios/b0000000-0000-4000-8000-000000000008");
+    await guest.getByLabel(/Escribe a Farid/).fill("Hola Farid, trabajo cerca y me interesa mucho la habitación de Chamberí.");
+    await guest.getByRole("button", { name: "Me interesa" }).click();
+    await expect(guest).toHaveURL(/\/mensajes\/[0-9a-f-]{36}$/);
+    const conversation = guest.url();
+
+    const host = await login(browser, "farid@convivo.test");
+    await host.goto(conversation);
+    await host.getByRole("button", { name: "Aceptar interés" }).click();
+    await expect(host.getByText(/Interés\s+aceptado/)).toBeVisible();
+    await host.reload();
+    const section = host.getByRole("region", { name: "Contrato" });
+    await expect(section.getByText(/todavía no está disponible fuera de Galicia/)).toBeVisible();
+    await expect(section.getByText(/las reseñas funcionan igual/)).toBeVisible();
+    await expect(host.getByRole("button", { name: "Preparar contrato" })).toHaveCount(0);
+    // La estancia se puede proponer igualmente desde el chat.
+    await expect(host.getByRole("heading", { name: "Estancia" })).toBeVisible();
   });
 });

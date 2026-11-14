@@ -16,7 +16,7 @@ export const CONTRACT_KIND_LABELS: Record<ContractKind, string> = {
 };
 
 /** Cambia la versión cada vez que cambie el texto de las plantillas. */
-export const TEMPLATE_VERSION = "2026-11-borrador-1";
+export const TEMPLATE_VERSION = "2026-11-borrador-2";
 
 const name = z.string().trim().min(5, { error: "Escribe el nombre y los apellidos" }).max(120);
 const isoDate = z.iso.date({ error: "Fecha no válida" });
