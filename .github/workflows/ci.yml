@@ -1,0 +1,85 @@
+# Comprobaciones automáticas en cada cambio (push y pull request).
+# - comprobaciones: lint, tipos, pruebas de lógica y de base de datos (PGlite) y build.
+# - e2e: recorridos completos en el navegador contra un Supabase LOCAL que se crea
+#   y se destruye en la propia máquina de GitHub. Nunca toca «Convivo pruebas» ni
+#   producción, y no necesita ninguna clave real: las de Supabase local son de
+#   desarrollo y CRON_SECRET / SIGNAL_SECRET se generan al vuelo.
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  comprobaciones:
+    name: Lint, tipos, pruebas y build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+
+  e2e:
+    name: Pruebas e2e (navegador + Supabase local)
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+
+      - name: Arrancar Supabase local (migraciones + datos de ejemplo)
+        run: npx supabase start -x studio,imgproxy,vector,logflare,edge-runtime,supavisor,postgres-meta
+
+      - name: Variables para las pruebas (.env.local, solo en esta máquina)
+        run: |
+          eval "$(npx supabase status -o env)"
+          {
+            echo "NEXT_PUBLIC_SUPABASE_URL=$API_URL"
+            echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=$ANON_KEY"
+            echo "SUPABASE_SERVICE_ROLE_KEY=$SERVICE_ROLE_KEY"
+            echo "MAILPIT_URL=$MAILPIT_URL"
+            echo "CRON_SECRET=$(openssl rand -hex 32)"
+            echo "SIGNAL_SECRET=$(openssl rand -hex 32)"
+          } > .env.local
+
+      - name: Instalar Chromium para Playwright
+        run: npx playwright install --with-deps chromium
+
+      - run: npm run build
+
+      - name: Pruebas e2e
+        run: npx playwright test
+
+      - name: Informe de Playwright si algo falla
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 7
+
+      - name: Parar Supabase local
+        if: always()
+        run: npx supabase stop --no-backup
