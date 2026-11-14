@@ -173,6 +173,34 @@ Antes de cada commit: `npm run lint && npm run typecheck && npm test && npm run 
 - **Auditoría** (`docs/REVISION-FASE-7.md`, capturas en `docs/capturas-fase-7/`): `scripts/auditoria/lighthouse.sh` (Lighthouse móvil; instalar `lighthouse@12` fuera del proyecto), `pantallas.mjs` (capturas 375 px y axe de 52 pantallas, con un circuito de contrato en la BD **local**) y `fotos-de-ejemplo.mjs` (sube fotos de ejemplo a la BD local para medir con portadas reales). Los tres se niegan a funcionar contra algo que no sea local. `axe-core` y `lighthouse` no son dependencias del proyecto.
 - **Tests:** `tests/unit/seo.test.ts` y `tests/e2e/seo.spec.ts`. El e2e levanta **dos servidores** (`playwright.config.ts`): el normal (puerto 3000, indexación apagada) y otro en el 3100 con `INDEXING_ENABLED=true` y `NEXT_PUBLIC_SITE_URL=https://convivo.example.test`.
 
+## Operación (fase 8a)
+
+- **CI** (`.github/workflows/ci.yml`): en cada push y pull request.
+  - Trabajo «comprobaciones»: `lint`, `typecheck`, `npm test` (unitarios y PGlite) y `build`.
+  - Trabajo «e2e»: levanta un **Supabase local** en la máquina de GitHub (`supabase start -x …`, con migraciones y seed), escribe `.env.local` con sus claves de desarrollo, más `CRON_SECRET` y `SIGNAL_SECRET` aleatorios, y pasa `playwright test` completo.
+  - **No necesita ni usa ninguna clave real** y nunca toca «Convivo pruebas» ni producción.
+  - Si falla, sube el informe de Playwright como artefacto (7 días).
+  - Duración: unos 5 minutos.
+- **Sentry** (`@sentry/nextjs` 11, fijado a una versión de más de dos semanas):
+  - **Apagado si no hay DSN** (`NEXT_PUBLIC_SENTRY_DSN`, alias `sentrydsn`; `next.config.ts` lo copia al navegador). Sin DSN no se inicializa nada, el navegador no descarga su código (`src/instrumentation-client.ts` lo importa bajo demanda) y la CSP no abre `connect-src` a Sentry (`buildCsp({ sentryOrigin })`).
+  - Ficheros: `src/instrumentation.ts` (servidor y Edge, más `onRequestError`), `src/instrumentation-client.ts`, `src/lib/monitoring/sentry-options.ts` (todo lo configurable, con funciones puras y probadas) y `src/lib/monitoring/report.ts` (lo usan `error.tsx` y `global-error.tsx`).
+  - **Sin datos personales.**
+    - **En la v11, `sendDefaultPii` ya no existe y, sin configurar, `dataCollection` lo recoge TODO**: por eso `dataCollection` va con todo apagado.
+    - Además `beforeSend`, `beforeBreadcrumb` y `beforeSendSpan` (los tramos de rendimiento van por streaming; `beforeSendTransaction` se ignora) quitan usuario, IP, cookies, cabeceras, cuerpos y parámetros de URL, y tapan emails, teléfonos, UUID y tokens (`maskText`, `cleanUrl`, `scrubEvent`, `scrubSpan`).
+    - **Sin Replay.**
+  - Muestreo de rendimiento del 2 % (`SENTRY_TRACES_SAMPLE_RATE`, como mucho 0,1).
+  - **Límite de envíos:** 10 por hora en cada pestaña y 30 por minuto en cada instancia del servidor. Más el límite por clave en Sentry (150 al día) para no pasar de la cuota del plan gratuito.
+  - **Monitor de la tarea diaria:** `GET /api/cron/review-windows` va dentro de `Sentry.withMonitor("review-windows", …)` con el mismo cron que `vercel.json` (hay un test que lo comprueba). Si falla la consulta, **lanza** (antes respondía 500), para que el monitor marque la ejecución como fallida.
+  - Con la organización en la UE, el DSN es `o….ingest.de.sentry.io`. Ojo: Sentry guarda en EE. UU. los avisos de las tareas programadas y la configuración, sin datos de personas.
+  - No se usa `withSentryConfig`, así que no se suben *source maps* y las trazas del navegador salen minificadas (idea aparcada).
+- **`GET /api/salud`:** 200 `{ok:true}` si la web y la base de datos responden (un recuento de anuncios públicos con la clave pública, sin sesión) y 503 si no. `no-store`, sin detalles. Es la URL del único monitor de disponibilidad del plan gratuito de Sentry. La página humana sigue siendo `/estado`.
+- **Documentos de operación:**
+  - `docs/DEPLOY.md`: montar producción paso a paso, para no técnicos.
+  - `docs/COPIAS-DE-SEGURIDAD.md`: las copias de Supabase **no incluyen los ficheros de Storage**; copia mensual propia con `supabase db dump` y `rclone` por S3; prueba trimestral; cómo evitar que reaparezcan las cuentas borradas al restaurar.
+  - `docs/CHECKLIST-LANZAMIENTO.md`: única lista de lo que falta antes de abrir.
+  - `docs/PESO-DE-LAS-FOTOS.md`: medición; se repite con `scripts/auditoria/peso-fotos/`, solo en local.
+- **Producción se instala por el editor SQL** (`instalar-base-de-datos.sql` una vez y después cada migración nueva a mano, anotada en `DEPLOY.md`). **Nunca `db push` ni seed en producción.** Claude Code no toca producción: solo aplica migraciones a «Convivo pruebas».
+
 ## Diagnóstico y errores
 
 - **`/estado`**: página de diagnóstico para quien despliega. Dice si existen las variables (nunca su valor), si la base de datos responde, si la instalación SQL está completa (comprueba objetos de la última migración) y si funciona el login. Tiene `noindex`.
@@ -231,18 +259,21 @@ Plantilla en `.env.example`. Los valores reales van en `.env.local` (ignorado po
 
 - `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`: públicas, llegan al navegador. La segunda admite la *publishable key* nueva (`sb_publishable_…`) o la «anon» clásica; las dos están probadas con toda la suite e2e.
 - `SUPABASE_SERVICE_ROLE_KEY`: **solo servidor**. Nunca con prefijo `NEXT_PUBLIC_`. Admite la *secret key* nueva (`sb_secret_…`) o la «service_role» clásica.
-- **Nombres alternativos aceptados** (el proyecto de Vercel los usa): `projecturl` = `NEXT_PUBLIC_SUPABASE_URL`, `publickey` = `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `secretkey` = `SUPABASE_SERVICE_ROLE_KEY`, `cronsecret` = `CRON_SECRET`, `signalsecret` = `SIGNAL_SECRET`, `siteurl` = `NEXT_PUBLIC_SITE_URL`, `resendkey` = `RESEND_API_KEY`, `emailfrom` = `EMAIL_FROM`, `indexing` = `INDEXING_ENABLED`. Las dos públicas se copian a `NEXT_PUBLIC_*` en `next.config.ts` (`env`), así que llegan al navegador. **Si existen, los nombres en minúscula tienen prioridad** sobre los estándar, para que una integración de Vercel que cree `NEXT_PUBLIC_SUPABASE_URL` apuntando a otro proyecto no pise la configuración manual. Ojo: Vercel Cron solo envía el secreto si la variable se llama exactamente `CRON_SECRET`.
+- **Nombres alternativos aceptados** (el proyecto de Vercel los usa): `projecturl` = `NEXT_PUBLIC_SUPABASE_URL`, `publickey` = `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `secretkey` = `SUPABASE_SERVICE_ROLE_KEY`, `cronsecret` = `CRON_SECRET`, `signalsecret` = `SIGNAL_SECRET`, `siteurl` = `NEXT_PUBLIC_SITE_URL`, `resendkey` = `RESEND_API_KEY`, `emailfrom` = `EMAIL_FROM`, `indexing` = `INDEXING_ENABLED`, `sentrydsn` = `NEXT_PUBLIC_SENTRY_DSN`. Las públicas se copian a `NEXT_PUBLIC_*` en `next.config.ts` (`env`), así que llegan al navegador. **Si existen, los nombres en minúscula tienen prioridad** sobre los estándar, para que una integración de Vercel que cree `NEXT_PUBLIC_SUPABASE_URL` apuntando a otro proyecto no pise la configuración manual. Ojo: Vercel Cron solo envía el secreto si la variable se llama exactamente `CRON_SECRET`.
 - `SUPABASE_PROJECT_REF`: solo para `typegen`.
 - `NEXT_PUBLIC_SITE_URL`: URL pública para los enlaces de los emails (en local se deduce de la cabecera Host).
 - `RESEND_API_KEY`, `EMAIL_FROM`: email transaccional en producción. `MAILPIT_URL`: buzón local (`npx supabase status`).
 - `INDEXING_ENABLED` (alias `indexing`): `true` permite que los buscadores indexen la web. **Apagada por defecto**; solo se enciende en producción el día del lanzamiento (ver «SEO técnico e indexación»). Con ella apagada la web de pruebas lleva `noindex` en todo.
+- `NEXT_PUBLIC_SENTRY_DSN` (alias `sentrydsn`): opcional; vacío = Sentry apagado. `SENTRY_TRACES_SAMPLE_RATE`: opcional, entre 0 y 0,1 (por defecto 0,02). Ver «Operación».
 - `CRON_SECRET`: protege la tarea programada (Vercel lo envía como Bearer). `SIGNAL_SECRET`: clave del HMAC de las señales anti-abuso. Valores aleatorios largos; **no los cambies** una vez en producción, porque los hashes antiguos dejarían de coincidir.
 
 ## Base de datos
 
 ### Aplicar las migraciones a tu proyecto de Supabase
 
-**Opción A, CLI (recomendada):**
+> **Producción:** solo por el editor SQL, siguiendo `docs/DEPLOY.md` (decisión 59). Las dos opciones de abajo valen para pruebas y desarrollo.
+
+**Opción A, CLI (recomendada para desarrollo):**
 
 ```bash
 npx supabase login                      # una vez; abre el navegador
@@ -367,7 +398,7 @@ RPC (`supabase.rpc(...)`): `confirm_stay`, `cancel_stay`, `end_stay`, `add_stay_
 38. **Límite de acceso por fallos y por cuentas distintas**, no por intentos: en residencias y campus muchos estudiantes comparten IP, y entrar bien nunca debe penalizar.
 39. **El borrado de cuenta vive en la BD (trigger en `auth.users`), no en la app:** funciona igual si se borra desde el panel de Supabase, y no hace falta service_role (el usuario borra sus ficheros con su sesión y su fila con una RPC).
 40. **Sin banner de cookies** mientras solo haya cookies técnicas de sesión.
-41. **«Solo chicas/chicos» permitido** (decisión de producto, en contra de la recomendación prudente de esperar al abogado): en texto y como campo cerrado filtrable para habitaciones y «busco». Si el abogado lo limita, el campo cerrado permite restringirlo sin tocar anuncios uno a uno.
+41. **REVOCADA en la planificación (noviembre de 2026):** se quita el campo y el filtro en el bloque «Correcciones legales». Mientras tanto sigue en el código. Texto original: **«Solo chicas/chicos» permitido** (decisión de producto, en contra de la recomendación prudente de esperar al abogado): en texto y como campo cerrado filtrable para habitaciones y «busco». Si el abogado lo limita, el campo cerrado permite restringirlo sin tocar anuncios uno a uno.
 42. **Las marcas de fraude no despublican ni avisan**: un falso positivo no perjudica a un anunciante honrado y un estafador no aprende a esquivar el filtro. Decide un admin.
 43. **El registro de moderación se escribe desde la BD**, no desde la app: no se puede moderar sin dejar rastro, ni llamando a la API directamente.
 44. **El canal de denuncias está abierto a personas sin cuenta** (DSA art. 16): el caso típico es el de un casero reseñado que no usa Convivo. Se frena el abuso con un límite por IP y email y con la declaración de buena fe.
@@ -382,3 +413,8 @@ RPC (`supabase.rpc(...)`): `confirm_stay`, `cancel_stay`, `end_stay`, `add_stay_
 53. **Ninguna URL absoluta escrita a mano:** sitemap, canonical, Open Graph y JSON-LD salen de la variable pública (`siteurl`); cuando haya dominio, solo cambia ella.
 54. **Páginas de ciudad solo para el piloto** (Lugo, A Coruña, Madrid, Barcelona), en `/habitaciones/…` y `/pisos/…`; una ciudad sin anuncios muestra un mensaje útil, no una página vacía. Los perfiles y los anuncios «busco» no se indexan (son personas).
 55. **Los datos estructurados nunca llevan dirección exacta ni coordenadas** (decisión 3), y funcionan con la CSP con nonce y páginas dinámicas (decisión 37): ninguna página estática nueva.
+56. **CI con Supabase local en GitHub Actions**, no contra «Convivo pruebas»: cada ejecución empieza de cero, no gasta cuota ni deja datos, y no hace falta guardar claves reales en GitHub.
+57. **Sentry opcional y apagado sin DSN**, cargado bajo demanda en el navegador: quien visita no descarga nada si no está configurado. En la UE, sin datos personales y sin Replay, con límite de envíos en el código y en Sentry.
+58. **Un solo monitor de disponibilidad, sobre `/api/salud`** (incluido en el plan gratuito), que comprueba a la vez la web y la base de datos. Vigilar más páginas es decisión del usuario (de pago o con otro servicio).
+59. **Producción se instala y se actualiza por el editor SQL**, a mano y con registro en `DEPLOY.md`: una sola forma, apta para una persona no técnica, y Claude Code nunca toca producción.
+60. **Fotos: se mide, no se migra.** Con el optimizador de Vercel delante, Supabase Storage solo sirve cada original una vez; las alarmas (más de 150 GB/mes de tráfico o más de 60 GB de ficheros) disparan la revisión.

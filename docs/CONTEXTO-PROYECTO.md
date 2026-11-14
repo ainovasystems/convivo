@@ -1,7 +1,7 @@
 # Convivo · Contexto del proyecto (para planificar)
 
-> Documento para el chat de planificación del proyecto. Estado a **10 de noviembre de 2026**.
-> «Convivo» es un nombre provisional. El detalle técnico completo está en `CLAUDE.md` (raíz del repositorio).
+> Documento para el chat de planificación del proyecto. Estado a **14 de noviembre de 2026** (cierre de la Fase 8a).
+> «Convivo» es un nombre provisional. **El nombre elegido es Hommie (dominio hommie.es)**, pendiente de comprobar la marca en TMview / OEPM; la web todavía no se ha renombrado. El detalle técnico completo está en `CLAUDE.md` (raíz del repositorio).
 > Qué toca ahora y qué falta: `docs/HOJA-DE-RUTA.md`. Cómo trabajamos: `docs/COMO-TRABAJAMOS.md`.
 
 ## 1. Qué es
@@ -25,15 +25,16 @@ Plataforma web en español (España) para **vivienda compartida**: un «LinkedIn
 
 - la revisión del abogado;
 - configurar los emails y el dominio;
+- las **correcciones legales** ya decididas («solo chicas/chicos» fuera; contrato de habitación y guía de la fianza solo para Galicia);
 - el pulido de diseño, accesibilidad y rendimiento (fase 7b; el SEO técnico ya está hecho en la 7a);
-- la preparación del lanzamiento y la operación (fase 8).
+- **montar producción**: la operación ya está preparada en la 8a (CI, Sentry, copias y guía paso a paso en `docs/DEPLOY.md`). Lo que falta, con responsable, está en `docs/CHECKLIST-LANZAMIENTO.md`.
 
 **Datos del entorno:**
 
 - **Web de pruebas:** https://convivo-six.vercel.app (Vercel, funciones en París).
 - **Base de datos:** Supabase, proyecto «Convivo pruebas», en Europa. No hay todavía un proyecto de producción.
-- **Código:** GitHub `ainovasystems/convivo`, rama `claude/new-session-734nfk`, con unos 90 commits.
-- **Pruebas automáticas:** 285 de lógica y base de datos, y las de recorrido completo en el navegador (83 pasan en móvil y escritorio, 7 se saltan a propósito). Todas pasan.
+- **Código:** GitHub `ainovasystems/convivo`, rama `claude/new-session-734nfk`, con unos 100 commits. **Cada cambio pasa solo las comprobaciones en GitHub** (pestaña Actions).
+- **Pruebas automáticas:** 298 de lógica y base de datos, y 87 de recorrido completo en el navegador (móvil y escritorio; otras 7 se saltan a propósito). Todas pasan, en local y en GitHub.
 - **Datos de ejemplo:** 8 usuarios `@convivo.test` con la contraseña `convivo-dev-1234`, y anuncios en Lugo, A Coruña, Madrid y Barcelona.
 
 ## 3. Qué puede hacer hoy un usuario
@@ -111,6 +112,8 @@ Plataforma web en español (España) para **vivienda compartida**: un «LinkedIn
 - **Supabase:** base de datos, usuarios, fotos y tiempo real. La seguridad vive en la propia base de datos: cada usuario solo lee y escribe lo suyo, aunque intente saltarse la web.
 - **Vercel:** publicación automática con cada cambio en GitHub.
 - **Emails:** con Resend; el código está listo pero falta configurarlo.
+- **Avisos de errores:** Sentry, en la UE y sin datos personales. Está apagado hasta que se ponga su clave en producción, y vigila también la tarea diaria y que la web responda.
+- **Copias:** diarias en Supabase Pro, más una copia propia mensual con las fotos, que la copia de Supabase no incluye. Ver `docs/COPIAS-DE-SEGURIDAD.md`.
 - **Trabajo:** el chat de planificación decide y redacta los encargos; Claude Code los ejecuta en el repositorio. Ver `docs/COMO-TRABAJAMOS.md`.
 
 ## 5. Decisiones de producto ya tomadas (no reabrir sin motivo)
@@ -120,7 +123,7 @@ Plataforma web en español (España) para **vivienda compartida**: un «LinkedIn
 3. **Sin mapa y sin dirección exacta** hasta que el anunciante acepta el interés.
 4. **Nunca se pide DNI**, ni nacionalidad, origen, religión o salud.
 5. **Edad exacta**, calculada a partir del año de nacimiento, con un mínimo de 18 años.
-6. **«Solo chicas/chicos» permitido**, en el texto y como filtro, solo en habitaciones y en «busco». Riesgo legal pendiente (Ley 15/2022).
+6. **«Solo chicas/chicos»: decisión REVOCADA.** Se quitan el campo y el filtro en el bloque «Correcciones legales», que es el siguiente. Hoy siguen en la web.
 7. **Borrar la cuenta desvincula, no destruye:**
    - el perfil queda como «Usuario eliminado» y las reseñas se conservan;
    - si la persona vuelve con el mismo email, recupera su historial;
@@ -132,7 +135,7 @@ Plataforma web en español (España) para **vivienda compartida**: un «LinkedIn
 12. **Indexación:** la web de pruebas no se indexa (una variable la enciende en producción); perfiles y anuncios «busco» no se indexan; las páginas de ciudad son solo las del piloto.
 13. **Identidad visual:** blanco y crema, marrón nogal #7b4b2a y acento miel #f4b740, tipografía Plus Jakarta Sans, botones en píldora y estilo startup (Glovo, Too Good To Go, BlaBlaCar). El modo oscuro está desactivado.
 
-Las 55 decisiones técnicas están numeradas en `CLAUDE.md` → «Decisiones tomadas».
+Las 60 decisiones técnicas están numeradas en `CLAUDE.md` → «Decisiones tomadas».
 
 ## 6. Riesgos principales
 
