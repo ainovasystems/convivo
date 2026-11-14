@@ -71,13 +71,13 @@ export default function RootLayout({
         <footer className="border-t border-border bg-surface pb-24 sm:pb-0 print:hidden">
           <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-8 text-sm text-muted">
             <Logo />
-            <nav aria-label="Pie de página" className="flex flex-wrap gap-5">
-              <Link href="/anuncios" className="hover:text-brand">Buscar</Link>
-              <Link href="/publicar" className="hover:text-brand">Publicar</Link>
-              <Link href="/registro" className="hover:text-brand">Crear cuenta</Link>
-              <Link href="/privacidad" className="hover:text-brand">Privacidad</Link>
-              <Link href="/terminos" className="hover:text-brand">Condiciones</Link>
-              <Link href="/denunciar" className="hover:text-brand">Denunciar contenido</Link>
+            <nav aria-label="Pie de página" className="flex flex-wrap gap-x-5">
+              <Link href="/anuncios" className="inline-block py-2 hover:text-brand">Buscar</Link>
+              <Link href="/publicar" className="inline-block py-2 hover:text-brand">Publicar</Link>
+              <Link href="/registro" className="inline-block py-2 hover:text-brand">Crear cuenta</Link>
+              <Link href="/privacidad" className="inline-block py-2 hover:text-brand">Privacidad</Link>
+              <Link href="/terminos" className="inline-block py-2 hover:text-brand">Condiciones</Link>
+              <Link href="/denunciar" className="inline-block py-2 hover:text-brand">Denunciar contenido</Link>
             </nav>
             <p>© {new Date().getFullYear()} Convivo · Hecho en España</p>
           </div>

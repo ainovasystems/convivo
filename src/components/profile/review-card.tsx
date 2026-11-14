@@ -70,7 +70,7 @@ export function ReviewCard({ review, viewer }: { review: ReceivedReview; viewer?
           // Sin cuenta también se puede notificar una reseña ilegal (DSA art. 16).
           <Link
             href={`/denunciar?url=${encodeURIComponent(viewer?.path ?? "/")}&resena=${review.id}`}
-            className="self-start text-xs text-muted underline"
+            className="self-start py-2 text-xs text-muted underline"
           >
             Notificar contenido ilegal
           </Link>

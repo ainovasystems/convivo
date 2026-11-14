@@ -41,7 +41,6 @@ export default async function InboxPage() {
                 <Link
                   href={`/mensajes/${c.id}`}
                   className="flex items-start gap-3 p-4 hover:bg-brand/5 focus-visible:outline-2"
-                  aria-label={`Conversación con ${other?.display_name ?? "usuario"} sobre ${c.listing?.title ?? "un anuncio"}${c.unread ? `, ${c.unread} sin leer` : ""}`}
                 >
                   <Avatar name={other?.display_name ?? "?"} path={other?.avatar_path ?? null} size="sm" />
                   <div className="min-w-0 flex-1">
@@ -54,6 +53,7 @@ export default async function InboxPage() {
                     </p>
                     {c.lastMessage ? <p className="mt-1 truncate text-sm">{c.lastMessage.body}</p> : null}
                   </div>
+                  {c.unread ? <span className="sr-only">{c.unread} sin leer</span> : null}
                   {c.unread ? (
                     <span className="shrink-0 rounded-full bg-brand px-2 py-0.5 text-xs font-bold text-brand-foreground" aria-hidden="true">
                       {c.unread}

@@ -71,7 +71,7 @@ function PasswordForm({ next }: { next: string }) {
       <SubmitButton pendingText="Entrando…">Entrar</SubmitButton>
       <p className="text-sm text-muted">
         ¿No tienes cuenta?{" "}
-        <Link href="/registro" className="font-medium text-brand underline">
+        <Link href="/registro" className="inline-block py-2 font-medium text-brand underline">
           Regístrate
         </Link>
       </p>

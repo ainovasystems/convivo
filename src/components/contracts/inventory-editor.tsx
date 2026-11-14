@@ -146,7 +146,7 @@ export function InventoryEditor(props: Props) {
                     {!locked ? (
                       <button
                         type="button"
-                        className="text-sm font-semibold text-red-700 underline print:hidden"
+                        className="py-2 text-sm font-semibold text-red-700 underline print:hidden"
                         disabled={pending}
                         onClick={() => {
                           if (window.confirm(`¿Quitar «${item.name}» del inventario?`)) run(() => deleteInventoryItem(item.id));

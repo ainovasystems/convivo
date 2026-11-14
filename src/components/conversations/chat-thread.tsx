@@ -37,7 +37,7 @@ export function ChatThread({
   const [draft, setDraft] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [pending, start] = useTransition();
-  const endRef = useRef<HTMLDivElement>(null);
+  const endRef = useRef<HTMLLIElement>(null);
 
   // Realtime: mensajes nuevos y cambios de estado del interés. RLS decide
   // qué eventos recibe cada suscriptor (solo las dos partes).
@@ -107,8 +107,8 @@ export function ChatThread({
   return (
     <section aria-label="Mensajes" className="space-y-4">
       <p role="note" className="rounded-xl border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-900">
-        <strong>Nunca pagues antes de ver el piso.</strong> Desconfía de quien pida transferencias, Western Union o Bizum
-        por adelantado, o diga que está en el extranjero y te enviará las llaves. Si te pasa, denúncialo.
+        <strong>Nunca pagues antes de ver el piso.</strong> Desconfía de quien pida transferencias, Western Union o Bizum por
+        adelantado, o diga que está en el extranjero. Si te pasa, denúncialo.
       </p>
       {liveStatus === "accepted" && serverStatus !== "accepted" && isGuest ? (
         <p role="status" className="rounded-xl border border-emerald-300 bg-emerald-50 px-3 py-2 text-sm text-emerald-900 dark:border-emerald-800 dark:bg-emerald-950 dark:text-emerald-100">
@@ -144,12 +144,8 @@ export function ChatThread({
             </li>
           );
         })}
-        <div ref={endRef} />
+        <li ref={endRef} aria-hidden="true" className="h-0 list-none" />
       </ol>
-
-      <p className="rounded-xl border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-900 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-100">
-        <strong>Nunca pagues antes de ver el piso.</strong> Desconfía de quien pida señales, transferencias o envíos de dinero por adelantado.
-      </p>
 
       {canWrite ? (
         <form onSubmit={submit} className="space-y-2">
