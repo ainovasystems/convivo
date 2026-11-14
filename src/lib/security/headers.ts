@@ -12,7 +12,18 @@
  * nonce. Un estilo inyectado no ejecuta código; el riesgo es mucho menor que en
  * scripts.
  */
-export function buildCsp({ nonce, supabaseUrl, dev }: { nonce: string; supabaseUrl?: string; dev: boolean }) {
+export function buildCsp({
+  nonce,
+  supabaseUrl,
+  dev,
+  sentryOrigin,
+}: {
+  nonce: string;
+  supabaseUrl?: string;
+  dev: boolean;
+  /** Origen de envío de Sentry (p. ej. https://o1.ingest.de.sentry.io). Sin él, nada de Sentry. */
+  sentryOrigin?: string | null;
+}) {
   const supabase = supabaseUrl ? new URL(supabaseUrl) : null;
   const http = supabase ? supabase.origin : "https://*.supabase.co";
   // Realtime usa WebSocket en el mismo host que la API.
@@ -25,7 +36,7 @@ export function buildCsp({ nonce, supabaseUrl, dev }: { nonce: string; supabaseU
     "style-src": ["'self'", "'unsafe-inline'"],
     "img-src": ["'self'", "data:", "blob:", http],
     "font-src": ["'self'"],
-    "connect-src": ["'self'", http, ws, ...(dev ? ["ws:"] : [])],
+    "connect-src": ["'self'", http, ws, ...(sentryOrigin ? [sentryOrigin] : []), ...(dev ? ["ws:"] : [])],
     "manifest-src": ["'self'"],
     "worker-src": ["'self'", "blob:"],
     "frame-src": ["'none'"],

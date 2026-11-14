@@ -1,7 +1,9 @@
+import * as Sentry from "@sentry/nextjs";
 import { NextResponse, type NextRequest } from "next/server";
 
 import { reviewWindowEmail } from "@/lib/email/templates";
 import { emailUser } from "@/lib/email/notify";
+import { getSentryDsn, REVIEW_WINDOWS_MONITOR } from "@/lib/monitoring/sentry-options";
 import { formatDate } from "@/lib/reviews/labels";
 import { createAdminClient } from "@/lib/supabase/admin";
 
@@ -23,9 +25,17 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
   }
 
+  // Con Sentry encendido, cada ejecución avisa de que empieza y de cómo acaba
+  // (monitor «review-windows»): si un día no se ejecuta o falla, llega un email.
+  if (!getSentryDsn()) return runReviewWindows(request);
+  return Sentry.withMonitor(REVIEW_WINDOWS_MONITOR.slug, () => runReviewWindows(request), REVIEW_WINDOWS_MONITOR.config);
+}
+
+async function runReviewWindows(request: NextRequest) {
   const admin = createAdminClient();
   const { data: due, error } = await admin.rpc("review_window_notices_due");
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  // Lanzar (y no solo responder 500) para que el monitor marque la ejecución como fallida.
+  if (error) throw new Error(`review_window_notices_due: ${error.message}`);
 
   const site = (process.env.NEXT_PUBLIC_SITE_URL ?? request.nextUrl.origin).replace(/\/$/, "");
   let sent = 0;

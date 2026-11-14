@@ -1,7 +1,14 @@
 "use client";
 
+import { useEffect } from "react";
+
+import { reportClientError } from "@/lib/monitoring/report";
+
 /** Último recurso: si falla incluso el layout. Sin dependencias para que siempre se pinte. */
 export default function GlobalError({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
+  useEffect(() => {
+    reportClientError(error);
+  }, [error]);
   return (
     <html lang="es">
       <body style={{ fontFamily: "system-ui, sans-serif", textAlign: "center", padding: "4rem 1rem", color: "#2b1d14" }}>

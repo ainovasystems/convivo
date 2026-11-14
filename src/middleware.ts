@@ -1,5 +1,6 @@
 import type { NextRequest } from "next/server";
 
+import { getSentryDsn, sentryIngestOrigin } from "@/lib/monitoring/sentry-options";
 import { buildCsp, createNonce } from "@/lib/security/headers";
 import { isIndexingEnabled, robotsTagFor } from "@/lib/seo/indexing";
 import { updateSession } from "@/lib/supabase/middleware";
@@ -10,6 +11,7 @@ export async function middleware(request: NextRequest) {
     nonce,
     supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL,
     dev: process.env.NODE_ENV === "development",
+    sentryOrigin: sentryIngestOrigin(getSentryDsn()),
   });
   const response = await updateSession(request, { "x-nonce": nonce, "content-security-policy": csp });
   response.headers.set("Content-Security-Policy", csp);
