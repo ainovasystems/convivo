@@ -62,7 +62,7 @@ test.describe("interés → conversación → estancia confirmada", () => {
     const host = await loginPage(browser, "diego@convivo.test");
     await expect(host.getByRole("link", { name: /Mensajes.*sin leer|sin leer.*Mensajes/ }).first()).toBeVisible();
     await host.goto("/mensajes");
-    await host.getByRole("link", { name: new RegExp(`Conversación con ${guestName}.*sin leer`) }).click();
+    await host.getByRole("link", { name: new RegExp(`${guestName}.*sin leer`) }).click();
     await expect(host).toHaveURL(conversationUrl);
     await expect(host.getByRole("region", { name: "Mensajes" }).getByText(/soy estudiante de Informática/)).toBeVisible();
     await expect.poll(mailpitSubjects).toContainEqual(expect.stringContaining(`${guestName} está interesado/a`));

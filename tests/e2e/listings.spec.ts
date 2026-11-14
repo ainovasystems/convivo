@@ -83,8 +83,27 @@ test.describe("anuncios", () => {
     await expect(page.getByRole("status").filter({ hasText: "Guardado." })).toBeVisible();
   });
 
-  test("el formulario de filtros escribe los filtros en la URL", async ({ page }) => {
+  test("la ficha repite la llamada a contactar tras «Datos clave» (sin barra pegajosa)", async ({ page }) => {
+    await page.goto("/anuncios/b0000000-0000-4000-8000-000000000005");
+    // Una vez en la columna lateral (escritorio) o al final, y otra tras los datos clave (solo móvil).
+    await expect(page.getByRole("link", { name: "Entra para contactar" })).toHaveCount(2);
+    const datos = page.getByRole("region", { name: "Datos clave" });
+    await expect(datos).toBeVisible();
+    if ((page.viewportSize()?.width ?? 1280) < 1024) {
+      const second = page.getByRole("link", { name: "Entra para contactar" }).first();
+      const [d, c] = [await datos.boundingBox(), await second.boundingBox()];
+      expect(c!.y).toBeGreaterThan(d!.y);
+    }
+  });
+
+  test("la búsqueda arranca con los filtros plegados y, al buscar, resume y deja chips que se quitan", async ({ page }) => {
     await page.goto("/anuncios");
+    const panel = page.getByRole("region", { name: "Filtros de búsqueda" });
+    await expect(panel.getByText("Sin filtros")).toBeVisible();
+    // Plegado: los campos no se ven hasta desplegar el panel.
+    await expect(page.getByLabel("Tipo")).toBeHidden();
+    await expect(page.getByRole("link", { name: /Elviña/ })).toBeVisible(); // los resultados, arriba
+    await panel.getByText("Filtros y orden").click();
     await expect(page.getByLabel("Convivencia")).toHaveCount(0);
     await page.getByLabel("Tipo").selectOption("flat");
     await page.getByLabel("Provincia").selectOption("A Coruña");
@@ -93,6 +112,14 @@ test.describe("anuncios", () => {
     await expect(page).toHaveURL(/provincia=A\+Coru%C3%B1a|provincia=A%20Coru%C3%B1a/);
     await expect(page.getByRole("link", { name: "Piso de 2 habitaciones con vistas a Riazor" })).toBeVisible();
     await expect(page.getByRole("link", { name: /Elviña/ })).toHaveCount(0);
+
+    // Vuelve plegado, con el resumen y los chips de lo aplicado.
+    await expect(page.getByLabel("Tipo")).toBeHidden();
+    await expect(panel.getByText("Piso entero · A Coruña")).toBeVisible();
+    await page.getByRole("link", { name: "Quitar filtro: Piso entero" }).click();
+    await expect(page).not.toHaveURL(/tipo=/);
+    await expect(page).toHaveURL(/provincia=/);
+    await expect(page.getByRole("link", { name: "Quitar filtro: Piso entero" })).toHaveCount(0);
   });
 
   test("mis anuncios: pausar retira el anuncio del listado y reactivar lo devuelve", async ({ page }, testInfo) => {
