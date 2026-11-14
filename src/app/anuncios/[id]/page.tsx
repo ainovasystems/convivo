@@ -36,6 +36,8 @@ type Props = {
 };
 
 const idSchema = z.uuid();
+const ctaClass =
+  "block rounded-full bg-brand px-4 py-3 text-center font-semibold text-brand-foreground hover:bg-brand-strong focus-visible:outline-2 focus-visible:outline-offset-2";
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
@@ -74,7 +76,8 @@ export default async function ListingPage({ params, searchParams }: Props) {
   const isOwner = viewer?.id === l.owner_id;
   const owner = l.owner;
   const ownerRating = overallRating(ownerStats);
-  const place = [l.neighborhood, l.city, l.province].filter(Boolean).join(", ");
+  // La provincia solo se añade si no repite la ciudad («Lugo, Lugo»).
+  const place = [l.neighborhood, l.city, l.province && l.province !== l.city ? l.province : null].filter(Boolean).join(", ");
   const baseUrl = await getBaseUrl();
   // Datos estructurados solo de anuncios públicos y activos; nunca la dirección exacta.
   const jsonLd =
@@ -148,7 +151,7 @@ export default async function ListingPage({ params, searchParams }: Props) {
             <p className="text-xl font-semibold">{priceText(l)}</p>
           </header>
 
-          {l.kind !== "seeking" ? <Gallery photos={l.photos} title={l.title} /> : null}
+          {l.kind !== "seeking" ? <Gallery photos={l.photos} title={l.title} altBase={`${KIND_LABELS[l.kind]} en ${place}`} /> : null}
 
           <section aria-labelledby="datos" className="space-y-3">
             <h2 id="datos" className="text-lg font-semibold">
@@ -163,6 +166,25 @@ export default async function ListingPage({ params, searchParams }: Props) {
               ))}
             </dl>
           </section>
+
+          {!isOwner ? (
+            // Repite la llamada a la acción tras los datos clave (en móvil el contacto queda al final). Sin barra pegajosa.
+            <div className="lg:hidden">
+              {viewer && myInterest ? (
+                <Link href={`/mensajes/${myInterest.id}`} className={ctaClass}>
+                  Ir a la conversación
+                </Link>
+              ) : viewer && l.status === "active" ? (
+                <a href="#contactar" className={ctaClass}>
+                  Me interesa
+                </a>
+              ) : !viewer ? (
+                <Link href={`/entrar?next=/anuncios/${l.id}`} className={ctaClass}>
+                  Entra para contactar
+                </Link>
+              ) : null}
+            </div>
+          ) : null}
 
           <section aria-labelledby="descripcion">
             <h2 id="descripcion" className="text-lg font-semibold">
@@ -268,7 +290,7 @@ export default async function ListingPage({ params, searchParams }: Props) {
             </section>
           ) : null}
 
-          <section aria-label="Contactar" className="space-y-3 rounded-2xl border border-border bg-background p-4">
+          <section id="contactar" aria-label="Contactar" className="scroll-mt-4 space-y-3 rounded-2xl border border-border bg-background p-4">
             {isOwner ? (
               <>
                 <p className="text-sm text-muted">Es tu anuncio.</p>
@@ -305,7 +327,7 @@ export default async function ListingPage({ params, searchParams }: Props) {
             )}
             <p className="text-xs text-muted">Nunca pagues ni envíes dinero antes de ver la vivienda y firmar un contrato.</p>
             {!isOwner ? (
-              <Link href={`/denunciar?url=/anuncios/${l.id}`} className="block text-center text-xs text-muted underline">
+              <Link href={`/denunciar?url=/anuncios/${l.id}`} className="block py-2 text-center text-xs text-muted underline">
                 Notificar este anuncio como ilegal o fraudulento
               </Link>
             ) : null}

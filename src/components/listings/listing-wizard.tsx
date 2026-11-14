@@ -389,7 +389,7 @@ export function ListingWizard({
             </div>
             <div>
               <dt className="text-muted">Ubicación</dt>
-              <dd className="font-medium">{[values.neighborhood, knownCity?.name ?? values.city, knownCity?.province ?? values.province].filter(Boolean).join(", ") || "—"}</dd>
+              <dd className="font-medium">{[...new Set([values.neighborhood, knownCity?.name ?? values.city, knownCity?.province ?? values.province].filter(Boolean))].join(", ") || "—"}</dd>
             </div>
             <div>
               <dt className="text-muted">Periodo</dt>
