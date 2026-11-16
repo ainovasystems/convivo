@@ -88,6 +88,10 @@ Después del piloto: contratos · fase 3 / **Fase B de pagos** con socio regulad
 22. (j) Textos del apartado «Fianza»: «si tu comunidad lo exige» para habitaciones y, en Galicia, solo remitir al IGVS sin afirmar plazo para depositar. ¿Son prudentes? (relacionada con la pregunta 16).
 23. (k) **Conservación** de la cronología de la fianza y del resguardo (hoy indefinida, como el contrato firmado).
 
+**Nuevas (bloque «Datos sensibles de terceros»)**
+
+24. (l) **Russmedia (TJUE C-492/23):** ¿bastan el aviso de datos sensibles, el canal de denuncias, la ocultación cautelar y los cambios de `/terminos` y `/privacidad` (ver CLAUDE.md, «Datos sensibles de terceros») para no ser corresponsable de los datos de terceros que publican los usuarios? ¿Hace falta un control previo (no solo aviso) en reseñas, con riesgo de falsos positivos? ¿Es suficiente la cláusula «Tu contenido» (uso solo para prestar el servicio) o hace falta una licencia expresa mínima?
+
 ## Ideas aparcadas (no hacer sin decidirlo antes en la planificación)
 
 - **`/terminos` §3 está desfasado:** todavía dice que en habitaciones se puede indicar «solo chicas / solo chicos», cuando el campo y el filtro se quitaron (decisión 41). Es un cambio de fondo legal: decidir con el abogado (pregunta 8) y corregir el texto.

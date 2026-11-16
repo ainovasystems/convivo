@@ -158,6 +158,8 @@ Las 70 decisiones técnicas están numeradas en `CLAUDE.md` → «Decisiones tom
 
 **Datos personales en texto público (noviembre de 2026):** el título, la descripción, las zonas y el barrio de un anuncio, las reseñas, sus respuestas y la biografía del perfil no pueden llevar teléfonos, emails, DNI/NIE, IBAN o tarjetas, enlaces a WhatsApp, Telegram, Instagram y similares, ni direcciones exactas (tampoco las del propio anunciante: el contacto va por el chat). **Se bloquea, no pasa a revisión.** El chat entre las dos partes no se controla. Lo ya publicado no se toca; lo retroactivo lo cubre el canal de denuncias. No se detectan nombres ni datos de salud (con patrones no es fiable).
 
+**Datos sensibles de terceros (Russmedia):** como la plataforma puede ser corresponsable de lo que publican los usuarios, la reseña, la respuesta pública y la biografía llevan un aviso visible («No escribas sobre la salud, la religión, el origen racial o étnico, la orientación o la vida sexual, la ideología política o sindical ni los antecedentes penales de nadie…»). Solo se avisa: no se detecta nada sensible automáticamente. Sigue la ocultación cautelar por datos personales y el canal público de denuncias. Las condiciones y la privacidad (borradores) dicen que Convivo usa el contenido solo para prestar el servicio y que puede ocultarlo o retirarlo.
+
 ## 6. Riesgos principales
 
 - **Legal:** nada se abre al público sin la revisión del abogado. Lista de preguntas en `docs/HOJA-DE-RUTA.md`.
