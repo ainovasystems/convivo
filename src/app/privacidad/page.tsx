@@ -7,7 +7,7 @@ export const metadata: Metadata = { title: "Política de privacidad (borrador)",
 
 export default function PrivacyPage() {
   return (
-    <LegalPage title="Política de privacidad" updated="6 de noviembre de 2026">
+    <LegalPage title="Política de privacidad" updated="18 de noviembre de 2026">
       <section>
         <h2>1. Quién es el responsable</h2>
         <ul>
@@ -40,7 +40,14 @@ export default function PrivacyPage() {
         </ul>
         <p>
           <strong>No pedimos ni guardamos</strong> DNI, nacionalidad, origen, religión, datos de salud ni otras categorías
-          especiales de datos. Te pedimos que no los incluyas en tus textos.
+          especiales de datos. Te pedimos que no los incluyas en tus textos: no escribas sobre la salud, la religión, el origen
+          racial o étnico, la orientación o la vida sexual, la ideología política o sindical ni los antecedentes penales de
+          nadie. Si un contenido publicado incluye datos personales de terceros, en especial sensibles, podemos ocultarlo o
+          retirarlo, y cualquier persona puede pedirlo desde el{" "}
+          <Link href="/denunciar" className="font-semibold text-brand underline">
+            formulario de notificación de contenido ilegal
+          </Link>
+          .
         </p>
       </section>
 
@@ -83,7 +90,11 @@ export default function PrivacyPage() {
             </tr>
           </tbody>
         </table>
-        <p>No vendemos tus datos ni los usamos para publicidad. [POR COMPLETAR: revisar si cambia el modelo de negocio]</p>
+        <p>
+          Usamos el contenido que publicas solo para prestar el servicio: mostrarlo, moderarlo, mantener la seguridad y cumplir
+          la ley. No vendemos tus datos ni los usamos para publicidad ni para otros fines propios. [POR COMPLETAR: revisar si
+          cambia el modelo de negocio]
+        </p>
       </section>
 
       <section>
@@ -133,6 +144,13 @@ export default function PrivacyPage() {
             Mi cuenta y mis datos
           </Link>{" "}
           puedes descargar todos tus datos y borrar tu cuenta tú mismo. Para lo demás, escríbenos a [POR COMPLETAR: email].
+        </p>
+        <p>
+          Si aparecen tus datos en un contenido publicado por otra persona, puedes pedir que lo ocultemos o retiremos desde el{" "}
+          <Link href="/denunciar" className="font-semibold text-brand underline">
+            formulario de notificación de contenido ilegal
+          </Link>
+          , tengas cuenta o no.
         </p>
         <p>
           Si crees que no hemos tratado bien tus datos, puedes reclamar ante la Agencia Española de Protección de Datos

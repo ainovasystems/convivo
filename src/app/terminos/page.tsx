@@ -7,7 +7,7 @@ export const metadata: Metadata = { title: "Condiciones de uso (borrador)", robo
 
 export default function TermsPage() {
   return (
-    <LegalPage title="Condiciones de uso" updated="6 de noviembre de 2026">
+    <LegalPage title="Condiciones de uso" updated="18 de noviembre de 2026">
       <section>
         <h2>1. Qué es Convivo</h2>
         <p>
@@ -68,7 +68,11 @@ export default function TermsPage() {
             salud…) ni acusaciones de delitos sin base. [POR COMPLETAR: revisar riesgo de difamación y procedimiento de
             retirada]
           </li>
-          <li>La persona reseñada puede responder una vez, públicamente.</li>
+          <li>
+            No escribas sobre la salud, la religión, el origen racial o étnico, la orientación o la vida sexual, la ideología
+            política o sindical ni los antecedentes penales de nadie. Si lo haces, la reseña puede ocultarse.
+          </li>
+          <li>La persona reseñada puede responder una vez, públicamente. Su respuesta sigue las mismas normas.</li>
           <li>
             Si borras tu cuenta, tus reseñas se conservan, desvinculadas de tu cuenta: aparecen como «Usuario eliminado». Puedes eliminar una reseña tuya indicando el motivo; queda
             constancia de que existió.
@@ -92,6 +96,16 @@ export default function TermsPage() {
           </li>
           <li>Las reseñas denunciadas por contener datos personales se ocultan hasta que las revisamos.</li>
           <li>
+            Convivo puede ocultar o retirar cualquier contenido (anuncio, reseña, respuesta o perfil) que incluya datos
+            personales de terceros, en especial datos sensibles (salud, religión, origen, orientación sexual, ideología,
+            antecedentes penales), o que incumpla estas condiciones. Lo hará con una decisión motivada y avisando a quien lo
+            publicó. Quien vea un contenido así, o aparezca en él, puede notificarlo desde{" "}
+            <Link href="/denunciar" className="font-semibold text-brand underline">
+              Notificar contenido ilegal
+            </Link>
+            .
+          </li>
+          <li>
             Si no estás de acuerdo con una decisión, responde al email en el que te la comunicamos o escribe a [POR COMPLETAR:
             email de reclamaciones] y la revisaremos de nuevo.
           </li>
@@ -100,7 +114,17 @@ export default function TermsPage() {
       </section>
 
       <section>
-        <h2>6. Responsabilidad</h2>
+        <h2>6. Tu contenido</h2>
+        <p>
+          Lo que publicas es tuyo. Convivo usa los anuncios, perfiles, reseñas, respuestas y mensajes solo para prestar el
+          servicio: mostrarlos a quien corresponda, moderarlos, mantener la seguridad de la plataforma y cumplir la ley. No los
+          usa para fines propios ni adquiere derechos amplios sobre ellos. [POR COMPLETAR: revisar con el abogado el alcance de
+          la licencia mínima necesaria para prestar el servicio]
+        </p>
+      </section>
+
+      <section>
+        <h2>7. Responsabilidad</h2>
         <p>
           [POR COMPLETAR: limitación de responsabilidad de la plataforma sobre los anuncios, los contratos entre usuarios, las
           fianzas y el estado de las viviendas.]
@@ -108,7 +132,7 @@ export default function TermsPage() {
       </section>
 
       <section>
-        <h2>7. Cambios y ley aplicable</h2>
+        <h2>8. Cambios y ley aplicable</h2>
         <p>
           Avisaremos de los cambios importantes de estas condiciones. Se rigen por la ley española. [POR COMPLETAR: fuero y
           resolución de conflictos con consumidores]
