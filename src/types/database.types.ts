@@ -78,6 +78,119 @@ export type Database = {
           },
         ];
       };
+      contract_deposit_events: {
+        Row: {
+          actor_id: string | null;
+          contract_id: string;
+          created_at: string;
+          data: Json;
+          id: number;
+          kind: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          actor_id?: string | null;
+          contract_id: string;
+          created_at?: string;
+          data?: Json;
+          id?: number;
+          kind: string;
+        };
+        Update: {
+          actor_id?: string | null;
+          contract_id?: string;
+          created_at?: string;
+          data?: Json;
+          id?: number;
+          kind?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "contract_deposit_events_actor_id_fkey";
+            columns: ["actor_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "contract_deposit_events_contract_id_fkey";
+            columns: ["contract_id"];
+            isOneToOne: false;
+            referencedRelation: "contracts";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      contract_deposits: {
+        Row: {
+          contract_id: string;
+          created_at: string;
+          deposit_recorded_at: string | null;
+          deposited_on: string | null;
+          has_receipt: boolean;
+          keys_confirmation: string | null;
+          keys_confirmed_at: string | null;
+          keys_declared_at: string | null;
+          keys_declared_on: string | null;
+          receipt_number: string | null;
+          receipt_path: string | null;
+          return_due_on: string | null;
+          return_marked_at: string | null;
+          return_marked_on: string | null;
+          return_response: string | null;
+          return_response_at: string | null;
+          status: Database["public"]["Enums"]["deposit_status"];
+          updated_at: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          contract_id: string;
+          created_at?: string;
+          deposit_recorded_at?: string | null;
+          deposited_on?: string | null;
+          keys_confirmation?: string | null;
+          keys_confirmed_at?: string | null;
+          keys_declared_at?: string | null;
+          keys_declared_on?: string | null;
+          receipt_number?: string | null;
+          receipt_path?: string | null;
+          return_due_on?: string | null;
+          return_marked_at?: string | null;
+          return_marked_on?: string | null;
+          return_response?: string | null;
+          return_response_at?: string | null;
+          status?: Database["public"]["Enums"]["deposit_status"];
+          updated_at?: string;
+        };
+        Update: {
+          contract_id?: string;
+          created_at?: string;
+          deposit_recorded_at?: string | null;
+          deposited_on?: string | null;
+          keys_confirmation?: string | null;
+          keys_confirmed_at?: string | null;
+          keys_declared_at?: string | null;
+          keys_declared_on?: string | null;
+          receipt_number?: string | null;
+          receipt_path?: string | null;
+          return_due_on?: string | null;
+          return_marked_at?: string | null;
+          return_marked_on?: string | null;
+          return_response?: string | null;
+          return_response_at?: string | null;
+          status?: Database["public"]["Enums"]["deposit_status"];
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "contract_deposits_contract_id_fkey";
+            columns: ["contract_id"];
+            isOneToOne: true;
+            referencedRelation: "contracts";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       contract_inventories: {
         Row: {
           contract_id: string;
@@ -1399,6 +1512,193 @@ export type Database = {
           isSetofReturn: false;
         };
       };
+      attach_deposit_receipt: {
+        Args: { p_contract_id: string; p_receipt_path: string };
+        Returns: {
+          contract_id: string;
+          created_at: string;
+          deposit_recorded_at: string | null;
+          deposited_on: string | null;
+          has_receipt: boolean;
+          keys_confirmation: string | null;
+          keys_confirmed_at: string | null;
+          keys_declared_at: string | null;
+          keys_declared_on: string | null;
+          receipt_number: string | null;
+          receipt_path: string | null;
+          return_due_on: string | null;
+          return_marked_at: string | null;
+          return_marked_on: string | null;
+          return_response: string | null;
+          return_response_at: string | null;
+          status: Database["public"]["Enums"]["deposit_status"];
+          updated_at: string;
+        };
+        SetofOptions: {
+          from: "*";
+          to: "contract_deposits";
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
+      confirm_keys_handover: {
+        Args: { p_contract_id: string };
+        Returns: {
+          contract_id: string;
+          created_at: string;
+          deposit_recorded_at: string | null;
+          deposited_on: string | null;
+          has_receipt: boolean;
+          keys_confirmation: string | null;
+          keys_confirmed_at: string | null;
+          keys_declared_at: string | null;
+          keys_declared_on: string | null;
+          receipt_number: string | null;
+          receipt_path: string | null;
+          return_due_on: string | null;
+          return_marked_at: string | null;
+          return_marked_on: string | null;
+          return_response: string | null;
+          return_response_at: string | null;
+          status: Database["public"]["Enums"]["deposit_status"];
+          updated_at: string;
+        };
+        SetofOptions: {
+          from: "*";
+          to: "contract_deposits";
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
+      declare_keys_handover: {
+        Args: { p_contract_id: string; p_keys_on: string };
+        Returns: {
+          contract_id: string;
+          created_at: string;
+          deposit_recorded_at: string | null;
+          deposited_on: string | null;
+          has_receipt: boolean;
+          keys_confirmation: string | null;
+          keys_confirmed_at: string | null;
+          keys_declared_at: string | null;
+          keys_declared_on: string | null;
+          receipt_number: string | null;
+          receipt_path: string | null;
+          return_due_on: string | null;
+          return_marked_at: string | null;
+          return_marked_on: string | null;
+          return_response: string | null;
+          return_response_at: string | null;
+          status: Database["public"]["Enums"]["deposit_status"];
+          updated_at: string;
+        };
+        SetofOptions: {
+          from: "*";
+          to: "contract_deposits";
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
+      mark_deposit_returned: {
+        Args: { p_contract_id: string; p_returned_on: string };
+        Returns: {
+          contract_id: string;
+          created_at: string;
+          deposit_recorded_at: string | null;
+          deposited_on: string | null;
+          has_receipt: boolean;
+          keys_confirmation: string | null;
+          keys_confirmed_at: string | null;
+          keys_declared_at: string | null;
+          keys_declared_on: string | null;
+          receipt_number: string | null;
+          receipt_path: string | null;
+          return_due_on: string | null;
+          return_marked_at: string | null;
+          return_marked_on: string | null;
+          return_response: string | null;
+          return_response_at: string | null;
+          status: Database["public"]["Enums"]["deposit_status"];
+          updated_at: string;
+        };
+        SetofOptions: {
+          from: "*";
+          to: "contract_deposits";
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
+      record_deposit: {
+        Args: { p_contract_id: string; p_deposited_on: string; p_receipt_number: string; p_receipt_path?: string };
+        Returns: {
+          contract_id: string;
+          created_at: string;
+          deposit_recorded_at: string | null;
+          deposited_on: string | null;
+          has_receipt: boolean;
+          keys_confirmation: string | null;
+          keys_confirmed_at: string | null;
+          keys_declared_at: string | null;
+          keys_declared_on: string | null;
+          receipt_number: string | null;
+          receipt_path: string | null;
+          return_due_on: string | null;
+          return_marked_at: string | null;
+          return_marked_on: string | null;
+          return_response: string | null;
+          return_response_at: string | null;
+          status: Database["public"]["Enums"]["deposit_status"];
+          updated_at: string;
+        };
+        SetofOptions: {
+          from: "*";
+          to: "contract_deposits";
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
+      respond_deposit_return: {
+        Args: { p_contract_id: string; p_received: boolean };
+        Returns: {
+          contract_id: string;
+          created_at: string;
+          deposit_recorded_at: string | null;
+          deposited_on: string | null;
+          has_receipt: boolean;
+          keys_confirmation: string | null;
+          keys_confirmed_at: string | null;
+          keys_declared_at: string | null;
+          keys_declared_on: string | null;
+          receipt_number: string | null;
+          receipt_path: string | null;
+          return_due_on: string | null;
+          return_marked_at: string | null;
+          return_marked_on: string | null;
+          return_response: string | null;
+          return_response_at: string | null;
+          status: Database["public"]["Enums"]["deposit_status"];
+          updated_at: string;
+        };
+        SetofOptions: {
+          from: "*";
+          to: "contract_deposits";
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
+      deposit_receipt_path: { Args: { p_contract_id: string }; Returns: string };
+      deposit_timers_run: {
+        Args: never;
+        Returns: {
+          contract_id: string;
+          due_on: string;
+          keys_on: string;
+          kind: string;
+          listing_title: string;
+          party: string;
+          user_id: string;
+        }[];
+      };
       confirm_inventory: {
         Args: { p_inventory_id: string };
         Returns: {
@@ -1629,6 +1929,7 @@ export type Database = {
     Enums: {
       contract_kind: "room" | "flat_habitual" | "flat_seasonal";
       contract_status: "draft" | "sent" | "signed" | "cancelled";
+      deposit_status: "pending" | "deposited" | "returned" | "claimed";
       interest_status: "pending" | "accepted" | "declined" | "withdrawn";
       inventory_stage: "entry" | "exit";
       item_condition: "new" | "good" | "worn" | "damaged";
@@ -1769,6 +2070,7 @@ export const Constants = {
     Enums: {
       contract_kind: ["room", "flat_habitual", "flat_seasonal"],
       contract_status: ["draft", "sent", "signed", "cancelled"],
+      deposit_status: ["pending", "deposited", "returned", "claimed"],
       interest_status: ["pending", "accepted", "declined", "withdrawn"],
       inventory_stage: ["entry", "exit"],
       item_condition: ["new", "good", "worn", "damaged"],
