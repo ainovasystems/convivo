@@ -12,6 +12,8 @@ describe("migraciones", () => {
       "admin_users",
       "auth_attempts",
       "blocks",
+      "contract_deposit_events",
+      "contract_deposits",
       "contract_inventories",
       "contracts",
       "conversation_reads",
