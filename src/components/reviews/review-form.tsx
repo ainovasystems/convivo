@@ -5,6 +5,7 @@ import { useActionState, useState } from "react";
 import { createReview } from "@/app/resenas/actions";
 import { TextAreaField } from "@/components/ui/field";
 import { FormAlert } from "@/components/ui/form-alert";
+import { SensitiveDataNotice } from "@/components/moderation/sensitive-data-notice";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { initialFormState } from "@/lib/forms";
 import { personalDataError, PERSONAL_DATA_HINT } from "@/lib/moderation/personal-data";
@@ -98,6 +99,7 @@ export function ReviewForm({
         hint={`${length}/1500 caracteres (mínimo 50). Sé concreto/a y justo/a. ${PERSONAL_DATA_HINT}`}
         error={errors.body}
       />
+      <SensitiveDataNotice />
 
       <div className="rounded-xl bg-brand-soft p-3 text-sm">
         <p className="font-medium">Cómo funciona el doble ciego</p>

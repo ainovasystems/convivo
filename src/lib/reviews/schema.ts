@@ -74,7 +74,7 @@ export const responseSchema = z.object({
 });
 
 export const REPORT_REASONS = {
-  personal_data: "Contiene datos personales (teléfono, dirección, DNI…)",
+  personal_data: "Contiene datos personales, también sensibles, de terceros (teléfono, dirección, DNI, salud, religión, origen, orientación sexual, ideología, antecedentes penales…)",
   offensive: "Lenguaje ofensivo o insultos",
   false_information: "Información falsa",
   discrimination: "Discriminación",

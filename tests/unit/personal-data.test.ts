@@ -320,3 +320,18 @@ describe("integración: biografía", () => {
     expect(r.error!.issues[0].message).toContain("Tu perfil es público");
   });
 });
+
+describe("aviso sobre datos sensibles de terceros", () => {
+  it("lleva el texto acordado, con las categorías y la consecuencia", async () => {
+    const { SENSITIVE_DATA_NOTICE } = await import("@/lib/moderation/personal-data");
+    expect(SENSITIVE_DATA_NOTICE).toBe(
+      "No escribas sobre la salud, la religión, el origen racial o étnico, la orientación o la vida sexual, la ideología política o sindical ni los antecedentes penales de nadie. Si lo haces, la reseña puede ocultarse.",
+    );
+  });
+
+  it("el motivo «datos personales» de la denuncia incluye los sensibles", async () => {
+    const { REPORT_REASONS } = await import("@/lib/reviews/schema");
+    expect(REPORT_REASONS.personal_data).toMatch(/sensibles|salud/);
+    expect(REPORT_REASONS.personal_data).toContain("terceros");
+  });
+});

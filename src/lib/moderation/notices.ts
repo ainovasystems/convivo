@@ -3,7 +3,7 @@ import { z } from "zod";
 /** Motivos de una notificación de contenido ilícito (DSA art. 16). Iguales que el CHECK de legal_notices. */
 export const NOTICE_REASONS = {
   defamation: "Difamación o acusaciones falsas",
-  personal_data: "Datos personales míos o de otra persona",
+  personal_data: "Datos personales míos o de otra persona (también sensibles: salud, religión, origen, orientación sexual…)",
   discrimination: "Discriminación",
   fraud: "Estafa o fraude",
   minor: "La cuenta es de un menor",

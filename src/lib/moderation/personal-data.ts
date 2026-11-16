@@ -52,6 +52,13 @@ const WHY: Record<PersonalDataContext, string> = {
   profile: "Tu perfil es público. Para tu seguridad, el contacto va por el chat de Hommie.",
 };
 
+/**
+ * Aviso (no detección: con patrones no es fiable) sobre datos sensibles de terceros.
+ * Va en el formulario de reseña, en la respuesta pública y en la biografía.
+ */
+export const SENSITIVE_DATA_NOTICE =
+  "No escribas sobre la salud, la religión, el origen racial o étnico, la orientación o la vida sexual, la ideología política o sindical ni los antecedentes penales de nadie. Si lo haces, la reseña puede ocultarse.";
+
 /** Hint breve y visible para anticiparlo en los formularios. */
 export const PERSONAL_DATA_HINT = "No incluyas teléfonos, emails ni direcciones exactas: usa el chat.";
 

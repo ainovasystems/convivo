@@ -21,6 +21,7 @@ import {
   type Habits,
   maxBirthYear,
 } from "@/lib/profile/options";
+import { SensitiveDataNotice } from "@/components/moderation/sensitive-data-notice";
 import { personalDataError } from "@/lib/moderation/personal-data";
 import { useClientValidation } from "@/lib/use-client-validation";
 import { profileFormDataToObject, profileSchema } from "@/lib/validation/profile";
@@ -75,6 +76,7 @@ export function ProfileForm({ initial }: { initial: ProfileFormValues }) {
           hint="Cuéntales a tus futuros compañeros cómo eres en casa (máx. 1000 caracteres). No incluyas teléfonos, emails ni direcciones exactas: usa el chat."
           error={bioLive ?? errors.bio}
         />
+        <SensitiveDataNotice />
         <div className="grid gap-4 sm:grid-cols-2">
           <TextField
             id="city"

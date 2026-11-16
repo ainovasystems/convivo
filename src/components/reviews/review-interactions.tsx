@@ -6,6 +6,7 @@ import { useActionState, useEffect, useState } from "react";
 import { reportReview, respondToReview } from "@/app/resenas/actions";
 import { SelectField, TextAreaField } from "@/components/ui/field";
 import { FormAlert } from "@/components/ui/form-alert";
+import { SensitiveDataNotice } from "@/components/moderation/sensitive-data-notice";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { initialFormState, type FormState } from "@/lib/forms";
 import { personalDataError, PERSONAL_DATA_HINT } from "@/lib/moderation/personal-data";
@@ -49,6 +50,7 @@ export function RespondForm({ reviewId, path }: { reviewId: string; path: string
           hint={`Solo puedes responder una vez y no podrás editarla. Mantén un tono respetuoso. ${PERSONAL_DATA_HINT}`}
           error={live ?? state.errors?.body}
         />
+        <SensitiveDataNotice />
         <SubmitButton pendingText="Publicando…">Publicar respuesta</SubmitButton>
       </form>
     </details>
