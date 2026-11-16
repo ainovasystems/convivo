@@ -2,7 +2,7 @@
 
 > **Fuente única de «qué toca ahora».** Solo se trabaja en el bloque marcado como **SIGUIENTE**. Lo que surja por el camino va a «Ideas aparcadas», no se hace en ese momento.
 > La actualiza Claude Code al cerrar cada bloque y se vuelve a subir al proyecto de Claude.
-> Última actualización: **17 de noviembre de 2026** (cierre de «Fianza: liquidación de salida», 2 de 2).
+> Última actualización: **18 de noviembre de 2026** (cierre de «Control previo de datos personales»).
 > Lo que falta antes de abrir, con responsable y estado: `docs/CHECKLIST-LANZAMIENTO.md`.
 
 ## Hecho
@@ -20,6 +20,7 @@
 | Correcciones legales | Quitado el campo y el filtro «solo chicas/chicos»; contrato de habitación solo para anuncios en Galicia (fuera, aviso y la estancia se confirma en el chat); guía de la fianza con dos versiones (Galicia y resto de España) y solo para el casero, tras el botón «¿Ayuda con la fianza?»; línea «DNI/NIE» en blanco por parte en los contratos; Sentry en `/privacidad` |
 | Fianza: seguimiento (1 de 2) | Apartado «Fianza» en el contrato firmado: depósito anotado por el casero (fecha, n.º de resguardo y resguardo privado), entrega de llaves (la declara el inquilino y la confirma el casero; ya no se da nunca por confirmada: sin confirmar consta como «declarada por el inquilino, sin confirmar» y el casero recibe recordatorios), reloj de un mes para devolver (art. 36.4 LAU) con avisos in-app y por email, devolución marcada por el casero y confirmada por el inquilino, y paquete de pruebas imprimible a PDF si vence el plazo. Sin tocar dinero |
 | Fianza: liquidación de salida (2 de 2) | Ajuste de las llaves (sin confirmación a los 7 días; fecha «declarada, sin confirmar» con recordatorios al casero; paquete de pruebas pasado un mes desde la fecha declarada, con aviso expreso de que no la confirmó el casero), importe devuelto informativo y liquidación de salida: partidas del casero (solo daños nuevos vinculables al inventario, con fotos de entrada y salida; el desgaste se avisa como no descontable), respuesta del inquilino partida por partida, confirmación de las dos partes y bloqueo, reabrir antes del cierre, enlace a la conversación y resumen imprimible a PDF con huella. Cronología append-only. Solo documenta |
+| Control previo de datos personales | Anuncios (título, descripción, zonas y barrio), reseñas, respuestas públicas y biografía rechazan teléfonos, emails (también «arroba»), DNI/NIE, IBAN y tarjetas, canales de contacto externos y direcciones exactas. Aviso en vivo y de nuevo en el servidor; no se repite el dato. Reseñas y respuestas, además, con respaldo en la base de datos. El chat no se toca |
 | Fase 7a · SEO técnico y auditoría | Páginas de ciudad (`/habitaciones/lugo`, `/pisos/lugo`…), `sitemap.xml`, `robots.txt`, datos estructurados, tarjetas para compartir, indexación apagada con una variable, y `docs/REVISION-FASE-7.md` (Lighthouse, axe y 52 capturas en móvil) |
 
 ## SIGUIENTE (en este orden, decidido en la planificación)
@@ -92,7 +93,7 @@ Después del piloto: contratos · fase 3 / **Fase B de pagos** con socio regulad
 - **Pruebas e2e posiblemente frágiles por el mismo motivo** que arregló el cierre de la CI (mensaje de éxito dentro de un elemento que `router.refresh()` retira): revisar `listing-flag-form.tsx` y otros formularios de `/admin` que hacen `router.refresh()` tras el éxito y cuyas pruebas esperen su mensaje. Nota de producto: el aviso de «Decisión registrada» se ve un instante antes de que la notificación salga de las pendientes.
 - **Pendiente de verificar con Supabase real** (CI o web de pruebas): el CLS del perfil tras quitar su esqueleto, y repetir la medición de peso con fotos reales y en Vercel.
 - Calidad de la versión optimizada de las tarjetas (de 75 a ~60): recomendación 3 de `docs/PESO-DE-LAS-FOTOS.md`, opcional.
-- **Control previo de datos personales** en reseñas y anuncios antes de publicar (caso Russmedia). **Prioritario antes del piloto.**
+- **Datos personales, mejoras posibles:** revisar con el uso real los falsos positivos y negativos (en teléfonos y direcciones); extender el respaldo de la base de datos a anuncios (hoy solo reseñas y respuestas); controlar también lo que se escribe en la nota de una denuncia o en el motivo de un contrato si hiciera falta; e2e de reseñas y biografía (hoy solo hay e2e del asistente de anuncios); Hommie/Convivo: los textos de interfaz nuevos dicen «chat de Hommie» por encargo, el resto de la app sigue diciendo Convivo hasta decidir el nombre.
 - Tarea de purga automática de los plazos de conservación.
 - Suspender cuentas desde `/admin`.
 - Verificación de teléfono (el campo existe; falta el flujo y la tabla privada).

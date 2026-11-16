@@ -21,7 +21,7 @@ Plataforma web en español (España) para **vivienda compartida**: un «LinkedIn
 
 ## 2. Estado en una frase
 
-**El producto completo funciona en una web de pruebas**: anuncios, chat, estancias, reseñas, moderación, seguridad y RGPD, y contratos con firma, inventario, ayuda y seguimiento de la fianza. Para abrir al público falta lo siguiente:
+**El producto completo funciona en una web de pruebas**: anuncios, chat, estancias, reseñas, moderación, seguridad y RGPD, y contratos con firma, inventario, ayuda y seguimiento de la fianza, con control previo de datos personales en el texto público. Para abrir al público falta lo siguiente:
 
 - la revisión del abogado;
 - configurar los emails y el dominio;
@@ -155,6 +155,8 @@ Plataforma web en español (España) para **vivienda compartida**: un «LinkedIn
 13. **Identidad visual:** blanco y crema, marrón nogal #7b4b2a y acento miel #f4b740, tipografía Plus Jakarta Sans, botones en píldora y estilo startup (Glovo, Too Good To Go, BlaBlaCar). El modo oscuro está desactivado.
 
 Las 70 decisiones técnicas están numeradas en `CLAUDE.md` → «Decisiones tomadas».
+
+**Datos personales en texto público (noviembre de 2026):** el título, la descripción, las zonas y el barrio de un anuncio, las reseñas, sus respuestas y la biografía del perfil no pueden llevar teléfonos, emails, DNI/NIE, IBAN o tarjetas, enlaces a WhatsApp, Telegram, Instagram y similares, ni direcciones exactas (tampoco las del propio anunciante: el contacto va por el chat). **Se bloquea, no pasa a revisión.** El chat entre las dos partes no se controla. Lo ya publicado no se toca; lo retroactivo lo cubre el canal de denuncias. No se detectan nombres ni datos de salud (con patrones no es fiable).
 
 ## 6. Riesgos principales
 
