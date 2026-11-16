@@ -2,7 +2,7 @@
 
 > **Fuente única de «qué toca ahora».** Solo se trabaja en el bloque marcado como **SIGUIENTE**. Lo que surja por el camino va a «Ideas aparcadas», no se hace en ese momento.
 > La actualiza Claude Code al cerrar cada bloque y se vuelve a subir al proyecto de Claude.
-> Última actualización: **16 de noviembre de 2026** (cierre de «Fianza: seguimiento», 1 de 2).
+> Última actualización: **17 de noviembre de 2026** (cierre de «Fianza: liquidación de salida», 2 de 2).
 > Lo que falta antes de abrir, con responsable y estado: `docs/CHECKLIST-LANZAMIENTO.md`.
 
 ## Hecho
@@ -18,13 +18,13 @@
 | Fase 8a · Operación sin dominio | CI en GitHub Actions (lint, tipos, pruebas, build y e2e con Supabase local en cada cambio), Sentry preparado (apagado sin clave, UE, sin datos personales, límite de envíos, monitor de la tarea diaria), `/api/salud` para el monitor de disponibilidad, `docs/DEPLOY.md`, `docs/COPIAS-DE-SEGURIDAD.md`, `docs/CHECKLIST-LANZAMIENTO.md` y medición del peso de las fotos (`docs/PESO-DE-LAS-FOTOS.md`) |
 | Fase 7b · Arreglos de diseño, accesibilidad y rendimiento | D1-D4, D6, D7, D9, P1, P2, A1-A6 y fotos más ligeras (ver `docs/REVISION-FASE-7.md` §5): filtros plegados con resumen y chips, botón de contacto repetido en la ficha, perfil sin esqueleto, tarjetas ≤ 828 px y galería que carga solo la primera foto |
 | Correcciones legales | Quitado el campo y el filtro «solo chicas/chicos»; contrato de habitación solo para anuncios en Galicia (fuera, aviso y la estancia se confirma en el chat); guía de la fianza con dos versiones (Galicia y resto de España) y solo para el casero, tras el botón «¿Ayuda con la fianza?»; línea «DNI/NIE» en blanco por parte en los contratos; Sentry en `/privacidad` |
-| Fianza: seguimiento (1 de 2) | Apartado «Fianza» en el contrato firmado: depósito anotado por el casero (fecha, n.º de resguardo y resguardo privado), entrega de llaves (la declara el inquilino, la confirma el casero o se da por confirmada a los 7 días), reloj de un mes para devolver (art. 36.4 LAU) con avisos in-app y por email, devolución marcada por el casero y confirmada por el inquilino, y paquete de pruebas imprimible a PDF si vence el plazo. Sin tocar dinero |
+| Fianza: seguimiento (1 de 2) | Apartado «Fianza» en el contrato firmado: depósito anotado por el casero (fecha, n.º de resguardo y resguardo privado), entrega de llaves (la declara el inquilino y la confirma el casero; ya no se da nunca por confirmada: sin confirmar consta como «declarada por el inquilino, sin confirmar» y el casero recibe recordatorios), reloj de un mes para devolver (art. 36.4 LAU) con avisos in-app y por email, devolución marcada por el casero y confirmada por el inquilino, y paquete de pruebas imprimible a PDF si vence el plazo. Sin tocar dinero |
+| Fianza: liquidación de salida (2 de 2) | Ajuste de las llaves (sin confirmación a los 7 días; fecha «declarada, sin confirmar» con recordatorios al casero; paquete de pruebas pasado un mes desde la fecha declarada, con aviso expreso de que no la confirmó el casero), importe devuelto informativo y liquidación de salida: partidas del casero (solo daños nuevos vinculables al inventario, con fotos de entrada y salida; el desgaste se avisa como no descontable), respuesta del inquilino partida por partida, confirmación de las dos partes y bloqueo, reabrir antes del cierre, enlace a la conversación y resumen imprimible a PDF con huella. Cronología append-only. Solo documenta |
 | Fase 7a · SEO técnico y auditoría | Páginas de ciudad (`/habitaciones/lugo`, `/pisos/lugo`…), `sitemap.xml`, `robots.txt`, datos estructurados, tarjetas para compartir, indexación apagada con una variable, y `docs/REVISION-FASE-7.md` (Lighthouse, axe y 52 capturas en móvil) |
 
 ## SIGUIENTE (en este orden, decidido en la planificación)
 
-1. **Fianza: liquidación de salida y negociación documentada (2 de 2)**: descuentos justificados con el inventario de entrada y salida y negociación dentro de la app. Sin tocar dinero. Alcance fino a cerrar en la planificación; ahí también se decide cómo discrepa el casero de la fecha de llaves declarada.
-2. **Piloto** en una ciudad (Galicia, que es donde hay contrato de habitación): montar producción con `docs/DEPLOY.md`, completar `docs/CHECKLIST-LANZAMIENTO.md`, objetivos y captación.
+1. **Piloto** en una ciudad (Galicia, que es donde hay contrato de habitación): montar producción con `docs/DEPLOY.md`, completar `docs/CHECKLIST-LANZAMIENTO.md`, objetivos y captación.
 
 Después del piloto: contratos · fase 3 / **Fase B de pagos** con socio regulado, y app nativa (Expo / React Native) reutilizando la misma base de datos.
 
@@ -97,7 +97,8 @@ Después del piloto: contratos · fase 3 / **Fase B de pagos** con socio regulad
 - Suspender cuentas desde `/admin`.
 - Verificación de teléfono (el campo existe; falta el flujo y la tabla privada).
 - Firma avanzada con proveedor (Signaturit, DocuSign).
-- **Seguimiento de la fianza, mejoras:** PDF real generado en servidor para el paquete de pruebas (hoy se imprime a PDF desde el navegador); corregir un error de tecleo del número de resguardo (hoy inmutable); mecanismo para que el casero discrepe de la fecha de llaves (va al bloque 2); aviso al casero para anotar el depósito si pasa mucho tiempo; **e2e del flujo de la fianza** (no se pudo ejecutar sin Docker en la sesión) y comprobar el cron con Supabase real.
+- **Seguimiento de la fianza, mejoras:** PDF real generado en servidor para el paquete de pruebas (hoy se imprime a PDF desde el navegador); corregir un error de tecleo del número de resguardo (hoy inmutable); aviso al casero para anotar el depósito si pasa mucho tiempo; **e2e del flujo de la fianza** (no se pudo ejecutar sin Docker en la sesión) y comprobar el cron con Supabase real.
+- **Fianza: liquidación, mejoras:** **e2e del flujo completo** (llaves sin confirmar, liquidación y resumen) en escritorio y móvil, que no se pudo ejecutar sin Docker en la sesión (probar con la CI); editar una partida ya creada desde la pantalla (hoy se quita y se vuelve a añadir; la RPC ya lo admite); sección de la liquidación dentro del paquete de pruebas; aviso al casero para abrir la liquidación cuando el inventario de salida queda bloqueado; PDF real generado en servidor; revisión del abogado de todos los textos (preguntas 4 y siguientes).
 - **Fase B de pagos** con un socio regulado (cobro de rentas o fianzas y seguro de impago). Antes, la pregunta 12 al abogado.
 - **Fotos a escala:** si en Supabase el tráfico pasa de **150 GB/mes** o los ficheros de **60 GB** (revisión mensual), estudiar una CDN o almacenamiento propio para las fotos (p. ej. Cloudflare R2) y miniaturas generadas al subir. Hoy no hace falta: las fotos pasan por el optimizador de Vercel (`docs/PESO-DE-LAS-FOTOS.md`).
 - **Prueba de carga** antes de abrir a varias ciudades: cuántas visitas y mensajes por minuto aguantan Vercel y Supabase con el plan contratado.

@@ -87,9 +87,17 @@ Plataforma web en español (España) para **vivienda compartida**: un «LinkedIn
 
 - En el contrato firmado, las dos partes ven un apartado «Fianza» con su estado: pendiente de depositar, depositada, devuelta o reclamada (no recibida). No es una señal pública en el perfil.
 - El casero anota la fecha y el número de resguardo del depósito y, si quiere, sube el resguardo (solo lo ve él; el inquilino ve estado, fecha y número).
-- Al terminar la estancia, el inquilino declara la fecha de entrega de llaves y el casero la confirma. Si no responde en 7 días, se da por confirmada, con aviso a los dos y constancia.
-- Con las llaves confirmadas corre un plazo de un mes para devolver la fianza (art. 36.4 LAU, orientativo), visible para las dos partes, con avisos en la app y por email 7 días antes y al vencer.
-- El casero marca la devolución y el inquilino la confirma o dice que no la ha recibido. Si vence el plazo sin devolverla, el inquilino puede preparar un paquete de pruebas en PDF (contrato y huella, inventarios con fotos, fechas y cronología). Convivo no reclama nada en su nombre.
+- Al terminar la estancia, el inquilino declara la fecha de entrega de llaves y el casero la confirma. **Convivo nunca la da por confirmada**: si el casero no responde, consta como «declarada por el inquilino, sin confirmar» (con su fecha y hora de registro, visible para los dos) y el casero recibe recordatorios en la app y por email.
+- Con las llaves confirmadas corre un plazo de un mes para devolver la fianza (art. 36.4 LAU, orientativo), visible para las dos partes, con avisos en la app y por email 7 días antes y al vencer. Si la fecha no está confirmada, no hay reloj oficial: pasado un mes desde la fecha declarada, el inquilino puede descargar el paquete de pruebas, que dice de forma expresa que el casero no la confirmó.
+- El casero marca la devolución (con el importe devuelto, si quiere; es solo informativo) y el inquilino la confirma o dice que no la ha recibido. Si vence el plazo sin devolverla, el inquilino puede preparar un paquete de pruebas en PDF (contrato y huella, inventarios con fotos, fechas y cronología). Convivo no reclama nada en su nombre.
+**Liquidación de salida de la fianza (solo documenta)**
+
+- Cuando los dos habéis confirmado el inventario de salida, el casero abre la liquidación: una lista de partidas con concepto e importe y, si procede, el elemento del inventario al que se refieren, con sus fotos de entrada y de salida. Solo se pueden vincular los **daños nuevos** (a la entrada estaba bien y a la salida está dañado); el desgaste por uso normal se avisa como no descontable.
+- Se ve el total de descuentos frente a la fianza (si lo supera, solo se señala).
+- El casero la envía; el inquilino responde a cada partida (acepto / no acepto, con comentario obligatorio si no acepta). Estados: en preparación, enviada, de acuerdo, con discrepancias.
+- Las dos partes la confirman y queda cerrada: ya nadie puede cambiarla. Antes del cierre, el casero puede reabrirla (lo anterior queda en la cronología). Si hay discrepancias, se hablan en la conversación de siempre y el resumen sirve como constancia.
+- El resumen se guarda como PDF (partidas, fotos, respuestas, fechas, estado y huella). Convivo no media, no propone cifras, no decide quién tiene razón y no mueve dinero. Textos en borrador pendiente de revisión legal.
+
 - Habitaciones: «si tu comunidad lo exige»; en Galicia, solo se recuerda consultar al IGVS. Todos los textos son borrador pendiente de revisión legal.
 
 **Reseñas**
@@ -141,12 +149,12 @@ Plataforma web en español (España) para **vivienda compartida**: un «LinkedIn
 8. **Las marcas de fraude no despublican ni avisan al anunciante**: decide un admin.
 9. **Firmar el contrato confirma la estancia.** Se firma el texto exacto. La firma es electrónica simple; la avanzada, con un proveedor como Signaturit o DocuSign, queda para más adelante.
 10. **El inventario confirmado por los dos queda bloqueado**: es la prueba para devolver la fianza.
-10b. **Fianza sin tocar dinero:** Convivo solo deja constancia (estados, fechas, avisos y un paquete de pruebas). Si el casero no responde: avisos, reloj y paquete de pruebas; nunca una carta de requerimiento ni un mediador. La entrega de llaves se da por confirmada a los 7 días sin respuesta.
+10b. **Fianza sin tocar dinero:** Convivo solo deja constancia (estados, fechas, avisos y un paquete de pruebas). Si el casero no responde: avisos, reloj y paquete de pruebas; nunca una carta de requerimiento ni un mediador. La entrega de llaves **nunca** se da por confirmada: solo la confirma el casero. La liquidación de salida solo documenta (sin mediar ni proponer cifras) y queda cerrada al confirmarla las dos partes.
 11. **Datos en Europa** (Vercel en París, Supabase en Europa). Solo cookies técnicas, así que no hay banner de cookies.
 12. **Indexación:** la web de pruebas no se indexa (una variable la enciende en producción); perfiles y anuncios «busco» no se indexan; las páginas de ciudad son solo las del piloto.
 13. **Identidad visual:** blanco y crema, marrón nogal #7b4b2a y acento miel #f4b740, tipografía Plus Jakarta Sans, botones en píldora y estilo startup (Glovo, Too Good To Go, BlaBlaCar). El modo oscuro está desactivado.
 
-Las 67 decisiones técnicas están numeradas en `CLAUDE.md` → «Decisiones tomadas».
+Las 70 decisiones técnicas están numeradas en `CLAUDE.md` → «Decisiones tomadas».
 
 ## 6. Riesgos principales
 
