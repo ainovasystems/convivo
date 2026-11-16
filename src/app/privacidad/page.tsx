@@ -170,7 +170,7 @@ export default function PrivacyPage() {
       <section>
         <h2>8. Menores</h2>
         <p>
-          Convivo es solo para mayores de 18 años: al registrarte declaras que lo eres, y el año de nacimiento del perfil no
+          Hommie es solo para mayores de 18 años: al registrarte declaras que lo eres, y el año de nacimiento del perfil no
           admite menores de 18. No pedimos DNI. Si sabemos que una cuenta es de un menor, la suspendemos y borramos sus datos. Puedes
           avisarnos desde el <a href="/denunciar" className="font-semibold text-brand underline">formulario de denuncias</a>.
         </p>

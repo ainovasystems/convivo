@@ -9,13 +9,13 @@ export default function TermsPage() {
   return (
     <LegalPage title="Condiciones de uso" updated="18 de noviembre de 2026">
       <section>
-        <h2>1. Qué es Convivo</h2>
+        <h2>1. Qué es Hommie</h2>
         <p>
-          Convivo es una plataforma para encontrar habitación, piso o compañeros de piso, con perfiles y reseñas de
+          Hommie es una plataforma para encontrar habitación, piso o compañeros de piso, con perfiles y reseñas de
           personas que han convivido de verdad. La presta [POR COMPLETAR: titular, NIF y domicilio].
         </p>
         <p>
-          <strong>Convivo no es parte de los contratos de alquiler</strong> ni cobra rentas, fianzas ni comisiones: pone en
+          <strong>Hommie no es parte de los contratos de alquiler</strong> ni cobra rentas, fianzas ni comisiones: pone en
           contacto a las personas. El acuerdo de alquiler o de convivencia es solo entre ellas. [POR COMPLETAR: revisar con
           el abogado la condición de prestador de servicios de la sociedad de la información (LSSI) y la relación con la LAU]
         </p>
@@ -44,11 +44,6 @@ export default function TermsPage() {
           <li>
             <strong>No se permiten anuncios discriminatorios</strong>: no se puede excluir a nadie por origen, nacionalidad,
             religión, orientación sexual u otros motivos protegidos.
-          </li>
-          <li>
-            En habitaciones y en búsquedas de compañero se puede indicar con quién se quiere convivir («solo chicas», «solo
-            chicos»), porque se comparte la vivienda. [POR COMPLETAR: validar con el abogado (Ley 15/2022) y, en su caso,
-            limitarlo a viviendas en las que convive quien anuncia]
           </li>
           <li>No pidas pagos por adelantado antes de que la otra persona haya visto la vivienda.</li>
           <li>No incluyas en los textos datos personales de terceros.</li>
@@ -96,7 +91,7 @@ export default function TermsPage() {
           </li>
           <li>Las reseñas denunciadas por contener datos personales se ocultan hasta que las revisamos.</li>
           <li>
-            Convivo puede ocultar o retirar cualquier contenido (anuncio, reseña, respuesta o perfil) que incluya datos
+            Hommie puede ocultar o retirar cualquier contenido (anuncio, reseña, respuesta o perfil) que incluya datos
             personales de terceros, en especial datos sensibles (salud, religión, origen, orientación sexual, ideología,
             antecedentes penales), o que incumpla estas condiciones. Lo hará con una decisión motivada y avisando a quien lo
             publicó. Quien vea un contenido así, o aparezca en él, puede notificarlo desde{" "}
@@ -116,7 +111,7 @@ export default function TermsPage() {
       <section>
         <h2>6. Tu contenido</h2>
         <p>
-          Lo que publicas es tuyo. Convivo usa los anuncios, perfiles, reseñas, respuestas y mensajes solo para prestar el
+          Lo que publicas es tuyo. Hommie usa los anuncios, perfiles, reseñas, respuestas y mensajes solo para prestar el
           servicio: mostrarlos a quien corresponda, moderarlos, mantener la seguridad de la plataforma y cumplir la ley. No los
           usa para fines propios ni adquiere derechos amplios sobre ellos. [POR COMPLETAR: revisar con el abogado el alcance de
           la licencia mínima necesaria para prestar el servicio]
