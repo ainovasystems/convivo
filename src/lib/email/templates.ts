@@ -1,5 +1,7 @@
 /** Plantillas de email transaccional en español. Devuelven asunto, HTML y texto plano. */
 
+import { formatDay } from "@/lib/contracts/deposit-tracking";
+
 export function escapeHtml(s: string) {
   return s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
 }
@@ -214,5 +216,112 @@ export function inventoryToConfirmEmail(p: { stage: "entry" | "exit"; url: strin
     subject,
     html: layout(`Inventario ${label} por revisar`, paragraphs, { label: "Revisar el inventario", url: p.url }),
     text: `${paragraphs.map(strip).join("\n\n")}\n\nRevisar el inventario: ${p.url}`,
+  };
+}
+
+export type DepositEmailKind =
+  | "keys_declared"
+  | "keys_confirmed"
+  | "keys_auto_confirmed"
+  | "return_closing"
+  | "return_overdue"
+  | "return_marked"
+  | "return_confirmed"
+  | "return_disputed";
+
+const DEPOSIT_FOOTNOTE = "Convivo no mueve dinero: solo deja constancia. Información orientativa, borrador pendiente de revisión legal.";
+
+/** Seguimiento de la fianza: un único email con el texto según el aviso y a quién va. */
+export function depositEmail(p: {
+  kind: DepositEmailKind;
+  party: "landlord" | "tenant";
+  listingTitle: string;
+  url: string;
+  /** AAAA-MM-DD */
+  keysOn?: string | null;
+  dueOn?: string | null;
+}): Rendered {
+  const t = escapeHtml(p.listingTitle);
+  const keys = p.keysOn ? formatDay(p.keysOn) : null;
+  const due = p.dueOn ? formatDay(p.dueOn) : null;
+  const landlord = p.party === "landlord";
+  const copy: Record<DepositEmailKind, { subject: string; title: string; paragraphs: string[]; cta: string }> = {
+    keys_declared: {
+      subject: "Confirma la entrega de llaves",
+      title: "Confirma la entrega de llaves",
+      paragraphs: [
+        `Tu inquilino declara que entregó las llaves de «${t}»${keys ? ` el ${keys}` : ""}.`,
+        "Confírmalo en Convivo. Si no respondes en 7 días, se dará por confirmada y empezará a correr el plazo de un mes para devolver la fianza.",
+      ],
+      cta: "Revisar y confirmar",
+    },
+    keys_confirmed: {
+      subject: "Entrega de llaves confirmada: empieza el plazo de la fianza",
+      title: "Entrega de llaves confirmada",
+      paragraphs: [
+        `La entrega de llaves de «${t}»${keys ? ` (${keys})` : ""} está confirmada.`,
+        `${due ? `El plazo de un mes para devolver la fianza termina el ${due}.` : "Ya corre el plazo de un mes para devolver la fianza."} Es una indicación orientativa (art. 36.4 LAU).`,
+      ],
+      cta: "Ver el seguimiento de la fianza",
+    },
+    keys_auto_confirmed: {
+      subject: "Entrega de llaves dada por confirmada",
+      title: "Entrega de llaves dada por confirmada",
+      paragraphs: [
+        `Han pasado 7 días sin respuesta del casero, así que se da por confirmada la entrega de llaves de «${t}»${keys ? ` del ${keys}` : ""}. Ha quedado constancia.`,
+        `${due ? `El plazo de un mes para devolver la fianza termina el ${due}.` : "Ya corre el plazo de un mes para devolver la fianza."} Es una indicación orientativa (art. 36.4 LAU).`,
+      ],
+      cta: "Ver el seguimiento de la fianza",
+    },
+    return_closing: {
+      subject: "Se acerca el plazo para devolver la fianza",
+      title: "Se acerca el plazo de la fianza",
+      paragraphs: [
+        landlord
+          ? `Tienes hasta el ${due ?? "…"} para devolver la fianza de «${t}» (un mes desde la entrega de llaves).`
+          : `El plazo para que te devuelvan la fianza de «${t}» termina el ${due ?? "…"}.`,
+        landlord ? "Cuando la devuelvas, márcalo en el contrato." : "Cuando la recibas, confírmalo en el contrato.",
+      ],
+      cta: "Ver el seguimiento de la fianza",
+    },
+    return_overdue: {
+      subject: "Ha vencido el plazo para devolver la fianza",
+      title: "Ha vencido el plazo de la fianza",
+      paragraphs: [
+        `El plazo de un mes para devolver la fianza de «${t}» terminó el ${due ?? "…"}.`,
+        landlord
+          ? "Si ya la has devuelto, márcalo en el contrato."
+          : "Si no la has recibido, puedes descargar desde el contrato un paquete de pruebas en PDF con las fechas, los inventarios y la cronología. Convivo no hace ninguna reclamación en tu nombre.",
+      ],
+      cta: landlord ? "Marcar la devolución" : "Ver el seguimiento de la fianza",
+    },
+    return_marked: {
+      subject: "Tu casero dice que te ha devuelto la fianza",
+      title: "Confirma si has recibido la fianza",
+      paragraphs: [`Tu casero ha marcado como devuelta la fianza de «${t}». Confirma si la has recibido o indica que no.`],
+      cta: "Responder",
+    },
+    return_confirmed: {
+      subject: "Tu inquilino confirma que ha recibido la fianza",
+      title: "Devolución confirmada",
+      paragraphs: [`Tu inquilino ha confirmado que ha recibido la fianza de «${t}». El registro ya no se puede cambiar.`],
+      cta: "Ver el contrato",
+    },
+    return_disputed: {
+      subject: "Tu inquilino indica que no ha recibido la fianza",
+      title: "La fianza consta como no recibida",
+      paragraphs: [
+        `Tu inquilino indica que no ha recibido la fianza de «${t}». Revisa la devolución con él.`,
+        "Cuando la hayas hecho, puedes volver a marcarla en el contrato.",
+      ],
+      cta: "Ver el contrato",
+    },
+  };
+  const c = copy[p.kind];
+  const paragraphs = ["Hola:", ...c.paragraphs, DEPOSIT_FOOTNOTE];
+  return {
+    subject: c.subject,
+    html: layout(c.title, paragraphs, { label: c.cta, url: p.url }),
+    text: `${paragraphs.map(strip).join("\n\n")}\n\n${c.cta}: ${p.url}`,
   };
 }

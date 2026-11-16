@@ -7,8 +7,11 @@ import { ContractEditor } from "@/components/contracts/contract-editor";
 import { ContractSign } from "@/components/contracts/contract-sign";
 import { ContractText } from "@/components/contracts/contract-text";
 import { DepositGuide } from "@/components/contracts/deposit-guide";
+import { DepositSection } from "@/components/contracts/deposit-section";
 import { PrintButton } from "@/components/contracts/print-button";
 import { getCurrentUser } from "@/lib/auth";
+import { isGalicia } from "@/lib/contracts/availability";
+import { getDepositView } from "@/lib/contracts/deposit-queries";
 import { STAGE_LABELS, STAGE_SLUGS, INVENTORY_STAGES } from "@/lib/contracts/inventory";
 import { listContractInventories } from "@/lib/contracts/inventory-queries";
 import { getContract } from "@/lib/contracts/queries";
@@ -32,6 +35,7 @@ export default async function ContractPage({ params }: { params: Promise<{ id: s
   const myName = String((isLandlord ? terms.landlord_name : terms.tenant_name) ?? "");
   const iSigned = Boolean(isLandlord ? c.landlord_signed_at : c.tenant_signed_at);
   const inventories = c.status === "signed" ? await listContractInventories(c.id) : [];
+  const deposit = await (c.status === "signed" ? getDepositView(c, isLandlord) : Promise.resolve(null));
   const entryLocked = inventories.some((i) => i.stage === "entry" && i.locked_at);
   const inventoryStatus = (stage: (typeof INVENTORY_STAGES)[number]) => {
     const inv = inventories.find((i) => i.stage === stage);
@@ -126,6 +130,18 @@ export default async function ContractPage({ params }: { params: Promise<{ id: s
           </aside>
         </div>
       )}
+
+      {deposit ? (
+        <DepositSection
+          contractId={c.id}
+          deposit={Number(terms.deposit ?? 0)}
+          view={deposit}
+          isLandlord={isLandlord}
+          roomKind={c.kind === "room"}
+          isGalicia={isGalicia(c.listing?.province)}
+          otherName={(isLandlord ? c.tenant?.display_name : c.landlord?.display_name) ?? "La otra parte"}
+        />
+      ) : null}
     </div>
   );
 }

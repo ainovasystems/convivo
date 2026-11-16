@@ -12,7 +12,7 @@ import type { Database } from "@/types/database.types";
  */
 export async function buildDataExport(supabase: SupabaseClient<Database>, user: { id: string; email: string | null }) {
   const uid = user.id;
-  const [profile, listings, interests, messages, stays, participations, written, received, notifications, blocks, reports, contracts, inventories, inventoryItems] =
+  const [profile, listings, interests, messages, stays, participations, written, received, notifications, blocks, reports, contracts, inventories, inventoryItems, deposits, depositEvents] =
     await Promise.all([
       supabase.from("profiles").select("*").eq("id", uid).maybeSingle(),
       supabase.from("listings").select("*, address:listing_addresses(address_line, floor_door, postal_code)").eq("owner_id", uid),
@@ -31,13 +31,18 @@ export async function buildDataExport(supabase: SupabaseClient<Database>, user: 
         .or(`landlord_id.eq.${uid},tenant_id.eq.${uid}`),
       supabase.from("contract_inventories").select("*"),
       supabase.from("inventory_items").select("id, inventory_id, area, name, condition, notes, photos, created_by, created_at"),
+      // Sin la ruta del resguardo (el documento no se expone por la API).
+      supabase
+        .from("contract_deposits")
+        .select("contract_id, status, deposited_on, receipt_number, has_receipt, deposit_recorded_at, keys_declared_on, keys_declared_at, keys_confirmed_at, keys_confirmation, return_due_on, return_marked_on, return_marked_at, return_response, return_response_at"),
+      supabase.from("contract_deposit_events").select("contract_id, kind, actor_id, data, created_at"),
     ]);
 
   return {
     generado: new Date().toISOString(),
     nota:
       "Copia de tus datos en Convivo. Incluye tu perfil, tus anuncios con su dirección, tus conversaciones (tus mensajes), " +
-      "tus estancias, tus contratos con sus inventarios (las fotos se descargan desde cada inventario), las reseñas que has escrito y las ya publicadas sobre ti. No incluye datos de otras personas.",
+      "tus estancias, tus contratos con sus inventarios y el seguimiento de la fianza (las fotos se descargan desde cada inventario), las reseñas que has escrito y las ya publicadas sobre ti. No incluye datos de otras personas.",
     cuenta: { id: uid, email: user.email },
     perfil: profile.data,
     anuncios: listings.data ?? [],
@@ -53,5 +58,7 @@ export async function buildDataExport(supabase: SupabaseClient<Database>, user: 
     contratos: contracts.data ?? [],
     inventarios: inventories.data ?? [],
     elementos_de_inventario: inventoryItems.data ?? [],
+    seguimiento_de_la_fianza: deposits.data ?? [],
+    cronologia_de_la_fianza: depositEvents.data ?? [],
   };
 }
