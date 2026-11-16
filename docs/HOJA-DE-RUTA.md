@@ -2,7 +2,7 @@
 
 > **Fuente única de «qué toca ahora».** Solo se trabaja en el bloque marcado como **SIGUIENTE**. Lo que surja por el camino va a «Ideas aparcadas», no se hace en ese momento.
 > La actualiza Claude Code al cerrar cada bloque y se vuelve a subir al proyecto de Claude.
-> Última actualización: **18 de noviembre de 2026** (cierre de «Control previo de datos personales»).
+> Última actualización: **18 de noviembre de 2026** (cierre de «Datos sensibles de terceros (Russmedia)»).
 > Lo que falta antes de abrir, con responsable y estado: `docs/CHECKLIST-LANZAMIENTO.md`.
 
 ## Hecho
@@ -21,6 +21,7 @@
 | Fianza: seguimiento (1 de 2) | Apartado «Fianza» en el contrato firmado: depósito anotado por el casero (fecha, n.º de resguardo y resguardo privado), entrega de llaves (la declara el inquilino y la confirma el casero; ya no se da nunca por confirmada: sin confirmar consta como «declarada por el inquilino, sin confirmar» y el casero recibe recordatorios), reloj de un mes para devolver (art. 36.4 LAU) con avisos in-app y por email, devolución marcada por el casero y confirmada por el inquilino, y paquete de pruebas imprimible a PDF si vence el plazo. Sin tocar dinero |
 | Fianza: liquidación de salida (2 de 2) | Ajuste de las llaves (sin confirmación a los 7 días; fecha «declarada, sin confirmar» con recordatorios al casero; paquete de pruebas pasado un mes desde la fecha declarada, con aviso expreso de que no la confirmó el casero), importe devuelto informativo y liquidación de salida: partidas del casero (solo daños nuevos vinculables al inventario, con fotos de entrada y salida; el desgaste se avisa como no descontable), respuesta del inquilino partida por partida, confirmación de las dos partes y bloqueo, reabrir antes del cierre, enlace a la conversación y resumen imprimible a PDF con huella. Cronología append-only. Solo documenta |
 | Control previo de datos personales | Anuncios (título, descripción, zonas y barrio), reseñas, respuestas públicas y biografía rechazan teléfonos, emails (también «arroba»), DNI/NIE, IBAN y tarjetas, canales de contacto externos y direcciones exactas. Aviso en vivo y de nuevo en el servidor; no se repite el dato. Reseñas y respuestas, además, con respaldo en la base de datos. El chat no se toca |
+| Datos sensibles de terceros (Russmedia) | Aviso visible sobre datos sensibles en la reseña, la respuesta pública y la biografía; el motivo «datos personales» de las denuncias lo dice expresamente; `/terminos` y `/privacidad` ajustadas (uso del contenido solo para prestar el servicio, retirada y cómo notificar). Sin detección automática |
 | Fase 7a · SEO técnico y auditoría | Páginas de ciudad (`/habitaciones/lugo`, `/pisos/lugo`…), `sitemap.xml`, `robots.txt`, datos estructurados, tarjetas para compartir, indexación apagada con una variable, y `docs/REVISION-FASE-7.md` (Lighthouse, axe y 52 capturas en móvil) |
 
 ## SIGUIENTE (en este orden, decidido en la planificación)
@@ -88,6 +89,9 @@ Después del piloto: contratos · fase 3 / **Fase B de pagos** con socio regulad
 23. (k) **Conservación** de la cronología de la fianza y del resguardo (hoy indefinida, como el contrato firmado).
 
 ## Ideas aparcadas (no hacer sin decidirlo antes en la planificación)
+
+- **`/terminos` §3 está desfasado:** todavía dice que en habitaciones se puede indicar «solo chicas / solo chicos», cuando el campo y el filtro se quitaron (decisión 41). Es un cambio de fondo legal: decidir con el abogado (pregunta 8) y corregir el texto.
+- Los avisos nuevos y los textos legales dicen «Convivo» o «Hommie» según el encargo; unificar cuando se decida el nombre.
 
 - **De la revisión de la 7a, no incluidos en la 7b** (descripción en `docs/REVISION-FASE-7.md`): **D5** contrato e inventario con UUID largos (toca el texto firmado: pendiente del abogado), **D8** pasos del asistente con barra de progreso, **D10** índice en las páginas legales, **D11** estados vacíos con acción, **P3** JS heredado/sin usar (`browserslist`), **P4** rutas pesadas (publicar, chat, editar perfil), **P5** variabilidad del TBT en inicio, **P6** caché de ida y vuelta (bfcache), **A7** botones desactivados con ayuda.
 - **Pruebas e2e posiblemente frágiles por el mismo motivo** que arregló el cierre de la CI (mensaje de éxito dentro de un elemento que `router.refresh()` retira): revisar `listing-flag-form.tsx` y otros formularios de `/admin` que hacen `router.refresh()` tras el éxito y cuyas pruebas esperen su mensaje. Nota de producto: el aviso de «Decisión registrada» se ve un instante antes de que la notificación salga de las pendientes.
