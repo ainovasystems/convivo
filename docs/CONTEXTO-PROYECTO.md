@@ -21,7 +21,7 @@ Plataforma web en español (España) para **vivienda compartida**: un «LinkedIn
 
 ## 2. Estado en una frase
 
-**El producto completo funciona en una web de pruebas**: anuncios, chat, estancias, reseñas, moderación, seguridad y RGPD, y contratos con firma, inventario y ayuda con la fianza. Para abrir al público falta lo siguiente:
+**El producto completo funciona en una web de pruebas**: anuncios, chat, estancias, reseñas, moderación, seguridad y RGPD, y contratos con firma, inventario, ayuda y seguimiento de la fianza. Para abrir al público falta lo siguiente:
 
 - la revisión del abogado;
 - configurar los emails y el dominio;
@@ -83,6 +83,15 @@ Plataforma web en español (España) para **vivienda compartida**: un «LinkedIn
 - Al salir, el inventario de salida se compara con el de entrada y marca solo los daños nuevos.
 - El casero tiene el botón «¿Ayuda con la fianza?», con una guía orientativa de dos versiones: Galicia y resto de España. El inquilino no la ve por ahora.
 
+**Seguimiento de la fianza (sin tocar dinero)**
+
+- En el contrato firmado, las dos partes ven un apartado «Fianza» con su estado: pendiente de depositar, depositada, devuelta o reclamada (no recibida). No es una señal pública en el perfil.
+- El casero anota la fecha y el número de resguardo del depósito y, si quiere, sube el resguardo (solo lo ve él; el inquilino ve estado, fecha y número).
+- Al terminar la estancia, el inquilino declara la fecha de entrega de llaves y el casero la confirma. Si no responde en 7 días, se da por confirmada, con aviso a los dos y constancia.
+- Con las llaves confirmadas corre un plazo de un mes para devolver la fianza (art. 36.4 LAU, orientativo), visible para las dos partes, con avisos en la app y por email 7 días antes y al vencer.
+- El casero marca la devolución y el inquilino la confirma o dice que no la ha recibido. Si vence el plazo sin devolverla, el inquilino puede preparar un paquete de pruebas en PDF (contrato y huella, inventarios con fotos, fechas y cronología). Convivo no reclama nada en su nombre.
+- Habitaciones: «si tu comunidad lo exige»; en Galicia, solo se recuerda consultar al IGVS. Todos los textos son borrador pendiente de revisión legal.
+
 **Reseñas**
 
 - La ventana se abre a los 30 días de entrar o al terminar la estancia, y dura 30 días. Hay avisos por email y en la app.
@@ -132,11 +141,12 @@ Plataforma web en español (España) para **vivienda compartida**: un «LinkedIn
 8. **Las marcas de fraude no despublican ni avisan al anunciante**: decide un admin.
 9. **Firmar el contrato confirma la estancia.** Se firma el texto exacto. La firma es electrónica simple; la avanzada, con un proveedor como Signaturit o DocuSign, queda para más adelante.
 10. **El inventario confirmado por los dos queda bloqueado**: es la prueba para devolver la fianza.
+10b. **Fianza sin tocar dinero:** Convivo solo deja constancia (estados, fechas, avisos y un paquete de pruebas). Si el casero no responde: avisos, reloj y paquete de pruebas; nunca una carta de requerimiento ni un mediador. La entrega de llaves se da por confirmada a los 7 días sin respuesta.
 11. **Datos en Europa** (Vercel en París, Supabase en Europa). Solo cookies técnicas, así que no hay banner de cookies.
 12. **Indexación:** la web de pruebas no se indexa (una variable la enciende en producción); perfiles y anuncios «busco» no se indexan; las páginas de ciudad son solo las del piloto.
 13. **Identidad visual:** blanco y crema, marrón nogal #7b4b2a y acento miel #f4b740, tipografía Plus Jakarta Sans, botones en píldora y estilo startup (Glovo, Too Good To Go, BlaBlaCar). El modo oscuro está desactivado.
 
-Las 63 decisiones técnicas están numeradas en `CLAUDE.md` → «Decisiones tomadas».
+Las 67 decisiones técnicas están numeradas en `CLAUDE.md` → «Decisiones tomadas».
 
 ## 6. Riesgos principales
 

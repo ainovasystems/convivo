@@ -200,4 +200,4 @@ Anota aquí cada migración que pegues en el SQL Editor de producción, en orden
 
 | Fecha | Fichero | Quién | Resultado |
 |---|---|---|---|
-| _(instalación)_ | `instalar-base-de-datos.sql` (hasta `20261111000100_contract_inventories.sql`) | | |
+| _(instalación)_ | `instalar-base-de-datos.sql` (hasta `20261116000100_deposit_tracking.sql`) | | |
