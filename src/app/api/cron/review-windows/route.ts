@@ -1,6 +1,7 @@
 import * as Sentry from "@sentry/nextjs";
 import { NextResponse, type NextRequest } from "next/server";
 
+import { runDepositTimers } from "@/lib/contracts/deposit-timers";
 import { reviewWindowEmail } from "@/lib/email/templates";
 import { emailUser } from "@/lib/email/notify";
 import { getSentryDsn, REVIEW_WINDOWS_MONITOR } from "@/lib/monitoring/sentry-options";
@@ -10,6 +11,8 @@ import { createAdminClient } from "@/lib/supabase/admin";
 /**
  * Tarea programada diaria (Vercel Cron, ver vercel.json): avisa por email e
  * in-app cuando se abre una ventana de reseña y 3 días antes de que se cierre.
+ * También lleva los plazos de la fianza (llaves sin confirmar a los 7 días y
+ * plazo de devolución): ver runDepositTimers.
  *
  * Uso acotado de service_role: lee review_window_notices_due() (función que
  * solo puede ejecutar service_role) y escribe notifications y
@@ -74,5 +77,7 @@ async function runReviewWindows(request: NextRequest) {
     sent++;
   }
 
-  return NextResponse.json({ sent });
+  const deposits = await runDepositTimers(site);
+
+  return NextResponse.json({ sent, deposits });
 }
