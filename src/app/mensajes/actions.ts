@@ -24,7 +24,7 @@ function dbErrorMessage(error: { message: string; code?: string }): string {
   if (error.message.includes("interests_unique_per_user")) return "Ya mostraste interés en este anuncio.";
   if (error.message.includes("stays_one_open_per_guest")) return "Ya hay una estancia pendiente o activa para este anuncio.";
   if (error.message.includes("stay_participants_pkey")) return "Esa persona ya está añadida a la estancia.";
-  if (error.message.includes("foreign key")) return "No encontramos a esa persona en Convivo.";
+  if (error.message.includes("foreign key")) return "No encontramos a esa persona en Hommie.";
   if (error.code === "42501" || error.message.includes("row-level security")) return "No tienes permiso para hacer esto.";
   return /^[A-ZÁÉÍÓÚ¿¡]/.test(error.message) ? error.message : "No se ha podido completar la acción.";
 }

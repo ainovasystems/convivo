@@ -20,12 +20,12 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     metadataBase: new URL(baseUrl),
     title: {
-      default: "Convivo · Pisos y habitaciones con reseñas reales",
-      template: "%s · Convivo",
+      default: "Hommie · Pisos y habitaciones con reseñas reales",
+      template: "%s · Hommie",
     },
     description: DESCRIPTION,
-    applicationName: "Convivo",
-    appleWebApp: { capable: true, title: "Convivo", statusBarStyle: "default" },
+    applicationName: "Hommie",
+    appleWebApp: { capable: true, title: "Hommie", statusBarStyle: "default" },
     // Web de pruebas (indexación apagada): ninguna página se indexa. El
     // middleware repite lo mismo en la cabecera X-Robots-Tag.
     robots: isIndexingEnabled() ? undefined : { index: false, follow: false },
@@ -33,9 +33,9 @@ export async function generateMetadata(): Promise<Metadata> {
       type: "website",
       siteName: SITE_NAME,
       locale: "es_ES",
-      title: "Convivo · Pisos y habitaciones con reseñas reales",
+      title: "Hommie · Pisos y habitaciones con reseñas reales",
       description: DESCRIPTION,
-      images: [{ url: "/og/inicio", width: 1200, height: 630, alt: "Convivo: tu próximo hogar, con gente de confianza" }],
+      images: [{ url: "/og/inicio", width: 1200, height: 630, alt: "Hommie: tu próximo hogar, con gente de confianza" }],
     },
     twitter: { card: "summary_large_image", images: ["/og/inicio"] },
   };
@@ -79,7 +79,7 @@ export default function RootLayout({
               <Link href="/terminos" className="inline-block py-2 hover:text-brand">Condiciones</Link>
               <Link href="/denunciar" className="inline-block py-2 hover:text-brand">Denunciar contenido</Link>
             </nav>
-            <p>© {new Date().getFullYear()} Convivo · Hecho en España</p>
+            <p>© {new Date().getFullYear()} Hommie · Hecho en España</p>
           </div>
         </footer>
       </body>

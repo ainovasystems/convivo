@@ -16,7 +16,7 @@ export function Logo() {
   return (
     <span className="inline-flex items-center gap-2">
       <LogoMark />
-      <span className="text-xl font-extrabold tracking-tight text-brand">convivo</span>
+      <span className="text-xl font-extrabold tracking-tight text-brand">hommie</span>
     </span>
   );
 }

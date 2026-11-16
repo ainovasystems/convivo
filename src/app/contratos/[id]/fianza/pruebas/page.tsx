@@ -83,7 +83,7 @@ export default async function DepositEvidencePage({ params }: { params: Promise<
           Preparado el {dateTime.format(new Date())} por {c.tenant?.display_name}. {DEPOSIT_TRACKING_NOTICE}
         </p>
         <p className="text-sm text-muted">
-          Este documento recoge lo registrado en Convivo. No es una carta de requerimiento ni una reclamación, y Convivo no actúa en nombre de ninguna de las partes.
+          Este documento recoge lo registrado en Hommie. No es una carta de requerimiento ni una reclamación, y Hommie no actúa en nombre de ninguna de las partes.
         </p>
       </header>
 
@@ -93,7 +93,7 @@ export default async function DepositEvidencePage({ params }: { params: Promise<
             Atención: la fecha de entrega de llaves NO fue confirmada por el casero.
           </p>
           <p>
-            Es la fecha {row.keys_declared_on ? formatDay(row.keys_declared_on) : "—"}, declarada por el inquilino y registrada en Convivo el {when(row.keys_declared_at)}. {KEYS_UNCONFIRMED_NOTE} Este
+            Es la fecha {row.keys_declared_on ? formatDay(row.keys_declared_on) : "—"}, declarada por el inquilino y registrada en Hommie el {when(row.keys_declared_at)}. {KEYS_UNCONFIRMED_NOTE} Este
             paquete se prepara porque ha pasado un mes desde esa fecha declarada.
           </p>
         </section>
@@ -170,7 +170,7 @@ export default async function DepositEvidencePage({ params }: { params: Promise<
               {3 + i}. {STAGE_LABELS[stage]}
             </h2>
             {!inv ? (
-              <p className="text-sm text-muted">No se hizo este inventario en Convivo.</p>
+              <p className="text-sm text-muted">No se hizo este inventario en Hommie.</p>
             ) : (
               <>
                 <p className="text-sm text-muted">
@@ -227,7 +227,7 @@ export default async function DepositEvidencePage({ params }: { params: Promise<
       </section>
 
       <p className="border-t border-border pt-3 text-xs text-muted">
-        Borrador pendiente de revisión legal. Información registrada por las partes en Convivo; no constituye asesoramiento jurídico.
+        Borrador pendiente de revisión legal. Información registrada por las partes en Hommie; no constituye asesoramiento jurídico.
       </p>
     </div>
   );

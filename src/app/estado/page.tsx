@@ -48,7 +48,7 @@ async function runChecks(): Promise<Check[]> {
             ? `Configurado · remitente: ${env.emailfrom || env.EMAIL_FROM}`
             : "Falta el remitente (emailfrom o EMAIL_FROM)"
           : "No configurado: los emails no se envían (solo se anotan en los logs)",
-      fix: "Añade en Vercel resendkey (la API key de Resend) y emailfrom (p. ej. Convivo <hola@tudominio.es>) y vuelve a publicar.",
+      fix: "Añade en Vercel resendkey (la API key de Resend) y emailfrom (p. ej. Hommie <hola@tudominio.es>) y vuelve a publicar.",
     },
     {
       label: "Secreto de la tarea diaria",

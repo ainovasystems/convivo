@@ -5,7 +5,7 @@ import { compareWithEntry, type ItemCondition } from "@/lib/contracts/inventory"
 /**
  * Liquidación de salida de la fianza. Las reglas las impone la BD
  * (20261117000100_deposit_settlement.sql); esto es el espejo para decidir qué se
- * muestra, los esquemas de los formularios y los textos. Convivo SOLO DOCUMENTA:
+ * muestra, los esquemas de los formularios y los textos. Hommie SOLO DOCUMENTA:
  * no media, no propone cifras, no decide quién tiene razón y no toca dinero.
  */
 export const SETTLEMENT_STATUSES = ["draft", "sent", "agreed", "disputed"] as const;
@@ -19,7 +19,7 @@ export const SETTLEMENT_STATUS_LABELS: Record<SettlementStatus, string> = {
 };
 
 export const SETTLEMENT_NOTICE =
-  "Convivo solo deja constancia de lo que anotáis: no media, no propone cifras, no decide quién tiene razón y no mueve dinero. Esta liquidación es informativa, no tiene valor de sentencia ni de arbitraje y es un borrador pendiente de revisión legal; no es asesoría jurídica.";
+  "Hommie solo deja constancia de lo que anotáis: no media, no propone cifras, no decide quién tiene razón y no mueve dinero. Esta liquidación es informativa, no tiene valor de sentencia ni de arbitraje y es un borrador pendiente de revisión legal; no es asesoría jurídica.";
 
 export const SETTLEMENT_DISPUTE_NOTICE =
   "Si no hay acuerdo, el resumen de la liquidación sirve como constancia de lo que cada parte dijo y cuándo. Las discrepancias se hablan en la conversación que ya tenéis.";

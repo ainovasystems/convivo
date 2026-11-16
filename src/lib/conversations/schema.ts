@@ -29,12 +29,12 @@ export const proposeStaySchema = z
 
 const UUID_RE = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i;
 
-/** Acepta el enlace a un perfil de Convivo (…/perfil/<id>) o el id directamente. */
+/** Acepta el enlace a un perfil de Hommie (…/perfil/<id>) o el id directamente. */
 export const participantSchema = z.object({
   stayId: z.uuid(),
   profile: z
     .string()
     .trim()
     .transform((s) => UUID_RE.exec(s)?.[0]?.toLowerCase() ?? "")
-    .pipe(z.uuid({ error: "Pega el enlace al perfil de Convivo de tu compañero/a" })),
+    .pipe(z.uuid({ error: "Pega el enlace al perfil de Hommie de tu compañero/a" })),
 });

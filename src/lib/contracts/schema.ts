@@ -3,7 +3,7 @@ import { z } from "zod";
 /**
  * Condiciones de un contrato (columna contracts.terms). El mismo esquema se usa
  * en el formulario del casero y en el servidor. Sin DNI: las partes se
- * identifican por su nombre completo y su cuenta de Convivo (decisión de no
+ * identifican por su nombre completo y su cuenta de Hommie (decisión de no
  * guardar documentos de identidad; pendiente de validar con el abogado).
  */
 export const CONTRACT_KINDS = ["room", "flat_habitual", "flat_seasonal"] as const;
@@ -16,7 +16,7 @@ export const CONTRACT_KIND_LABELS: Record<ContractKind, string> = {
 };
 
 /** Cambia la versión cada vez que cambie el texto de las plantillas. */
-export const TEMPLATE_VERSION = "2026-11-borrador-2";
+export const TEMPLATE_VERSION = "2026-11-borrador-3";
 
 const name = z.string().trim().min(5, { error: "Escribe el nombre y los apellidos" }).max(120);
 const isoDate = z.iso.date({ error: "Fecha no válida" });

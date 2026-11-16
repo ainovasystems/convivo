@@ -1,10 +1,10 @@
 import type { MetadataRoute } from "next";
 
-/** Permite «Añadir a pantalla de inicio» y abrir Convivo como una app. */
+/** Permite «Añadir a pantalla de inicio» y abrir Hommie como una app. */
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Convivo",
-    short_name: "Convivo",
+    name: "Hommie",
+    short_name: "Hommie",
     description: "Pisos, habitaciones y compañeros con reseñas reales.",
     start_url: "/",
     display: "standalone",

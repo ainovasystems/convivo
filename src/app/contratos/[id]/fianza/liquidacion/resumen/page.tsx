@@ -151,7 +151,7 @@ export default async function SettlementSummaryPage({ params }: { params: Promis
       </section>
 
       <p className="border-t border-border pt-3 text-xs text-muted">
-        Borrador pendiente de revisión legal. Información registrada por las partes en Convivo; no constituye asesoramiento jurídico ni tiene valor de sentencia o arbitraje.
+        Borrador pendiente de revisión legal. Información registrada por las partes en Hommie; no constituye asesoramiento jurídico ni tiene valor de sentencia o arbitraje.
       </p>
     </div>
   );

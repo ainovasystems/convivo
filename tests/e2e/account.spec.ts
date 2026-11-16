@@ -32,7 +32,7 @@ test.describe("RGPD: mis datos, borrar la cuenta y textos legales", () => {
     const downloadPromise = page.waitForEvent("download");
     await page.getByRole("link", { name: "Descargar mis datos" }).click();
     const download = await downloadPromise;
-    expect(download.suggestedFilename()).toMatch(/^convivo-mis-datos-\d{4}-\d{2}-\d{2}\.json$/);
+    expect(download.suggestedFilename()).toMatch(/^hommie-mis-datos-\d{4}-\d{2}-\d{2}\.json$/);
     const data = JSON.parse(await readFile((await download.path())!, "utf8"));
     expect(data.cuenta.email).toBe(email);
     expect(data.perfil.display_name).toBe(name);
@@ -66,7 +66,7 @@ test.describe("RGPD: mis datos, borrar la cuenta y textos legales", () => {
     await expect(page).toHaveURL(/\/perfil\/editar/);
     await page.goto("/perfil");
     await expect(page.getByText("Cuenta nueva")).toBeVisible();
-    await expect(page.getByText(/Volvió a Convivo con el mismo email/)).toBeVisible();
+    await expect(page.getByText(/Volvió a Hommie con el mismo email/)).toBeVisible();
   });
 
   test("la descarga de datos exige sesión", async ({ request }) => {

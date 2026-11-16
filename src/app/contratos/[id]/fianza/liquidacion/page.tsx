@@ -36,7 +36,7 @@ const dateTime = new Intl.DateTimeFormat("es-ES", { dateStyle: "long", timeStyle
 const when = (iso: string | null) => (iso ? dateTime.format(new Date(iso)) : "—");
 
 /**
- * Liquidación de salida de la fianza. Convivo solo documenta: el casero anota las
+ * Liquidación de salida de la fianza. Hommie solo documenta: el casero anota las
  * partidas (con los daños nuevos del inventario), el inquilino responde a cada
  * una y las dos partes confirman. Confirmada, queda bloqueada.
  */
@@ -118,7 +118,7 @@ export default async function SettlementPage({ params }: { params: Promise<{ id:
         <p className="text-sm text-muted">Resultado si se aplicaran todas las partidas: {formatEuros(totals.remaining)} a devolver.</p>
         {totals.exceeds ? (
           <p role="status" className="text-sm font-semibold text-red-700">
-            Los descuentos superan el importe de la fianza. Convivo solo lo señala; no decide nada.
+            Los descuentos superan el importe de la fianza. Hommie solo lo señala; no decide nada.
           </p>
         ) : null}
       </section>

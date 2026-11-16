@@ -36,7 +36,7 @@ async function mailpitSubjects(): Promise<string[]> {
   return json.messages.map((m) => m.Subject);
 }
 
-test.describe("contrato firmado en Convivo", () => {
+test.describe("contrato firmado en Hommie", () => {
   requireSupabase();
 
   test("el casero lo prepara, firman los dos y la estancia queda confirmada", async ({ browser }, info) => {

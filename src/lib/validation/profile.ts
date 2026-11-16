@@ -40,7 +40,7 @@ export const profileSchema = z.object({
       .number({ error: "Escribe el año con cuatro cifras" })
       .int({ error: "Escribe el año con cuatro cifras" })
       .min(new Date().getFullYear() - 110, { error: "Revisa el año de nacimiento" })
-      .max(maxBirthYear(), { error: "Para usar Convivo tienes que tener 18 años o más" })
+      .max(maxBirthYear(), { error: "Para usar Hommie tienes que tener 18 años o más" })
       .nullable(),
   ),
   languages: z.array(z.enum(LANGUAGE_CODES)).max(10, { error: "Elige como máximo 10 idiomas" }),

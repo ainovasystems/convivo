@@ -203,7 +203,7 @@ describe("metadatos", () => {
   it("pageMetadata fija canonical, Open Graph y tarjeta con URLs absolutas", () => {
     const m = pageMetadata({ baseUrl: BASE, title: "T", description: "D", path: "/habitaciones/lugo", image: "/og/x" });
     expect(m.alternates?.canonical).toBe(`${BASE}/habitaciones/lugo`);
-    expect(m.openGraph).toMatchObject({ url: `${BASE}/habitaciones/lugo`, title: "T · Convivo", locale: "es_ES" });
+    expect(m.openGraph).toMatchObject({ url: `${BASE}/habitaciones/lugo`, title: "T · Hommie", locale: "es_ES" });
     expect(m.openGraph?.images).toEqual([{ url: `${BASE}/og/x`, width: 1200, height: 630, alt: "T" }]);
     expect(m.twitter).toMatchObject({ card: "summary_large_image", images: [`${BASE}/og/x`] });
   });

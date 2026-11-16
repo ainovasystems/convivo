@@ -19,7 +19,7 @@ const KINDS = [
 
 const STEPS = [
   { title: "Encuentra", text: "Filtra por zona, precio y forma de vivir: mascotas, horarios, limpieza…" },
-  { title: "Conoce", text: "Habla por el chat de Convivo y mira perfiles y reseñas antes de visitar." },
+  { title: "Conoce", text: "Habla por el chat de Hommie y mira perfiles y reseñas antes de visitar." },
   { title: "Convive y opina", text: "Tras la estancia, os reseñáis mutuamente. Así se construye la confianza." },
 ];
 
@@ -45,7 +45,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<Rec
     <div>
       {params.cuenta === "borrada" ? (
         <p role="status" className="bg-brand-soft px-4 py-3 text-center text-sm font-semibold text-brand">
-          Tu cuenta se ha borrado. Gracias por haber usado Convivo.
+          Tu cuenta se ha borrado. Gracias por haber usado Hommie.
         </p>
       ) : null}
       {/* HERO */}

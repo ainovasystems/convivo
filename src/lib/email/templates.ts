@@ -12,14 +12,14 @@ function layout(
   title: string,
   paragraphs: string[],
   cta: { label: string; url: string },
-  footer = "Recibes este email porque tienes una cuenta en Convivo.",
+  footer = "Recibes este email porque tienes una cuenta en Hommie.",
 ): string {
   const body = paragraphs.map((p) => `<p style="margin:0 0 16px;line-height:1.5">${p}</p>`).join("");
   return `<!doctype html><html lang="es"><body style="margin:0;background:#f5f5f4;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:#1c1917">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td align="center" style="padding:24px">
 <table role="presentation" width="100%" style="max-width:560px;background:#fff;border-radius:12px;padding:32px">
 <tr><td>
-<p style="margin:0 0 24px;font-weight:700;font-size:20px;color:#7b4b2a">Convivo</p>
+<p style="margin:0 0 24px;font-weight:700;font-size:20px;color:#7b4b2a">Hommie</p>
 <h1 style="margin:0 0 16px;font-size:20px">${escapeHtml(title)}</h1>
 ${body}
 <p style="margin:24px 0"><a href="${escapeHtml(cta.url)}" style="background:#7b4b2a;color:#fff;padding:12px 22px;border-radius:999px;text-decoration:none;font-weight:600">${escapeHtml(cta.label)}</a></p>
@@ -121,7 +121,7 @@ export function reviewWindowEmail(p: {
   };
 }
 
-const NOTICE_FOOTER = "Recibes este email porque has enviado una notificación de contenido a Convivo.";
+const NOTICE_FOOTER = "Recibes este email porque has enviado una notificación de contenido a Hommie.";
 
 /** Acuse de recibo de una notificación de contenido ilícito (DSA art. 16.4). */
 export function noticeReceivedEmail(p: { name: string; reference: string; url: string }): Rendered {
@@ -134,7 +134,7 @@ export function noticeReceivedEmail(p: { name: string; reference: string; url: s
   ];
   return {
     subject,
-    html: layout("Notificación recibida", paragraphs, { label: "Ir a Convivo", url: p.url }, NOTICE_FOOTER),
+    html: layout("Notificación recibida", paragraphs, { label: "Ir a Hommie", url: p.url }, NOTICE_FOOTER),
     text: `${paragraphs.map(strip).join("\n\n")}`,
   };
 }
@@ -152,14 +152,14 @@ export function noticeDecisionEmail(p: { name: string; reference: string; action
   ];
   return {
     subject,
-    html: layout("Decisión sobre tu notificación", paragraphs, { label: "Ir a Convivo", url: p.url }, NOTICE_FOOTER),
+    html: layout("Decisión sobre tu notificación", paragraphs, { label: "Ir a Hommie", url: p.url }, NOTICE_FOOTER),
     text: `${paragraphs.map(strip).join("\n\n")}`,
   };
 }
 
 /** Motivación a la persona cuyo contenido se ha retirado (DSA art. 17). */
 export function contentRemovedEmail(p: { name: string; what: string; note: string; url: string }): Rendered {
-  const subject = `Hemos retirado ${p.what} en Convivo`;
+  const subject = `Hemos retirado ${p.what} en Hommie`;
   const paragraphs = [
     `Hola, ${escapeHtml(p.name)}:`,
     `Hemos retirado ${escapeHtml(p.what)} tras revisar una notificación de otra persona.`,
@@ -168,7 +168,7 @@ export function contentRemovedEmail(p: { name: string; what: string; note: strin
   ];
   return {
     subject,
-    html: layout("Hemos retirado contenido tuyo", paragraphs, { label: "Ir a Convivo", url: p.url }),
+    html: layout("Hemos retirado contenido tuyo", paragraphs, { label: "Ir a Hommie", url: p.url }),
     text: `${paragraphs.map(strip).join("\n\n")}`,
   };
 }
@@ -178,7 +178,7 @@ export function contractToSignEmail(p: { name: string; landlordName: string; lis
   const subject = `${p.landlordName} te ha enviado un contrato para firmar`;
   const paragraphs = [
     `Hola, ${escapeHtml(p.name)}:`,
-    `<strong>${escapeHtml(p.landlordName)}</strong> te ha enviado el contrato de «${escapeHtml(p.listingTitle)}» para que lo firmes en Convivo.`,
+    `<strong>${escapeHtml(p.landlordName)}</strong> te ha enviado el contrato de «${escapeHtml(p.listingTitle)}» para que lo firmes en Hommie.`,
     "Léelo con calma antes de firmar. Si algo no te cuadra, coméntalo en la conversación: hasta que firméis los dos se puede cancelar y preparar otro.",
   ];
   return {
@@ -209,7 +209,7 @@ export function inventoryToConfirmEmail(p: { stage: "entry" | "exit"; url: strin
   const subject = `Tienes un inventario ${label} por revisar`;
   const paragraphs = [
     "Hola:",
-    `La otra parte del contrato ha confirmado el inventario ${label} de la vivienda en Convivo.`,
+    `La otra parte del contrato ha confirmado el inventario ${label} de la vivienda en Hommie.`,
     "Revisa cada elemento y sus fotos. Si estás de acuerdo, confírmalo; si no, corrige lo que haga falta (la otra parte tendrá que volver a confirmarlo). Cuando lo confirméis los dos, ya no se podrá cambiar.",
   ];
   return {
@@ -235,7 +235,7 @@ export type DepositEmailKind =
   | "settlement_to_confirm"
   | "settlement_locked";
 
-const DEPOSIT_FOOTNOTE = "Convivo no mueve dinero: solo deja constancia. Información orientativa, borrador pendiente de revisión legal.";
+const DEPOSIT_FOOTNOTE = "Hommie no mueve dinero: solo deja constancia. Información orientativa, borrador pendiente de revisión legal.";
 
 /** Seguimiento de la fianza: un único email con el texto según el aviso y a quién va. */
 export function depositEmail(p: {
@@ -257,7 +257,7 @@ export function depositEmail(p: {
       title: "Confirma la entrega de llaves",
       paragraphs: [
         `Tu inquilino declara que entregó las llaves de «${t}»${keys ? ` el ${keys}` : ""}.`,
-        "Confírmalo en Convivo, o habladlo en la conversación si la fecha no coincide. Mientras no lo confirmes, constará como declarada por el inquilino y sin confirmar, y empezará a correr el plazo de un mes solo cuando la confirmes.",
+        "Confírmalo en Hommie, o habladlo en la conversación si la fecha no coincide. Mientras no lo confirmes, constará como declarada por el inquilino y sin confirmar, y empezará a correr el plazo de un mes solo cuando la confirmes.",
       ],
       cta: "Revisar y confirmar",
     },
@@ -275,7 +275,7 @@ export function depositEmail(p: {
       title: "Falta confirmar la entrega de llaves",
       paragraphs: [
         `Tu inquilino declaró que entregó las llaves de «${t}»${keys ? ` el ${keys}` : ""} y todavía no lo has confirmado.`,
-        "Mientras no lo confirmes, consta como «declarada por el inquilino, sin confirmar». Convivo no la da por confirmada. Si la fecha no coincide, habladlo en la conversación.",
+        "Mientras no lo confirmes, consta como «declarada por el inquilino, sin confirmar». Hommie no la da por confirmada. Si la fecha no coincide, habladlo en la conversación.",
       ],
       cta: "Revisar y confirmar",
     },
@@ -288,7 +288,7 @@ export function depositEmail(p: {
           : `Ha pasado un mes desde la fecha de entrega de llaves de «${t}» que declaraste${keys ? ` (${keys})` : ""}. El casero no la ha confirmado.`,
         landlord
           ? "Si la fianza sigue sin devolverse, tu inquilino podrá descargar un paquete de pruebas que indica expresamente que la fecha no está confirmada por ti."
-          : "Si no te han devuelto la fianza, puedes descargar el paquete de pruebas desde el contrato. Dirá expresamente que la fecha no fue confirmada por el casero. Convivo no hace ninguna reclamación en tu nombre.",
+          : "Si no te han devuelto la fianza, puedes descargar el paquete de pruebas desde el contrato. Dirá expresamente que la fecha no fue confirmada por el casero. Hommie no hace ninguna reclamación en tu nombre.",
       ],
       cta: "Ver el seguimiento de la fianza",
     },
@@ -310,7 +310,7 @@ export function depositEmail(p: {
         `El plazo de un mes para devolver la fianza de «${t}» terminó el ${due ?? "…"}.`,
         landlord
           ? "Si ya la has devuelto, márcalo en el contrato."
-          : "Si no la has recibido, puedes descargar desde el contrato un paquete de pruebas en PDF con las fechas, los inventarios y la cronología. Convivo no hace ninguna reclamación en tu nombre.",
+          : "Si no la has recibido, puedes descargar desde el contrato un paquete de pruebas en PDF con las fechas, los inventarios y la cronología. Hommie no hace ninguna reclamación en tu nombre.",
       ],
       cta: landlord ? "Marcar la devolución" : "Ver el seguimiento de la fianza",
     },
@@ -340,7 +340,7 @@ export function depositEmail(p: {
       title: "Liquidación de la fianza",
       paragraphs: [
         `Tu casero ha preparado la liquidación de la fianza de «${t}». Responde a cada partida: acepto o no acepto, con un comentario si quieres.`,
-        "Convivo solo deja constancia: no media, no propone cifras ni decide quién tiene razón.",
+        "Hommie solo deja constancia: no media, no propone cifras ni decide quién tiene razón.",
       ],
       cta: "Ver la liquidación",
     },

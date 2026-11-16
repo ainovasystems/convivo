@@ -20,7 +20,7 @@ export default async function MyStaysPage() {
       <h1 className="text-2xl font-bold tracking-tight">Mis estancias</h1>
       <p className="text-muted">
         Las estancias confirmadas por todas las partes son las que permiten dejar y recibir reseñas. Al firmar un contrato
-        en Convivo, la estancia se confirma sola.{" "}
+        en Hommie, la estancia se confirma sola.{" "}
         <Link href="/contratos" className="font-semibold text-brand underline">
           Ver mis contratos
         </Link>
@@ -41,7 +41,7 @@ export default async function MyStaysPage() {
                 <p className="text-sm text-muted">
                   {myRole} · {s.host?.display_name} y {s.guest?.display_name} ·{" "}
                   {s.end_date ? `del ${formatShortDate(s.start_date)} al ${formatShortDate(s.end_date)}` : `desde el ${formatShortDate(s.start_date)}`}
-                  {s.is_retroactive ? " · estancia anterior a Convivo" : ""}
+                  {s.is_retroactive ? " · estancia anterior a Hommie" : ""}
                 </p>
                 {me && !me.confirmed_at ? (
                   <div className="space-y-2 rounded-xl bg-brand-soft p-3">

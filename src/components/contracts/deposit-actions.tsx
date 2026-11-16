@@ -125,7 +125,7 @@ export function DateActionForm({
           autoComplete="off"
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
-          hint="Informativo: Convivo no mueve dinero ni comprueba el importe."
+          hint="Informativo: Hommie no mueve dinero ni comprueba el importe."
           error={result?.errors?.amount}
         />
       ) : null}

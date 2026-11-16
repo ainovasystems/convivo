@@ -29,7 +29,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!profile) return {};
   return {
     title: profile.display_name,
-    description: profile.bio?.slice(0, 155) ?? `Perfil de ${profile.display_name} en Convivo.`,
+    description: profile.bio?.slice(0, 155) ?? `Perfil de ${profile.display_name} en Hommie.`,
     // Los perfiles de personas no se indexan nunca, aunque se encienda la indexación.
     robots: { index: false, follow: false },
   };
@@ -86,7 +86,7 @@ export default async function ProfilePage({ params }: Props) {
             ) : null}
           </div>
           {facts.length ? <p className="text-muted">{facts.join(" · ")}</p> : null}
-          <p className="text-sm text-muted">En Convivo desde {formatMonth(profile.created_at)}</p>
+          <p className="text-sm text-muted">En Hommie desde {formatMonth(profile.created_at)}</p>
           {isNewAccount && !profile.deleted_at ? (
             <p>
               <span className="inline-block rounded-full bg-accent/30 px-2 py-0.5 text-xs font-bold text-foreground">Cuenta nueva</span>
@@ -94,7 +94,7 @@ export default async function ProfilePage({ params }: Props) {
           ) : null}
           {profile.restored_from ? (
             <p className="text-sm text-muted">
-              Volvió a Convivo con el mismo email: sus reseñas incluyen las de su cuenta anterior.
+              Volvió a Hommie con el mismo email: sus reseñas incluyen las de su cuenta anterior.
             </p>
           ) : null}
           <ul aria-label="Verificaciones" className="flex flex-wrap gap-2 pt-1">

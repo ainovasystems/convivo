@@ -38,7 +38,7 @@ function Step({ n, title, state, children }: { n: number; title: string; state?:
 
 /**
  * Apartado «Fianza» de un contrato firmado: estado, fechas y reloj del plazo de
- * devolución para las dos partes. Convivo no mueve dinero, solo deja constancia.
+ * devolución para las dos partes. Hommie no mueve dinero, solo deja constancia.
  */
 export function DepositSection({
   contractId,
@@ -154,7 +154,7 @@ export function DepositSection({
               label="Fecha de entrega de llaves"
               button="Declarar la entrega de llaves"
               today={today}
-              hint={`Constará como declarada por ti hasta que ${otherName} la confirme. Convivo no la da por confirmada.`}
+              hint={`Constará como declarada por ti hasta que ${otherName} la confirme. Hommie no la da por confirmada.`}
             />
           ) : (
             <p className="text-muted">Podrás declarar la entrega de llaves cuando la estancia haya terminado (se marca como terminada en la conversación).</p>
@@ -241,7 +241,7 @@ export function DepositSection({
           </p>
           {!keysConfirmed ? <p>Ojo: el casero no ha confirmado esa fecha, y el paquete lo indicará de forma expresa.</p> : null}
           <p>
-            Puedes descargar un paquete de pruebas en PDF con los datos del contrato, los inventarios con fotos, las fechas clave y la cronología. Convivo no hace
+            Puedes descargar un paquete de pruebas en PDF con los datos del contrato, los inventarios con fotos, las fechas clave y la cronología. Hommie no hace
             ninguna reclamación en tu nombre.
           </p>
           <Link href={`/contratos/${contractId}/fianza/pruebas`} className="inline-block font-bold text-brand underline">

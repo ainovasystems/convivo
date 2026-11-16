@@ -125,7 +125,7 @@ describe("emails de la fianza", () => {
     expect(depositEmail({ ...base, kind: "return_overdue" }).html).toContain("30 de julio de 2027");
     expect(depositEmail({ ...base, kind: "return_overdue" }).html).toContain("paquete de pruebas");
     expect(depositEmail({ ...base, kind: "return_overdue", party: "landlord" }).html).toContain("márcalo en el contrato");
-    // Ningún email dice que Convivo da la fecha por confirmada.
+    // Ningún email dice que Hommie da la fecha por confirmada.
     for (const kind of kinds) for (const party of ["landlord", "tenant"] as const) {
       expect(depositEmail({ ...base, kind, party }).text).not.toMatch(/se dará por confirmada|se da por confirmada|7 días/);
     }
@@ -135,7 +135,7 @@ describe("emails de la fianza", () => {
 });
 
 describe("cronología e importe devuelto", () => {
-  it("las etiquetas de la cronología no dicen nunca que Convivo da la fecha por confirmada", () => {
+  it("las etiquetas de la cronología no dicen nunca que Hommie da la fecha por confirmada", () => {
     for (const kind of ["keys_declared", "keys_confirmed", "keys_reminder", "keys_unconfirmed_due"]) {
       expect(eventLabel(kind)).not.toMatch(/dio por confirmada|da por confirmada|7 días/);
     }

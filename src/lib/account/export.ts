@@ -43,7 +43,7 @@ export async function buildDataExport(supabase: SupabaseClient<Database>, user: 
   return {
     generado: new Date().toISOString(),
     nota:
-      "Copia de tus datos en Convivo. Incluye tu perfil, tus anuncios con su dirección, tus conversaciones (tus mensajes), " +
+      "Copia de tus datos en Hommie. Incluye tu perfil, tus anuncios con su dirección, tus conversaciones (tus mensajes), " +
       "tus estancias, tus contratos con sus inventarios y el seguimiento de la fianza y su liquidación (las fotos se descargan desde cada inventario), las reseñas que has escrito y las ya publicadas sobre ti. No incluye datos de otras personas.",
     cuenta: { id: uid, email: user.email },
     perfil: profile.data,

@@ -4,7 +4,7 @@ import { absoluteUrl } from "@/lib/seo/url";
 
 type PageMeta = {
   baseUrl: string;
-  /** Título SIN el sufijo « · Convivo» (lo pone la plantilla del layout). */
+  /** Título SIN el sufijo « · Hommie» (lo pone la plantilla del layout). */
   title: string;
   description: string;
   /** Ruta canónica, con barra inicial y sin dominio ni parámetros. */
@@ -17,7 +17,7 @@ type PageMeta = {
   robots?: Metadata["robots"];
 };
 
-export const SITE_NAME = "Convivo";
+export const SITE_NAME = "Hommie";
 
 /**
  * Metadatos completos de una página pública: título, descripción, canonical,

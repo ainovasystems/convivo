@@ -13,7 +13,7 @@ export default function GlobalError({ error, reset }: { error: Error & { digest?
     <html lang="es">
       <body style={{ fontFamily: "system-ui, sans-serif", textAlign: "center", padding: "4rem 1rem", color: "#2b1d14" }}>
         <h1 style={{ fontSize: "1.5rem" }}>Algo se ha torcido</h1>
-        <p style={{ color: "#6f5e50" }}>No hemos podido cargar Convivo. Prueba otra vez en unos segundos.</p>
+        <p style={{ color: "#6f5e50" }}>No hemos podido cargar Hommie. Prueba otra vez en unos segundos.</p>
         <button
           type="button"
           onClick={reset}

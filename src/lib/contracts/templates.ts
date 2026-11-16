@@ -19,11 +19,11 @@ const longDate = (iso: string) =>
     new Date(`${iso}T12:00:00Z`),
   );
 
-/** Línea en blanco para rellenar a mano: Convivo no pide ni guarda el DNI/NIE. */
+/** Línea en blanco para rellenar a mano: Hommie no pide ni guarda el DNI/NIE. */
 const ID_BLANK = "____________________";
 
 export const DRAFT_NOTICE =
-  "BORRADOR DE PLANTILLA PENDIENTE DE REVISIÓN LEGAL. Convivo facilita este modelo, pero no presta asesoramiento jurídico ni es parte del contrato. Revisadlo antes de firmar.";
+  "BORRADOR DE PLANTILLA PENDIENTE DE REVISIÓN LEGAL. Hommie facilita este modelo, pero no presta asesoramiento jurídico ni es parte del contrato. Revisadlo antes de firmar.";
 
 export function renderContract(
   kind: ContractKind,
@@ -86,11 +86,11 @@ export function renderContract(
       heading: "Reunidos",
       paragraphs: [
         `En ${place}, en la fecha de la última firma electrónica que figura al final de este documento.`,
-        `De una parte, como PARTE ARRENDADORA, ${t.landlord_name}, usuario de Convivo con identificador ${meta.landlordId}.`,
-        `De otra parte, como PARTE ARRENDATARIA, ${t.tenant_name}, usuario de Convivo con identificador ${meta.tenantId}.`,
+        `De una parte, como PARTE ARRENDADORA, ${t.landlord_name}, usuario de Hommie con identificador ${meta.landlordId}.`,
+        `De otra parte, como PARTE ARRENDATARIA, ${t.tenant_name}, usuario de Hommie con identificador ${meta.tenantId}.`,
         `DNI/NIE de la parte arrendadora: ${ID_BLANK}`,
         `DNI/NIE de la parte arrendataria: ${ID_BLANK}`,
-        "El DNI/NIE de cada parte lo completa ella misma, a mano, al presentar el trámite de la fianza si procede. Convivo no lo recoge ni lo guarda.",
+        "El DNI/NIE de cada parte lo completa ella misma, a mano, al presentar el trámite de la fianza si procede. Hommie no lo recoge ni lo guarda.",
         "Ambas partes se reconocen capacidad legal suficiente para celebrar este contrato y declaran que los datos que constan en él son ciertos. [Revisar con el abogado si deben constar documento de identidad y domicilio de las partes].",
       ],
     },
@@ -144,7 +144,7 @@ export function renderContract(
     {
       heading: "Firma electrónica",
       paragraphs: [
-        "Las partes firman este contrato electrónicamente en Convivo escribiendo su nombre completo. Convivo deja constancia de la fecha y hora de cada firma y de la huella digital (SHA-256) del texto firmado, de modo que cualquier cambio posterior del texto se puede detectar. Cada parte puede descargar una copia.",
+        "Las partes firman este contrato electrónicamente en Hommie escribiendo su nombre completo. Hommie deja constancia de la fecha y hora de cada firma y de la huella digital (SHA-256) del texto firmado, de modo que cualquier cambio posterior del texto se puede detectar. Cada parte puede descargar una copia.",
         `Tipo de contrato: ${CONTRACT_KIND_LABELS[kind]}. Plantilla ${TEMPLATE_VERSION}. Referencia ${meta.contractId}.`,
       ],
     },

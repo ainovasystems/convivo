@@ -55,7 +55,7 @@ describe("apartado «Fianza»", () => {
     expect(landlord).toContain("IGVS");
     expect(landlord).toContain("no hemos confirmado que la obligación");
     expect(landlord).not.toMatch(/en el plazo de un mes para depositar|plazo para depositar/);
-    expect(landlord).toContain("Convivo no cobra");
+    expect(landlord).toContain("Hommie no cobra");
     expect(landlord).toContain("pendiente de revisión legal");
 
     const tenant = render(view(), { landlord: false });
@@ -88,13 +88,13 @@ describe("apartado «Fianza»", () => {
     expect(render(view(declared), { landlord: false })).not.toContain("Confirmar la entrega de llaves");
   });
 
-  it("Convivo nunca da la fecha de llaves por confirmada: ni a los 7 días ni a los 60", () => {
+  it("Hommie nunca da la fecha de llaves por confirmada: ni a los 7 días ni a los 60", () => {
     for (const ago of [8, 60]) {
       const declared = { keys_declared_on: day(-ago), keys_declared_at: day(-ago) + "T10:00:00Z" };
       for (const landlord of [true, false]) {
         const html = render(view(declared), { landlord });
         expect(html).toContain("Declarada por el inquilino, sin confirmar");
-        expect(html).toContain("Convivo no da esta fecha por confirmada");
+        expect(html).toContain("Hommie no da esta fecha por confirmada");
         expect(html).not.toMatch(/se dará por confirmada|se da por confirmada|dada por confirmada|Dada por confirmada/);
         expect(html).not.toContain("7 días");
       }

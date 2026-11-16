@@ -26,10 +26,10 @@ describe("plantillas de contrato", () => {
     expect(text).toMatch(/320\s€ al mes/);
     expect(text).toContain("1 de septiembre de 2027");
     expect(text).toContain("Código Civil");
-    // Convivo no pide el DNI/NIE: solo una línea en blanco por parte, para rellenar a mano.
+    // Hommie no pide el DNI/NIE: solo una línea en blanco por parte, para rellenar a mano.
     expect(text).toMatch(/DNI\/NIE de la parte arrendadora: _+\n/);
     expect(text).toMatch(/DNI\/NIE de la parte arrendataria: _+\n/);
-    expect(text).toMatch(/Convivo no lo recoge ni lo guarda/);
+    expect(text).toMatch(/Hommie no lo recoge ni lo guarda/);
     expect(base).not.toHaveProperty("dni");
   });
 

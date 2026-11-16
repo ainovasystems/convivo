@@ -47,6 +47,6 @@ describe("getMailer", () => {
   it("acepta resendkey y emailfrom, que mandan sobre los nombres estándar", () => {
     expect(getMailer({ resendkey: "k" } as never)).toBeInstanceOf(ResendMailer);
     expect(emailConfig({ emailfrom: "A <a@x.es>", EMAIL_FROM: "B <b@x.es>" } as never).from).toBe("A <a@x.es>");
-    expect(emailConfig({} as never).from).toContain("Convivo");
+    expect(emailConfig({} as never).from).toContain("Hommie");
   });
 });

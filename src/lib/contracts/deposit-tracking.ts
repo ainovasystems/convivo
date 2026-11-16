@@ -5,7 +5,7 @@ import { sniffImageType } from "@/lib/validation/image";
 /**
  * Seguimiento de la fianza de un contrato firmado. Las reglas las impone la BD
  * (20261116000100_deposit_tracking.sql); esto es el espejo para decidir qué se
- * muestra, los esquemas de los formularios y los textos. Convivo NO mueve
+ * muestra, los esquemas de los formularios y los textos. Hommie NO mueve
  * dinero: solo deja constancia.
  */
 export const DEPOSIT_STATUSES = ["pending", "deposited", "returned", "claimed"] as const;
@@ -22,12 +22,12 @@ export const DEPOSIT_STATUS_LABELS: Record<DepositStatus, string> = {
 export const RETURN_CLOSING_DAYS = 7;
 
 export const DEPOSIT_TRACKING_NOTICE =
-  "Convivo no cobra, no guarda ni mueve dinero: solo deja constancia de lo que anotáis. Información orientativa y borrador pendiente de revisión legal; no es asesoría jurídica.";
+  "Hommie no cobra, no guarda ni mueve dinero: solo deja constancia de lo que anotáis. Información orientativa y borrador pendiente de revisión legal; no es asesoría jurídica.";
 
-/** Etiqueta de una entrega de llaves que el casero no ha confirmado. Convivo NUNCA la da por confirmada. */
+/** Etiqueta de una entrega de llaves que el casero no ha confirmado. Hommie NUNCA la da por confirmada. */
 export const KEYS_UNCONFIRMED_LABEL = "Declarada por el inquilino, sin confirmar";
 export const KEYS_UNCONFIRMED_NOTE =
-  "Convivo no da esta fecha por confirmada: solo ha quedado registrada como declarada por el inquilino. El plazo de un mes se cuenta desde la fecha confirmada por el casero.";
+  "Hommie no da esta fecha por confirmada: solo ha quedado registrada como declarada por el inquilino. El plazo de un mes se cuenta desde la fecha confirmada por el casero.";
 
 export const RETURN_DEADLINE_TEXT =
   "El plazo para devolver la fianza es de un mes desde la entrega de llaves (art. 36.4 LAU). Es una indicación orientativa.";

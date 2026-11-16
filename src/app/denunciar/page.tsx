@@ -6,7 +6,7 @@ import { getCurrentUser } from "@/lib/auth";
 
 export const metadata: Metadata = {
   title: "Notificar contenido ilegal",
-  description: "Avísanos de un anuncio, perfil o reseña de Convivo que creas que es ilegal. No hace falta tener cuenta.",
+  description: "Avísanos de un anuncio, perfil o reseña de Hommie que creas que es ilegal. No hace falta tener cuenta.",
 };
 
 export default async function NoticePage({
@@ -22,7 +22,7 @@ export default async function NoticePage({
       <div className="space-y-3">
         <h1 className="text-2xl font-extrabold tracking-tight">Notificar contenido ilegal</h1>
         <p className="text-muted">
-          Si un anuncio, un perfil o una reseña de Convivo te parece ilegal (difamación, datos personales, discriminación,
+          Si un anuncio, un perfil o una reseña de Hommie te parece ilegal (difamación, datos personales, discriminación,
           estafa…), cuéntanoslo. <strong>No hace falta tener cuenta</strong>: también puedes usar este formulario si eres,
           por ejemplo, un casero al que han reseñado.
         </p>

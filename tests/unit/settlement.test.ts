@@ -118,7 +118,7 @@ describe("pantalla de la liquidación", () => {
     expect(html.match(/example\.test\/foto\.webp/g)).toHaveLength(2);
   });
 
-  it("los textos dicen que Convivo solo documenta y avisan del desgaste", () => {
+  it("los textos dicen que Hommie solo documenta y avisan del desgaste", () => {
     expect(SETTLEMENT_NOTICE).toMatch(/no media[\s\S]*no propone cifras[\s\S]*no decide[\s\S]*no mueve dinero/);
     expect(SETTLEMENT_NOTICE).toContain("borrador pendiente de revisión legal");
     expect(WEAR_NOTICE).toContain("no se descuenta");
@@ -128,7 +128,7 @@ describe("pantalla de la liquidación", () => {
     const add = renderToStaticMarkup(createElement(AddItemForm, { settlementId: "s", candidates: [{ id: "x1", label: "Cocina · Nevera" }] }));
     expect(add).toContain("Cocina · Nevera");
     expect(add).toContain("solo daños nuevos");
-    expect(add).toContain("Convivo no propone cifras");
+    expect(add).toContain("Hommie no propone cifras");
 
     const respond = renderToStaticMarkup(
       createElement(RespondForm, {

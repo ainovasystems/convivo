@@ -16,7 +16,7 @@ export async function GET() {
   return new NextResponse(JSON.stringify(data, null, 2), {
     headers: {
       "Content-Type": "application/json; charset=utf-8",
-      "Content-Disposition": `attachment; filename="convivo-mis-datos-${date}.json"`,
+      "Content-Disposition": `attachment; filename="hommie-mis-datos-${date}.json"`,
       "Cache-Control": "no-store",
     },
   });

@@ -274,7 +274,7 @@ export default async function ListingPage({ params, searchParams }: Props) {
                   <Link href={`/perfil/${owner.id}`} className="font-semibold hover:text-brand">
                     {owner.display_name}
                   </Link>
-                  <p className="text-sm text-muted">En Convivo desde {formatMonth(owner.created_at)}</p>
+                  <p className="text-sm text-muted">En Hommie desde {formatMonth(owner.created_at)}</p>
                 </div>
               </div>
               {ownerRating ? (

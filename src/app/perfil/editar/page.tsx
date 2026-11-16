@@ -25,7 +25,7 @@ export default async function EditProfilePage({
   return (
     <div className="mx-auto max-w-2xl space-y-10 px-4 py-8 sm:py-12">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">{welcome ? "¡Bienvenido/a a Convivo!" : "Editar perfil"}</h1>
+        <h1 className="text-2xl font-bold tracking-tight">{welcome ? "¡Bienvenido/a a Hommie!" : "Editar perfil"}</h1>
         <p className="mt-2 text-muted">
           {welcome
             ? "Completa tu perfil: los perfiles con foto y presentación reciben muchas más respuestas."

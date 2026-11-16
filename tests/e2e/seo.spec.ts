@@ -112,7 +112,7 @@ test.describe("páginas de ciudad", () => {
 
   test("/habitaciones/lugo muestra anuncios de Lugo, con título, h1, canonical y JSON-LD", async ({ page }) => {
     await page.goto("/habitaciones/lugo");
-    await expect(page).toHaveTitle(/Habitaciones en alquiler en Lugo.*pisos compartidos.*Convivo/i);
+    await expect(page).toHaveTitle(/Habitaciones en alquiler en Lugo.*pisos compartidos.*Hommie/i);
     await expect(page.getByRole("heading", { level: 1 })).toContainText("Lugo");
     await expect(page.locator('meta[name="description"]')).toHaveAttribute("content", /Lugo/);
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", /\/habitaciones\/lugo$/);

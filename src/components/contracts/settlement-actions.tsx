@@ -114,7 +114,7 @@ export function AddItemForm({ settlementId, candidates }: { settlementId: string
         required
         value={amount}
         onChange={(e) => setAmount(e.target.value)}
-        hint="Lo decides tú: Convivo no propone cifras."
+        hint="Lo decides tú: Hommie no propone cifras."
         error={result?.errors?.amount}
       />
       <button type="submit" className={buttonClass} disabled={pending || !concept.trim() || !amount.trim()}>

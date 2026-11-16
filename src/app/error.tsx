@@ -8,7 +8,7 @@ import { reportClientError } from "@/lib/monitoring/report";
 /** Error inesperado en una página: mensaje amable y opción de reintentar. */
 export default function ErrorPage({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
   useEffect(() => {
-    console.error("[convivo] error en la página", error);
+    console.error("[hommie] error en la página", error);
     reportClientError(error);
   }, [error]);
 

@@ -84,7 +84,7 @@ test.describe("canal público de denuncias (DSA)", () => {
     // Ya no está entre las pendientes (tras el refresco de la página).
     await expect(ana.getByRole("listitem").filter({ hasText: reference }).getByText(/Responder antes del/)).toHaveCount(0);
     await expect.poll(mailpitSubjects).toContainEqual(`Decisión sobre tu notificación (ref. ${reference})`);
-    await expect.poll(mailpitSubjects).toContainEqual(`Hemos retirado tu anuncio «${title}» en Convivo`);
+    await expect.poll(mailpitSubjects).toContainEqual(`Hemos retirado tu anuncio «${title}» en Hommie`);
   });
 
   test("valida el formulario y exige declarar la buena fe", async ({ page }) => {

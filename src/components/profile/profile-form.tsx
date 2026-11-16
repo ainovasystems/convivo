@@ -109,7 +109,7 @@ export function ProfileForm({ initial }: { initial: ProfileFormValues }) {
       </fieldset>
 
       <fieldset className="space-y-3">
-        <legend className="text-lg font-semibold">¿Cómo usas Convivo?</legend>
+        <legend className="text-lg font-semibold">¿Cómo usas Hommie?</legend>
         <div className="flex flex-wrap gap-3">
           {USER_ROLES.map((role) => (
             <label key={role} className="flex items-center gap-2 rounded-full border border-border px-3 py-2">

@@ -37,7 +37,7 @@ export function ogCard({
           <div style={{ display: "flex", fontSize: 34, letterSpacing: 1, textTransform: "uppercase", color: "#f4b740" }}>
             {kicker}
           </div>
-          <div style={{ display: "flex", fontSize: 40 }}>Convivo</div>
+          <div style={{ display: "flex", fontSize: 40 }}>Hommie</div>
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
           <div style={{ display: "flex", fontSize: long ? 56 : 74, lineHeight: 1.1 }}>{title}</div>
