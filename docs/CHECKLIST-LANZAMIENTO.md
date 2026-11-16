@@ -13,7 +13,7 @@
 | Buscar «Hommie» en **TMview** (tmdn.org/tmview) y en el **localizador de la OEPM**. Mirar sobre todo marcas parecidas como «**homming**» en las clases 35, 36 (inmobiliario), 42 (software) y 45. Si hay alguna parecida, consultarlo antes de seguir | Usuario (o Abogado de marcas) | ⏳ | Antes de comprar nada más |
 | Comprar el dominio **hommie.es** (y, si se puede, hommie.com) | Usuario | ⏳ | Antes de abrir |
 | Registrar la marca, si la búsqueda sale limpia | Usuario / Abogado | ⏳ | Antes de abrir (recomendado) |
-| Renombrar Convivo → Hommie en la web: textos, emails, icono, manifiesto y metadatos | Claude Code | ⏳ | Bloque propio, con la marca confirmada |
+| Renombrar Hommie → Hommie en la web: textos, emails, icono, manifiesto y metadatos | Claude Code | ⏳ | Bloque propio, con la marca confirmada |
 
 ## 2. Cuentas y configuración (ver `docs/DEPLOY.md`)
 

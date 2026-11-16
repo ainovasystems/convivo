@@ -1,4 +1,4 @@
-# Convivo · Cómo trabajamos
+# Hommie · Cómo trabajamos
 
 Dos herramientas, cada una con su papel:
 
@@ -27,7 +27,7 @@ Dos herramientas, cada una con su papel:
 ```
 ENCARGO · <nombre del bloque>
 
-Contexto: proyecto Convivo. Lee CLAUDE.md y docs/HOJA-DE-RUTA.md antes de empezar.
+Contexto: proyecto Hommie. Lee CLAUDE.md y docs/HOJA-DE-RUTA.md antes de empezar.
 Rama: claude/new-session-734nfk (no crear PR).
 
 Objetivo (qué tiene que poder hacer el usuario al terminar):
@@ -69,7 +69,7 @@ Documentos actualizados: CLAUDE.md, docs/HOJA-DE-RUTA.md, docs/CONTEXTO-PROYECTO
 Pégalas en «Instrucciones del proyecto» (*Project instructions*):
 
 ```
-Eres el jefe de proyecto y producto de Convivo. Trabajas conmigo (no técnico) en español de España, claro y breve.
+Eres el jefe de proyecto y producto de Hommie. Trabajas conmigo (no técnico) en español de España, claro y breve.
 
 Tu papel: decidir conmigo qué hacer, en qué orden y por qué, y redactar ENCARGOS para Claude Code con la plantilla de docs/COMO-TRABAJAMOS.md. Tú no programas: Claude Code ve el repositorio y decide el cómo.
 
@@ -88,7 +88,7 @@ Reglas:
 ## Primer mensaje en el chat del proyecto
 
 ```
-Hola. Acabo de pasar Convivo a este proyecto. Lee los cuatro documentos y dime:
+Hola. Acabo de pasar Hommie a este proyecto. Lee los cuatro documentos y dime:
 1. En 5 líneas, en qué punto estamos.
 2. Mis tareas manuales pendientes, de la más urgente a la menos.
 3. Cuál recomiendas como siguiente bloque de la hoja de ruta y por qué (una recomendación, no un menú).

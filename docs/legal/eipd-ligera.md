@@ -1,6 +1,6 @@
 # Evaluación de impacto ligera (EIPD) · BORRADOR
 
-> Borrador técnico para revisar con el abogado antes de abrir al público. La lista de la AEPD (art. 35.4 RGPD) pide una EIPD normalmente cuando se cumplen dos o más criterios. Convivo roza dos: la evaluación de personas (reputación) y el uso de identificadores únicos (huellas de IP y navegador). Es zona gris, así que se hace una versión ligera.
+> Borrador técnico para revisar con el abogado antes de abrir al público. La lista de la AEPD (art. 35.4 RGPD) pide una EIPD normalmente cuando se cumplen dos o más criterios. Hommie roza dos: la evaluación de personas (reputación) y el uso de identificadores únicos (huellas de IP y navegador). Es zona gris, así que se hace una versión ligera.
 
 ## 1. Descripción del tratamiento
 

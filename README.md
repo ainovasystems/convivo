@@ -1,4 +1,4 @@
-# Convivo
+# Hommie
 
 Plataforma de vivienda compartida: anuncios de habitación, piso o "busco compañero", perfiles y reseñas bidireccionales que solo se abren tras una estancia real.
 

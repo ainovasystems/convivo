@@ -20,7 +20,7 @@
 - **Dónde:** panel de Supabase → **Database → Backups**.
 - **Frecuencia y conservación:** una al día y se guardan 7 días (plan Pro).
 - **Qué incluye:** toda la base de datos (usuarios, perfiles, anuncios, reseñas, contratos, inventarios y registros) y los *datos sobre* las fotos, pero **no los ficheros de las fotos**.
-  - Tampoco guarda las contraseñas de los roles de base de datos personalizados. Convivo no usa ninguno.
+  - Tampoco guarda las contraseñas de los roles de base de datos personalizados. Hommie no usa ninguno.
 - **Opción PITR** (volver a cualquier momento, con unos 2 minutos de pérdida como mucho):
   - es un complemento de pago (desde unos 100 $ al mes para 7 días) y exige un tamaño de servidor mayor;
   - si se activa, Supabase deja de hacer las copias diarias.

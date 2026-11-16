@@ -1,6 +1,6 @@
-# Ver Convivo en tu móvil, paso a paso
+# Ver Hommie en tu móvil, paso a paso
 
-Vas a publicar Convivo en internet con dos servicios gratuitos:
+Vas a publicar Hommie en internet con dos servicios gratuitos:
 
 - **Supabase**: guarda los datos (usuarios, anuncios, mensajes, reseñas).
 - **Vercel**: publica la web y te da una dirección `https://…` que abres en el móvil.
@@ -74,7 +74,7 @@ Tiempo: unos 20-30 minutos. No hace falta instalar nada en tu ordenador.
    - **iPhone (Safari):** pulsa el botón **Compartir** (cuadrado con flecha hacia arriba) → **Añadir a pantalla de inicio** → **Añadir**.
    - **Android (Chrome):** menú **⋮** → **Añadir a pantalla de inicio** o **Instalar aplicación**.
 
-   Te aparecerá el icono marrón de Convivo junto a tus otras apps.
+   Te aparecerá el icono marrón de Hommie junto a tus otras apps.
 
 ## Cosas que debes saber
 

@@ -1,7 +1,7 @@
-# Convivo · Contexto del proyecto (para planificar)
+# Hommie · Contexto del proyecto (para planificar)
 
-> Documento para el chat de planificación del proyecto. Estado a **14 de noviembre de 2026** (cierre de la Fase 8a).
-> «Convivo» es un nombre provisional. **El nombre elegido es Hommie (dominio hommie.es)**, pendiente de comprobar la marca en TMview / OEPM; la web todavía no se ha renombrado. El detalle técnico completo está en `CLAUDE.md` (raíz del repositorio).
+> Documento para el chat de planificación del proyecto. Estado a **19 de noviembre de 2026** (cierre del renombrado a Hommie).
+> **El nombre definitivo es Hommie (dominio hommie.es)**; «Convivo» era provisional. La web ya dice Hommie en todo lo que ve el usuario; sigue pendiente comprobar la marca en TMview / OEPM (ver `docs/HOJA-DE-RUTA.md`). El detalle técnico completo está en `CLAUDE.md` (raíz del repositorio).
 > Qué toca ahora y qué falta: `docs/HOJA-DE-RUTA.md`. Cómo trabajamos: `docs/COMO-TRABAJAMOS.md`.
 
 ## 1. Qué es
@@ -14,7 +14,7 @@ Plataforma web en español (España) para **vivienda compartida**: un «LinkedIn
 - **Lo que nos diferencia: reseñas verificadas.**
   - Solo se reseña tras una **estancia confirmada por las dos partes**.
   - Hay reseñas en cuatro direcciones: inquilino → inmueble, inquilino → casero, casero → inquilino y compañero ↔ compañero.
-  - **Firmar el contrato en Convivo confirma la estancia**: cada contrato genera reseñas verificadas.
+  - **Firmar el contrato en Hommie confirma la estancia**: cada contrato genera reseñas verificadas.
 - **Reglas de las reseñas**, que impone la base de datos y no solo la web:
   - **Doble ciego:** una reseña no es pública hasta que la otra parte reseña o pasan 14 días.
   - **Inmutables:** no se editan. Solo se borran con motivo, y queda constancia.
@@ -72,7 +72,7 @@ Plataforma web en español (España) para **vivienda compartida**: un «LinkedIn
 
 - Con el interés aceptado, el casero pulsa «Preparar contrato». **El de habitación solo está disponible en Galicia**: fuera sale un aviso, y la estancia y las reseñas funcionan igual (se confirman en el chat).
 - Hay tres plantillas en borrador legal: habitación (Código Civil, solo Galicia), vivienda habitual (LAU) y temporada (LAU).
-- Cada parte lleva una línea «DNI/NIE» en blanco para rellenar a mano al presentar el trámite de la fianza; Convivo no lo recoge.
+- Cada parte lleva una línea «DNI/NIE» en blanco para rellenar a mano al presentar el trámite de la fianza; Hommie no lo recoge.
 - Se firma escribiendo el nombre completo. Queda constancia de la fecha y la hora y de una huella del texto que impide cambiarlo.
 - Al firmar los dos, la estancia queda confirmada. El contrato se descarga en PDF.
 
@@ -87,16 +87,16 @@ Plataforma web en español (España) para **vivienda compartida**: un «LinkedIn
 
 - En el contrato firmado, las dos partes ven un apartado «Fianza» con su estado: pendiente de depositar, depositada, devuelta o reclamada (no recibida). No es una señal pública en el perfil.
 - El casero anota la fecha y el número de resguardo del depósito y, si quiere, sube el resguardo (solo lo ve él; el inquilino ve estado, fecha y número).
-- Al terminar la estancia, el inquilino declara la fecha de entrega de llaves y el casero la confirma. **Convivo nunca la da por confirmada**: si el casero no responde, consta como «declarada por el inquilino, sin confirmar» (con su fecha y hora de registro, visible para los dos) y el casero recibe recordatorios en la app y por email.
+- Al terminar la estancia, el inquilino declara la fecha de entrega de llaves y el casero la confirma. **Hommie nunca la da por confirmada**: si el casero no responde, consta como «declarada por el inquilino, sin confirmar» (con su fecha y hora de registro, visible para los dos) y el casero recibe recordatorios en la app y por email.
 - Con las llaves confirmadas corre un plazo de un mes para devolver la fianza (art. 36.4 LAU, orientativo), visible para las dos partes, con avisos en la app y por email 7 días antes y al vencer. Si la fecha no está confirmada, no hay reloj oficial: pasado un mes desde la fecha declarada, el inquilino puede descargar el paquete de pruebas, que dice de forma expresa que el casero no la confirmó.
-- El casero marca la devolución (con el importe devuelto, si quiere; es solo informativo) y el inquilino la confirma o dice que no la ha recibido. Si vence el plazo sin devolverla, el inquilino puede preparar un paquete de pruebas en PDF (contrato y huella, inventarios con fotos, fechas y cronología). Convivo no reclama nada en su nombre.
+- El casero marca la devolución (con el importe devuelto, si quiere; es solo informativo) y el inquilino la confirma o dice que no la ha recibido. Si vence el plazo sin devolverla, el inquilino puede preparar un paquete de pruebas en PDF (contrato y huella, inventarios con fotos, fechas y cronología). Hommie no reclama nada en su nombre.
 **Liquidación de salida de la fianza (solo documenta)**
 
 - Cuando los dos habéis confirmado el inventario de salida, el casero abre la liquidación: una lista de partidas con concepto e importe y, si procede, el elemento del inventario al que se refieren, con sus fotos de entrada y de salida. Solo se pueden vincular los **daños nuevos** (a la entrada estaba bien y a la salida está dañado); el desgaste por uso normal se avisa como no descontable.
 - Se ve el total de descuentos frente a la fianza (si lo supera, solo se señala).
 - El casero la envía; el inquilino responde a cada partida (acepto / no acepto, con comentario obligatorio si no acepta). Estados: en preparación, enviada, de acuerdo, con discrepancias.
 - Las dos partes la confirman y queda cerrada: ya nadie puede cambiarla. Antes del cierre, el casero puede reabrirla (lo anterior queda en la cronología). Si hay discrepancias, se hablan en la conversación de siempre y el resumen sirve como constancia.
-- El resumen se guarda como PDF (partidas, fotos, respuestas, fechas, estado y huella). Convivo no media, no propone cifras, no decide quién tiene razón y no mueve dinero. Textos en borrador pendiente de revisión legal.
+- El resumen se guarda como PDF (partidas, fotos, respuestas, fechas, estado y huella). Hommie no media, no propone cifras, no decide quién tiene razón y no mueve dinero. Textos en borrador pendiente de revisión legal.
 
 - Habitaciones: «si tu comunidad lo exige»; en Galicia, solo se recuerda consultar al IGVS. Todos los textos son borrador pendiente de revisión legal.
 
@@ -149,16 +149,18 @@ Plataforma web en español (España) para **vivienda compartida**: un «LinkedIn
 8. **Las marcas de fraude no despublican ni avisan al anunciante**: decide un admin.
 9. **Firmar el contrato confirma la estancia.** Se firma el texto exacto. La firma es electrónica simple; la avanzada, con un proveedor como Signaturit o DocuSign, queda para más adelante.
 10. **El inventario confirmado por los dos queda bloqueado**: es la prueba para devolver la fianza.
-10b. **Fianza sin tocar dinero:** Convivo solo deja constancia (estados, fechas, avisos y un paquete de pruebas). Si el casero no responde: avisos, reloj y paquete de pruebas; nunca una carta de requerimiento ni un mediador. La entrega de llaves **nunca** se da por confirmada: solo la confirma el casero. La liquidación de salida solo documenta (sin mediar ni proponer cifras) y queda cerrada al confirmarla las dos partes.
+10b. **Fianza sin tocar dinero:** Hommie solo deja constancia (estados, fechas, avisos y un paquete de pruebas). Si el casero no responde: avisos, reloj y paquete de pruebas; nunca una carta de requerimiento ni un mediador. La entrega de llaves **nunca** se da por confirmada: solo la confirma el casero. La liquidación de salida solo documenta (sin mediar ni proponer cifras) y queda cerrada al confirmarla las dos partes.
 11. **Datos en Europa** (Vercel en París, Supabase en Europa). Solo cookies técnicas, así que no hay banner de cookies.
 12. **Indexación:** la web de pruebas no se indexa (una variable la enciende en producción); perfiles y anuncios «busco» no se indexan; las páginas de ciudad son solo las del piloto.
 13. **Identidad visual:** blanco y crema, marrón nogal #7b4b2a y acento miel #f4b740, tipografía Plus Jakarta Sans, botones en píldora y estilo startup (Glovo, Too Good To Go, BlaBlaCar). El modo oscuro está desactivado.
 
 Las 70 decisiones técnicas están numeradas en `CLAUDE.md` → «Decisiones tomadas».
 
+**Renombrado (noviembre de 2026):** todo lo que ve el usuario dice Hommie. Los nombres técnicos internos (repositorio, variables, el proyecto «Convivo pruebas») no cambian. Las páginas legales siguen en borrador; `/terminos` ya no permite «solo chicas/chicos». Las plantillas de los emails de acceso de Supabase (en español, con la marca) están en `docs/EMAILS-DE-ACCESO.md` y hay que pegarlas a mano en el panel.
+
 **Datos personales en texto público (noviembre de 2026):** el título, la descripción, las zonas y el barrio de un anuncio, las reseñas, sus respuestas y la biografía del perfil no pueden llevar teléfonos, emails, DNI/NIE, IBAN o tarjetas, enlaces a WhatsApp, Telegram, Instagram y similares, ni direcciones exactas (tampoco las del propio anunciante: el contacto va por el chat). **Se bloquea, no pasa a revisión.** El chat entre las dos partes no se controla. Lo ya publicado no se toca; lo retroactivo lo cubre el canal de denuncias. No se detectan nombres ni datos de salud (con patrones no es fiable).
 
-**Datos sensibles de terceros (Russmedia):** como la plataforma puede ser corresponsable de lo que publican los usuarios, la reseña, la respuesta pública y la biografía llevan un aviso visible («No escribas sobre la salud, la religión, el origen racial o étnico, la orientación o la vida sexual, la ideología política o sindical ni los antecedentes penales de nadie…»). Solo se avisa: no se detecta nada sensible automáticamente. Sigue la ocultación cautelar por datos personales y el canal público de denuncias. Las condiciones y la privacidad (borradores) dicen que Convivo usa el contenido solo para prestar el servicio y que puede ocultarlo o retirarlo.
+**Datos sensibles de terceros (Russmedia):** como la plataforma puede ser corresponsable de lo que publican los usuarios, la reseña, la respuesta pública y la biografía llevan un aviso visible («No escribas sobre la salud, la religión, el origen racial o étnico, la orientación o la vida sexual, la ideología política o sindical ni los antecedentes penales de nadie…»). Solo se avisa: no se detecta nada sensible automáticamente. Sigue la ocultación cautelar por datos personales y el canal público de denuncias. Las condiciones y la privacidad (borradores) dicen que Hommie usa el contenido solo para prestar el servicio y que puede ocultarlo o retirarlo.
 
 ## 6. Riesgos principales
 

@@ -1,8 +1,8 @@
-# Convivo · Hoja de ruta
+# Hommie · Hoja de ruta
 
 > **Fuente única de «qué toca ahora».** Solo se trabaja en el bloque marcado como **SIGUIENTE**. Lo que surja por el camino va a «Ideas aparcadas», no se hace en ese momento.
 > La actualiza Claude Code al cerrar cada bloque y se vuelve a subir al proyecto de Claude.
-> Última actualización: **18 de noviembre de 2026** (cierre de «Datos sensibles de terceros (Russmedia)»).
+> Última actualización: **19 de noviembre de 2026** (cierre de «Renombrado a Hommie y emails de acceso»).
 > Lo que falta antes de abrir, con responsable y estado: `docs/CHECKLIST-LANZAMIENTO.md`.
 
 ## Hecho
@@ -22,6 +22,7 @@
 | Fianza: liquidación de salida (2 de 2) | Ajuste de las llaves (sin confirmación a los 7 días; fecha «declarada, sin confirmar» con recordatorios al casero; paquete de pruebas pasado un mes desde la fecha declarada, con aviso expreso de que no la confirmó el casero), importe devuelto informativo y liquidación de salida: partidas del casero (solo daños nuevos vinculables al inventario, con fotos de entrada y salida; el desgaste se avisa como no descontable), respuesta del inquilino partida por partida, confirmación de las dos partes y bloqueo, reabrir antes del cierre, enlace a la conversación y resumen imprimible a PDF con huella. Cronología append-only. Solo documenta |
 | Control previo de datos personales | Anuncios (título, descripción, zonas y barrio), reseñas, respuestas públicas y biografía rechazan teléfonos, emails (también «arroba»), DNI/NIE, IBAN y tarjetas, canales de contacto externos y direcciones exactas. Aviso en vivo y de nuevo en el servidor; no se repite el dato. Reseñas y respuestas, además, con respaldo en la base de datos. El chat no se toca |
 | Datos sensibles de terceros (Russmedia) | Aviso visible sobre datos sensibles en la reseña, la respuesta pública y la biografía; el motivo «datos personales» de las denuncias lo dice expresamente; `/terminos` y `/privacidad` ajustadas (uso del contenido solo para prestar el servicio, retirada y cómo notificar). Sin detección automática |
+| Renombrado a Hommie y emails de acceso | Todo lo que ve el usuario dice Hommie (cabecera, portada, títulos, tarjetas para compartir, manifest, emails de la app, errores, contratos, PDF y páginas legales, que siguen en borrador). `/terminos` §3 ya no permite «solo chicas/chicos». Plantillas de los emails de acceso de Supabase en español en `docs/EMAILS-DE-ACCESO.md`. Los nombres internos no cambian |
 | Fase 7a · SEO técnico y auditoría | Páginas de ciudad (`/habitaciones/lugo`, `/pisos/lugo`…), `sitemap.xml`, `robots.txt`, datos estructurados, tarjetas para compartir, indexación apagada con una variable, y `docs/REVISION-FASE-7.md` (Lighthouse, axe y 52 capturas en móvil) |
 
 ## SIGUIENTE (en este orden, decidido en la planificación)
@@ -34,6 +35,7 @@ Después del piloto: contratos · fase 3 / **Fase B de pagos** con socio regulad
 
 | Qué | Para qué | Urgencia |
 |---|---|---|
+| **Pegar las 5 plantillas de `docs/EMAILS-DE-ACCESO.md`** en Supabase (primero «Convivo pruebas», luego producción) y poner «Hommie» como nombre del remitente | Que los emails de acceso estén en español y con la marca | Antes de abrir |
 | Configurar Resend + dominio propio y pegar `resendkey` y `emailfrom` en Vercel | Que los emails lleguen a cualquier usuario | Alta |
 | Después: reactivar «Confirm email» en Supabase → Authentication | Obligatorio antes de abrir | Alta |
 | Variable `CRON_SECRET`, con ese nombre exacto, en Vercel | Avisos diarios de reseña. Vercel solo envía el secreto con ese nombre | Media |
@@ -54,7 +56,7 @@ Después del piloto: contratos · fase 3 / **Fase B de pagos** con socio regulad
 
 1. ¿Son válidas las tres plantillas de contrato? ¿Qué cláusulas faltan o sobran?
 2. Habitación en vivienda compartida: ¿Código Civil o LAU, según el caso?
-3. ¿Basta con identificar a las partes por su nombre completo y su cuenta de Convivo, sin DNI ni domicilio? (Hoy cada contrato lleva una línea «DNI/NIE» en blanco para rellenar a mano: ver pregunta 19.)
+3. ¿Basta con identificar a las partes por su nombre completo y su cuenta de Hommie, sin DNI ni domicilio? (Hoy cada contrato lleva una línea «DNI/NIE» en blanco para rellenar a mano: ver pregunta 19.)
 4. **Solo Galicia:** ¿es correcta la guía de la fianza de Galicia (`src/lib/contracts/deposits.ts`: IGVS, depósito gratuito y sin intereses, copia del justificante en un mes)? Sin confirmar: el plazo de un mes para depositar y si la obligación alcanza a las habitaciones. Fuera de Galicia ya no damos datos por comunidad.
 5. ¿Plazo de conservación de los contratos y los inventarios? Hoy se conservan sin límite.
 
@@ -79,7 +81,7 @@ Después del piloto: contratos · fase 3 / **Fase B de pagos** con socio regulad
 16. (d) **Fianza legal frente a garantía adicional en Galicia**, y si la obligación de depositar alcanza a las habitaciones.
 17. (e) Si la **negociación documentada dentro de la app** vale como MASC (LO 1/2025).
 18. (f) El nombre **Hommie** frente a «homming» (marca): ¿riesgo de confusión?
-19. (g) **Validez de un contrato con el DNI/NIE en blanco** para el trámite de la fianza: ¿basta que lo rellene cada parte a mano al presentar el trámite, sin que Convivo lo recoja?
+19. (g) **Validez de un contrato con el DNI/NIE en blanco** para el trámite de la fianza: ¿basta que lo rellene cada parte a mano al presentar el trámite, sin que Hommie lo recoja?
 
 **Nuevas (bloque «Fianza: seguimiento»)**
 
@@ -94,14 +96,15 @@ Después del piloto: contratos · fase 3 / **Fase B de pagos** con socio regulad
 
 ## Ideas aparcadas (no hacer sin decidirlo antes en la planificación)
 
-- **`/terminos` §3 está desfasado:** todavía dice que en habitaciones se puede indicar «solo chicas / solo chicos», cuando el campo y el filtro se quitaron (decisión 41). Es un cambio de fondo legal: decidir con el abogado (pregunta 8) y corregir el texto.
-- Los avisos nuevos y los textos legales dicen «Convivo» o «Hommie» según el encargo; unificar cuando se decida el nombre.
+- **Nombres técnicos que todavía dicen «convivo»** (no los ve el usuario; renombrarlos solo con un motivo y con cuidado): repositorio, `package.json`, variables de sesión de la BD (`convivo.contract_rpc`, `convivo.anonymizing`), usuarios de ejemplo `@convivo.test`, contraseña de desarrollo, dominio de prueba de los e2e. Y los textos de las migraciones ya aplicadas.
+- Las plantillas de Supabase Auth hay que pegarlas a mano en el panel (pasos en `docs/EMAILS-DE-ACCESO.md`); el cambio de contraseña y el de email aún no tienen pantalla en la app.
+
 
 - **De la revisión de la 7a, no incluidos en la 7b** (descripción en `docs/REVISION-FASE-7.md`): **D5** contrato e inventario con UUID largos (toca el texto firmado: pendiente del abogado), **D8** pasos del asistente con barra de progreso, **D10** índice en las páginas legales, **D11** estados vacíos con acción, **P3** JS heredado/sin usar (`browserslist`), **P4** rutas pesadas (publicar, chat, editar perfil), **P5** variabilidad del TBT en inicio, **P6** caché de ida y vuelta (bfcache), **A7** botones desactivados con ayuda.
 - **Pruebas e2e posiblemente frágiles por el mismo motivo** que arregló el cierre de la CI (mensaje de éxito dentro de un elemento que `router.refresh()` retira): revisar `listing-flag-form.tsx` y otros formularios de `/admin` que hacen `router.refresh()` tras el éxito y cuyas pruebas esperen su mensaje. Nota de producto: el aviso de «Decisión registrada» se ve un instante antes de que la notificación salga de las pendientes.
 - **Pendiente de verificar con Supabase real** (CI o web de pruebas): el CLS del perfil tras quitar su esqueleto, y repetir la medición de peso con fotos reales y en Vercel.
 - Calidad de la versión optimizada de las tarjetas (de 75 a ~60): recomendación 3 de `docs/PESO-DE-LAS-FOTOS.md`, opcional.
-- **Datos personales, mejoras posibles:** revisar con el uso real los falsos positivos y negativos (en teléfonos y direcciones); extender el respaldo de la base de datos a anuncios (hoy solo reseñas y respuestas); controlar también lo que se escribe en la nota de una denuncia o en el motivo de un contrato si hiciera falta; e2e de reseñas y biografía (hoy solo hay e2e del asistente de anuncios); Hommie/Convivo: los textos de interfaz nuevos dicen «chat de Hommie» por encargo, el resto de la app sigue diciendo Convivo hasta decidir el nombre.
+- **Datos personales, mejoras posibles:** revisar con el uso real los falsos positivos y negativos (en teléfonos y direcciones); extender el respaldo de la base de datos a anuncios (hoy solo reseñas y respuestas); controlar también lo que se escribe en la nota de una denuncia o en el motivo de un contrato si hiciera falta; e2e de reseñas y biografía (hoy solo hay e2e del asistente de anuncios).
 - Tarea de purga automática de los plazos de conservación.
 - Suspender cuentas desde `/admin`.
 - Verificación de teléfono (el campo existe; falta el flujo y la tabla privada).
