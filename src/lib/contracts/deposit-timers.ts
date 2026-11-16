@@ -6,9 +6,10 @@ import { createAdminClient } from "@/lib/supabase/admin";
 
 /**
  * Parte de la tarea diaria (ver /api/cron/review-windows): llama a
- * deposit_timers_run() (solo service_role), que en la BD da por confirmadas las
- * entregas de llaves sin respuesta en 7 días y avisa 7 días antes de que venza
- * el plazo de devolución y cuando vence (avisos in-app y constancia incluidos).
+ * deposit_timers_run() (solo service_role), que en la BD recuerda al casero que
+ * confirme la fecha de llaves declarada (nunca la da por confirmada), avisa al
+ * mes de una fecha sin confirmar y 7 días antes de que venza el plazo de
+ * devolución y cuando vence (avisos in-app y constancia incluidos).
  * Aquí solo se mandan los emails. Idempotente: cada aviso sale una sola vez.
  *
  * Uso acotado de service_role (el mismo que el de los avisos de reseña).

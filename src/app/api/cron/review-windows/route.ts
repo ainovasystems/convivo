@@ -11,7 +11,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 /**
  * Tarea programada diaria (Vercel Cron, ver vercel.json): avisa por email e
  * in-app cuando se abre una ventana de reseña y 3 días antes de que se cierre.
- * También lleva los plazos de la fianza (llaves sin confirmar a los 7 días y
+ * También lleva los plazos de la fianza (recordatorios por llaves sin confirmar y
  * plazo de devolución): ver runDepositTimers.
  *
  * Uso acotado de service_role: lee review_window_notices_due() (función que

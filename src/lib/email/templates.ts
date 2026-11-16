@@ -222,12 +222,18 @@ export function inventoryToConfirmEmail(p: { stage: "entry" | "exit"; url: strin
 export type DepositEmailKind =
   | "keys_declared"
   | "keys_confirmed"
-  | "keys_auto_confirmed"
+  | "keys_reminder"
+  | "keys_unconfirmed_due"
   | "return_closing"
   | "return_overdue"
   | "return_marked"
   | "return_confirmed"
-  | "return_disputed";
+  | "return_disputed"
+  | "settlement_sent"
+  | "settlement_answered"
+  | "settlement_reopened"
+  | "settlement_to_confirm"
+  | "settlement_locked";
 
 const DEPOSIT_FOOTNOTE = "Convivo no mueve dinero: solo deja constancia. Información orientativa, borrador pendiente de revisión legal.";
 
@@ -251,7 +257,7 @@ export function depositEmail(p: {
       title: "Confirma la entrega de llaves",
       paragraphs: [
         `Tu inquilino declara que entregó las llaves de «${t}»${keys ? ` el ${keys}` : ""}.`,
-        "Confírmalo en Convivo. Si no respondes en 7 días, se dará por confirmada y empezará a correr el plazo de un mes para devolver la fianza.",
+        "Confírmalo en Convivo, o habladlo en la conversación si la fecha no coincide. Mientras no lo confirmes, constará como declarada por el inquilino y sin confirmar, y empezará a correr el plazo de un mes solo cuando la confirmes.",
       ],
       cta: "Revisar y confirmar",
     },
@@ -264,12 +270,25 @@ export function depositEmail(p: {
       ],
       cta: "Ver el seguimiento de la fianza",
     },
-    keys_auto_confirmed: {
-      subject: "Entrega de llaves dada por confirmada",
-      title: "Entrega de llaves dada por confirmada",
+    keys_reminder: {
+      subject: "Recordatorio: confirma la entrega de llaves",
+      title: "Falta confirmar la entrega de llaves",
       paragraphs: [
-        `Han pasado 7 días sin respuesta del casero, así que se da por confirmada la entrega de llaves de «${t}»${keys ? ` del ${keys}` : ""}. Ha quedado constancia.`,
-        `${due ? `El plazo de un mes para devolver la fianza termina el ${due}.` : "Ya corre el plazo de un mes para devolver la fianza."} Es una indicación orientativa (art. 36.4 LAU).`,
+        `Tu inquilino declaró que entregó las llaves de «${t}»${keys ? ` el ${keys}` : ""} y todavía no lo has confirmado.`,
+        "Mientras no lo confirmes, consta como «declarada por el inquilino, sin confirmar». Convivo no la da por confirmada. Si la fecha no coincide, habladlo en la conversación.",
+      ],
+      cta: "Revisar y confirmar",
+    },
+    keys_unconfirmed_due: {
+      subject: landlord ? "Ha pasado un mes desde la fecha de llaves declarada" : "Ya puedes descargar el paquete de pruebas",
+      title: landlord ? "Fecha de llaves sin confirmar" : "Paquete de pruebas disponible",
+      paragraphs: [
+        landlord
+          ? `Ha pasado un mes desde la fecha de entrega de llaves de «${t}» que declaró tu inquilino${keys ? ` (${keys})` : ""} y no la has confirmado. Confírmala o habladlo en la conversación.`
+          : `Ha pasado un mes desde la fecha de entrega de llaves de «${t}» que declaraste${keys ? ` (${keys})` : ""}. El casero no la ha confirmado.`,
+        landlord
+          ? "Si la fianza sigue sin devolverse, tu inquilino podrá descargar un paquete de pruebas que indica expresamente que la fecha no está confirmada por ti."
+          : "Si no te han devuelto la fianza, puedes descargar el paquete de pruebas desde el contrato. Dirá expresamente que la fecha no fue confirmada por el casero. Convivo no hace ninguna reclamación en tu nombre.",
       ],
       cta: "Ver el seguimiento de la fianza",
     },
@@ -315,6 +334,51 @@ export function depositEmail(p: {
         "Cuando la hayas hecho, puedes volver a marcarla en el contrato.",
       ],
       cta: "Ver el contrato",
+    },
+    settlement_sent: {
+      subject: "Tu casero te envía la liquidación de la fianza",
+      title: "Liquidación de la fianza",
+      paragraphs: [
+        `Tu casero ha preparado la liquidación de la fianza de «${t}». Responde a cada partida: acepto o no acepto, con un comentario si quieres.`,
+        "Convivo solo deja constancia: no media, no propone cifras ni decide quién tiene razón.",
+      ],
+      cta: "Ver la liquidación",
+    },
+    settlement_answered: {
+      subject: "Tu inquilino ha respondido a la liquidación de la fianza",
+      title: "Respuesta a la liquidación",
+      paragraphs: [
+        `Tu inquilino ha respondido a las partidas de la liquidación de «${t}».`,
+        "Revísala: si hay discrepancias, habladlo en la conversación; podéis reabrirla para cambiarla o confirmarla tal cual para dejar constancia.",
+      ],
+      cta: "Ver la liquidación",
+    },
+    settlement_reopened: {
+      subject: "Tu casero ha reabierto la liquidación de la fianza",
+      title: "Liquidación reabierta",
+      paragraphs: [
+        `Tu casero ha vuelto a poner en preparación la liquidación de la fianza de «${t}». Te avisaremos cuando te envíe la nueva versión.`,
+        "Tus respuestas anteriores quedan en la cronología.",
+      ],
+      cta: "Ver la liquidación",
+    },
+    settlement_to_confirm: {
+      subject: "Falta tu confirmación de la liquidación de la fianza",
+      title: "Falta tu confirmación",
+      paragraphs: [
+        `La otra parte ya ha confirmado la liquidación de la fianza de «${t}».`,
+        "Revísala y confírmala para dejarla cerrada. Confirmar no significa aceptar partidas que se hayan rechazado: solo deja cerrado el registro.",
+      ],
+      cta: "Revisar y confirmar",
+    },
+    settlement_locked: {
+      subject: "Liquidación de la fianza cerrada",
+      title: "Liquidación cerrada",
+      paragraphs: [
+        `Las dos partes habéis confirmado la liquidación de la fianza de «${t}». Ya no se puede cambiar.`,
+        "Desde el contrato podéis descargar el resumen en PDF. Si hay discrepancias, el resumen sirve como constancia.",
+      ],
+      cta: "Ver el resumen",
     },
   };
   const c = copy[p.kind];

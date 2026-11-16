@@ -9,10 +9,14 @@ import { getDepositView } from "@/lib/contracts/deposit-queries";
 import {
   DEPOSIT_STATUS_LABELS,
   DEPOSIT_TRACKING_NOTICE,
-  EVENT_LABELS,
+  KEYS_UNCONFIRMED_LABEL,
+  KEYS_UNCONFIRMED_NOTE,
+  eventLabel,
   RETURN_DEADLINE_TEXT,
+  addOneMonth,
   canDownloadEvidence,
   formatDay,
+  keysAreConfirmed,
   madridToday,
 } from "@/lib/contracts/deposit-tracking";
 import { CONDITION_LABELS, INVENTORY_STAGES, STAGE_LABELS, compareWithEntry, groupByArea } from "@/lib/contracts/inventory";
@@ -50,7 +54,8 @@ export default async function DepositEvidencePage({ params }: { params: Promise<
         </Link>
         <h1 className="text-2xl font-extrabold tracking-tight">Paquete de pruebas de la fianza</h1>
         <p className="rounded-2xl bg-surface p-4 text-muted">
-          El paquete se puede preparar cuando ha vencido el plazo de un mes para devolver la fianza y esta no consta como devuelta.
+          El paquete se puede preparar cuando ha vencido el plazo de un mes para devolver la fianza y esta no consta como devuelta. Si el casero no ha confirmado la fecha de entrega de
+          llaves, se puede preparar pasado un mes desde la fecha que declaraste, y el paquete lo dirá de forma expresa.
         </p>
       </div>
     );
@@ -60,6 +65,7 @@ export default async function DepositEvidencePage({ params }: { params: Promise<
   const inventories = [entry, exit] as const;
   const terms = (c.terms ?? {}) as Record<string, unknown>;
   const { row, events } = view;
+  const confirmed = keysAreConfirmed(row);
 
   return (
     <div className="mx-auto max-w-3xl space-y-8 px-4 py-6 sm:py-10 print:max-w-none print:space-y-6 print:py-0">
@@ -80,6 +86,18 @@ export default async function DepositEvidencePage({ params }: { params: Promise<
           Este documento recoge lo registrado en Convivo. No es una carta de requerimiento ni una reclamación, y Convivo no actúa en nombre de ninguna de las partes.
         </p>
       </header>
+
+      {!confirmed ? (
+        <section role="note" className="space-y-1 break-inside-avoid rounded-2xl border-2 border-red-700 p-4 text-sm" data-testid="keys-unconfirmed-banner">
+          <p className="font-bold text-red-800">
+            Atención: la fecha de entrega de llaves NO fue confirmada por el casero.
+          </p>
+          <p>
+            Es la fecha {row.keys_declared_on ? formatDay(row.keys_declared_on) : "—"}, declarada por el inquilino y registrada en Convivo el {when(row.keys_declared_at)}. {KEYS_UNCONFIRMED_NOTE} Este
+            paquete se prepara porque ha pasado un mes desde esa fecha declarada.
+          </p>
+        </section>
+      ) : null}
 
       <section className="space-y-2 break-inside-avoid">
         <h2 className="text-lg font-bold">1. Datos del contrato</h2>
@@ -122,13 +140,18 @@ export default async function DepositEvidencePage({ params }: { params: Promise<
           <dd>{row.keys_declared_on ? formatDay(row.keys_declared_on) : "—"}</dd>
           <dt className="font-semibold">Declarada por el inquilino</dt>
           <dd>{when(row.keys_declared_at)}</dd>
-          <dt className="font-semibold">Confirmada</dt>
+          <dt className="font-semibold">Confirmación del casero</dt>
           <dd>
-            {when(row.keys_confirmed_at)}
-            {row.keys_confirmation === "auto" ? " (dada por confirmada: el casero no respondió en 7 días)" : row.keys_confirmation === "landlord" ? " (por el casero)" : ""}
+            {confirmed ? `Confirmada el ${when(row.keys_confirmed_at)}` : `NO CONFIRMADA. ${KEYS_UNCONFIRMED_LABEL}.`}
           </dd>
           <dt className="font-semibold">Fin del plazo de devolución</dt>
-          <dd>{row.return_due_on ? formatDay(row.return_due_on) : "—"}</dd>
+          <dd>
+            {row.return_due_on
+              ? formatDay(row.return_due_on)
+              : row.keys_declared_on
+                ? `Sin fecha confirmada. Un mes desde la fecha declarada: ${formatDay(addOneMonth(row.keys_declared_on))}`
+                : "—"}
+          </dd>
           <dt className="font-semibold">Fecha de este paquete</dt>
           <dd>{formatDay(today)}</dd>
         </dl>
@@ -196,7 +219,7 @@ export default async function DepositEvidencePage({ params }: { params: Promise<
           <ol className="space-y-1 text-sm">
             {events.map((e) => (
               <li key={e.id}>
-                <span className="text-muted">{when(e.created_at)}</span> · {EVENT_LABELS[e.kind] ?? e.kind}
+                <span className="text-muted">{when(e.created_at)}</span> · {eventLabel(e.kind, e.data)}
               </li>
             ))}
           </ol>

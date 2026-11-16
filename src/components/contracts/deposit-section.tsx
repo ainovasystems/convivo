@@ -6,16 +6,18 @@ import { Chip } from "@/components/ui/chip";
 import {
   DEPOSIT_STATUS_LABELS,
   DEPOSIT_TRACKING_NOTICE,
-  EVENT_LABELS,
+  KEYS_UNCONFIRMED_LABEL,
+  KEYS_UNCONFIRMED_NOTE,
   RETURN_DEADLINE_TEXT,
   canDownloadEvidence,
   clockSentence,
   depositClock,
+  eventLabel,
   formatDay,
-  keysAutoConfirmDay,
   madridToday,
 } from "@/lib/contracts/deposit-tracking";
 import type { DepositView } from "@/lib/contracts/deposit-queries";
+import { SETTLEMENT_NOTICE, settlementStatusLabel } from "@/lib/contracts/settlement";
 import { formatEuros } from "@/lib/listings/options";
 
 const dateTime = new Intl.DateTimeFormat("es-ES", { dateStyle: "long", timeStyle: "short", timeZone: "Europe/Madrid" });
@@ -114,21 +116,29 @@ export function DepositSection({
           )}
         </Step>
 
-        <Step n={2} title="Entrega de llaves" state={keysConfirmed ? (row.keys_confirmation === "auto" ? "Dada por confirmada" : "Confirmada") : keysDeclared ? "Pendiente de confirmar" : "Sin declarar"}>
+        <Step
+          n={2}
+          title="Entrega de llaves"
+          state={keysConfirmed ? "Confirmada por el casero" : keysDeclared ? KEYS_UNCONFIRMED_LABEL : "Sin declarar"}
+        >
           {keysConfirmed && row.keys_declared_on ? (
             <p>
-              Llaves entregadas el {formatDay(row.keys_declared_on)}.
-              {row.keys_confirmation === "auto" ? " Se dio por confirmada porque el casero no respondió en 7 días; ha quedado constancia." : ""}
+              Llaves entregadas el {formatDay(row.keys_declared_on)}, confirmadas por el casero
+              {row.keys_confirmed_at ? ` el ${dateTime.format(new Date(row.keys_confirmed_at))}` : ""}.
             </p>
           ) : keysDeclared && row.keys_declared_on && row.keys_declared_at ? (
             <>
               <p>
-                {isLandlord ? "Tu inquilino declara" : "Has declarado"} que se entregaron el {formatDay(row.keys_declared_on)}. Si el casero no responde, se dará por confirmada el{" "}
-                {formatDay(keysAutoConfirmDay(row.keys_declared_at))}.
+                {isLandlord ? "Tu inquilino declara" : "Has declarado"} que se entregaron el {formatDay(row.keys_declared_on)}.{" "}
+                <strong>{KEYS_UNCONFIRMED_LABEL}</strong>: registrada el {dateTime.format(new Date(row.keys_declared_at))}.
               </p>
+              <p className="text-muted">{KEYS_UNCONFIRMED_NOTE}</p>
               {isLandlord ? (
                 <>
-                  <p className="text-muted">Si la fecha no es correcta, habladlo en la conversación: tu inquilino puede corregirla mientras no la confirmes.</p>
+                  <p className="text-muted">
+                    Mientras no la confirmes te llegarán recordatorios en la app y por email. Si la fecha no es correcta, habladlo en la conversación: tu inquilino puede
+                    corregirla mientras no la confirmes.
+                  </p>
                   <ConfirmKeysButton contractId={contractId} />
                 </>
               ) : (
@@ -144,24 +154,31 @@ export function DepositSection({
               label="Fecha de entrega de llaves"
               button="Declarar la entrega de llaves"
               today={today}
-              hint={`${otherName} tiene 7 días para confirmarla; si no responde, se dará por confirmada.`}
+              hint={`Constará como declarada por ti hasta que ${otherName} la confirme. Convivo no la da por confirmada.`}
             />
           ) : (
             <p className="text-muted">Podrás declarar la entrega de llaves cuando la estancia haya terminado (se marca como terminada en la conversación).</p>
           )}
         </Step>
 
-        <Step n={3} title="Plazo para devolver la fianza" state={clock.state === "overdue" ? "Vencido" : clock.state === "closing" ? "Se acerca" : undefined}>
-          <p className={clock.state === "overdue" ? "font-semibold text-red-700" : undefined}>{clockSentence(clock)}</p>
+        <Step n={3} title="Plazo para devolver la fianza" state={clock.state === "overdue" ? "Vencido" : clock.state === "closing" ? "Se acerca" : clock.state === "unconfirmed" || clock.state === "unconfirmed_overdue" ? "Sin fecha confirmada" : undefined}>
+          <p className={clock.state === "overdue" || clock.state === "unconfirmed_overdue" ? "font-semibold text-red-700" : undefined}>{clockSentence(clock)}</p>
           <p className="text-muted">{RETURN_DEADLINE_TEXT}</p>
         </Step>
 
         <Step n={4} title="Devolución" state={row.status === "returned" ? "Confirmada" : row.status === "claimed" ? "No recibida" : returnAwaitingTenant ? "Pendiente de confirmar" : undefined}>
           {row.status === "returned" && row.return_marked_on ? (
-            <p>Devuelta el {formatDay(row.return_marked_on)} y confirmada por el inquilino. El registro ya no se puede cambiar.</p>
+            <p>
+              Devuelta el {formatDay(row.return_marked_on)}
+              {row.returned_amount !== null ? <> · importe indicado por el casero: <strong>{formatEuros(row.returned_amount)}</strong></> : null} y confirmada por el inquilino. El registro ya
+              no se puede cambiar.
+            </p>
           ) : returnAwaitingTenant && row.return_marked_on ? (
             <>
-              <p>El casero marcó la fianza como devuelta el {formatDay(row.return_marked_on)}.</p>
+              <p>
+                El casero marcó la fianza como devuelta el {formatDay(row.return_marked_on)}
+                {row.returned_amount !== null ? <> · importe indicado: <strong>{formatEuros(row.returned_amount)}</strong></> : null}.
+              </p>
               {isLandlord ? <p className="text-muted">Falta que {otherName} confirme que la ha recibido.</p> : <RespondReturn contractId={contractId} />}
             </>
           ) : !keysConfirmed ? (
@@ -169,7 +186,7 @@ export function DepositSection({
           ) : isLandlord ? (
             <>
               {row.status === "claimed" ? <p className="font-semibold text-red-700">{otherName} indica que no ha recibido la fianza. Cuando la hayas devuelto, vuelve a marcarla.</p> : null}
-              <DateActionForm contractId={contractId} action="return" label="Fecha de devolución" button="Marcar como devuelta" today={today} min={row.keys_declared_on ?? undefined} />
+              <DateActionForm contractId={contractId} action="return" label="Fecha de devolución" button="Marcar como devuelta" today={today} min={row.keys_declared_on ?? undefined} withAmount />
             </>
           ) : (
             <p className="text-muted">
@@ -177,11 +194,52 @@ export function DepositSection({
             </p>
           )}
         </Step>
+
+
+        <Step n={5} title="Liquidación de salida" state={view.settlement ? settlementStatusLabel(view.settlement) : undefined}>
+          {view.settlement ? (
+            <>
+              <p className="text-muted">
+                {view.settlement.locked_at
+                  ? "Confirmada por las dos partes: ya no se puede cambiar."
+                  : view.settlement.status === "draft"
+                    ? isLandlord
+                      ? "Está en preparación: añade las partidas y envíala."
+                      : `${otherName} está preparando la liquidación.`
+                    : view.settlement.status === "sent"
+                      ? isLandlord
+                        ? "Esperando la respuesta de tu inquilino."
+                        : "Tienes que responder a cada partida."
+                      : "Respondida: falta que las dos partes la confirmen."}
+              </p>
+              <Link href={`/contratos/${contractId}/fianza/liquidacion`} className="inline-block font-bold text-brand underline">
+                {view.settlement.status === "draft" && !isLandlord ? "Ver el estado" : "Abrir la liquidación"}
+              </Link>
+            </>
+          ) : view.exitLocked ? (
+            isLandlord ? (
+              <>
+                <p className="text-muted">El inventario de salida está confirmado. Puedes abrir la liquidación para anotar, con el inventario delante, los descuentos que apliques.</p>
+                <Link href={`/contratos/${contractId}/fianza/liquidacion`} className="inline-block font-bold text-brand underline">
+                  Abrir la liquidación
+                </Link>
+              </>
+            ) : (
+              <p className="text-muted">Tu casero todavía no ha abierto la liquidación de la fianza.</p>
+            )
+          ) : (
+            <p className="text-muted">Se abre cuando los dos hayáis confirmado el inventario de salida.</p>
+          )}
+          <p className="text-muted">{SETTLEMENT_NOTICE}</p>
+        </Step>
       </ol>
 
       {evidence ? (
         <div className="space-y-2 rounded-2xl bg-brand-soft/40 p-4">
-          <p className="font-semibold">El plazo ha vencido y la fianza no consta como devuelta.</p>
+          <p className="font-semibold">
+            {keysConfirmed ? "El plazo ha vencido y la fianza no consta como devuelta." : "Ha pasado un mes desde la fecha de llaves que declaraste y la fianza no consta como devuelta."}
+          </p>
+          {!keysConfirmed ? <p>Ojo: el casero no ha confirmado esa fecha, y el paquete lo indicará de forma expresa.</p> : null}
           <p>
             Puedes descargar un paquete de pruebas en PDF con los datos del contrato, los inventarios con fotos, las fechas clave y la cronología. Convivo no hace
             ninguna reclamación en tu nombre.
@@ -198,7 +256,7 @@ export function DepositSection({
           <ul className="mt-3 space-y-1">
             {view.events.map((e) => (
               <li key={e.id}>
-                <span className="text-muted">{dateTime.format(new Date(e.created_at))}</span> · {EVENT_LABELS[e.kind] ?? e.kind}
+                <span className="text-muted">{dateTime.format(new Date(e.created_at))}</span> · {eventLabel(e.kind, e.data)}
               </li>
             ))}
           </ul>

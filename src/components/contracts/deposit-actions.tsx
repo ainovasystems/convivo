@@ -91,6 +91,7 @@ export function DateActionForm({
   today,
   hint,
   min,
+  withAmount,
 }: {
   contractId: string;
   action: "keys" | "return";
@@ -99,19 +100,35 @@ export function DateActionForm({
   today: string;
   hint?: string;
   min?: string;
+  /** Pide también el importe devuelto (solo al marcar la devolución; opcional e informativo). */
+  withAmount?: boolean;
 }) {
   const { result, pending, run } = useDepositAction();
   const [date, setDate] = useState("");
+  const [amount, setAmount] = useState("");
   const id = `fianza-${action}-date`;
   return (
     <form
       className="space-y-3"
       onSubmit={(e) => {
         e.preventDefault();
-        run(() => (action === "keys" ? declareKeys(contractId, date) : markReturned(contractId, date)));
+        run(() => (action === "keys" ? declareKeys(contractId, date) : markReturned(contractId, date, amount)));
       }}
     >
       <TextField id={id} label={label} type="date" min={min} max={today} required value={date} onChange={(e) => setDate(e.target.value)} hint={hint} error={result?.errors?.date} />
+      {withAmount ? (
+        <TextField
+          id="fianza-return-amount"
+          name="amount"
+          label="Importe devuelto en € (opcional)"
+          inputMode="decimal"
+          autoComplete="off"
+          value={amount}
+          onChange={(e) => setAmount(e.target.value)}
+          hint="Informativo: Convivo no mueve dinero ni comprueba el importe."
+          error={result?.errors?.amount}
+        />
+      ) : null}
       <button type="submit" className={buttonClass} disabled={pending || !date}>
         {pending ? "Guardando…" : button}
       </button>

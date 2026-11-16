@@ -7,7 +7,9 @@ import {
   daysBetween,
   depositClock,
   isReceiptPath,
-  keysAutoConfirmDay,
+  addOneMonth,
+  eventLabel,
+  returnSchema,
   madridToday,
   recordDepositSchema,
   sniffReceiptType,
@@ -31,14 +33,30 @@ describe("fechas", () => {
     expect(daysBetween("2027-07-30", "2027-07-01")).toBe(-29);
     // 23:30 UTC del 30 de junio ya es 1 de julio en España (verano, UTC+2).
     expect(madridToday(new Date("2027-06-30T23:30:00Z"))).toBe("2027-07-01");
-    expect(keysAutoConfirmDay("2027-07-01T10:00:00Z")).toBe("2027-07-08");
   });
 });
 
 describe("reloj del plazo de devolución", () => {
   it("no empieza hasta confirmar las llaves", () => {
     expect(depositClock(EMPTY_DEPOSIT, "2027-07-10").state).toBe("not_started");
-    expect(depositClock({ ...EMPTY_DEPOSIT, keys_declared_on: "2027-06-30" }, "2027-07-10").state).toBe("not_started");
+  });
+
+  it("fecha declarada y sin confirmar: no hay reloj oficial; pasado un mes se puede descargar el paquete", () => {
+    const declared = { ...EMPTY_DEPOSIT, keys_declared_on: "2027-06-30", keys_declared_at: "2027-07-01T10:00:00Z" };
+    expect(depositClock(declared, "2027-07-10")).toMatchObject({ state: "unconfirmed", dueOn: "2027-07-30", daysLeft: 20 });
+    expect(depositClock(declared, "2027-07-30")).toMatchObject({ state: "unconfirmed", daysLeft: 0 });
+    expect(depositClock(declared, "2027-07-31")).toMatchObject({ state: "unconfirmed_overdue", daysLate: 1 });
+    expect(canDownloadEvidence(declared, "2027-07-30")).toBe(false);
+    expect(canDownloadEvidence(declared, "2027-07-31")).toBe(true);
+    expect(canDownloadEvidence({ ...declared, status: "returned" }, "2027-09-01")).toBe(false);
+    expect(clockSentence(depositClock(declared, "2027-07-10"))).toContain("no ha confirmado");
+  });
+
+  it("un mes se suma como Postgres (31 de enero + 1 mes = 28 de febrero)", () => {
+    expect(addOneMonth("2027-01-31")).toBe("2027-02-28");
+    expect(addOneMonth("2028-01-31")).toBe("2028-02-29");
+    expect(addOneMonth("2027-12-15")).toBe("2028-01-15");
+    expect(addOneMonth("2027-06-30")).toBe("2027-07-30");
   });
 
   it("corre, avisa a 7 días, vence y se pasa", () => {
@@ -96,7 +114,7 @@ describe("emails de la fianza", () => {
   it("escapan el título y no afirman nada legal sin el aviso de orientativo", async () => {
     const { depositEmail } = await import("@/lib/email/templates");
     const base = { party: "tenant" as const, listingTitle: "<b>Piso</b> & co", url: "https://x.test/contratos/1", dueOn: "2027-07-30" };
-    const kinds = ["keys_declared", "keys_confirmed", "keys_auto_confirmed", "return_closing", "return_overdue", "return_marked", "return_confirmed", "return_disputed"] as const;
+    const kinds = ["keys_declared", "keys_confirmed", "keys_reminder", "keys_unconfirmed_due", "settlement_sent", "settlement_answered", "settlement_reopened", "settlement_to_confirm", "settlement_locked", "return_closing", "return_overdue", "return_marked", "return_confirmed", "return_disputed"] as const;
     for (const kind of kinds) {
       const m = depositEmail({ ...base, kind });
       expect(m.html).not.toContain("<b>Piso</b>");
@@ -107,5 +125,32 @@ describe("emails de la fianza", () => {
     expect(depositEmail({ ...base, kind: "return_overdue" }).html).toContain("30 de julio de 2027");
     expect(depositEmail({ ...base, kind: "return_overdue" }).html).toContain("paquete de pruebas");
     expect(depositEmail({ ...base, kind: "return_overdue", party: "landlord" }).html).toContain("márcalo en el contrato");
+    // Ningún email dice que Convivo da la fecha por confirmada.
+    for (const kind of kinds) for (const party of ["landlord", "tenant"] as const) {
+      expect(depositEmail({ ...base, kind, party }).text).not.toMatch(/se dará por confirmada|se da por confirmada|7 días/);
+    }
+    expect(depositEmail({ ...base, kind: "keys_reminder", party: "landlord" }).text).toContain("sin confirmar");
+    expect(depositEmail({ ...base, kind: "keys_unconfirmed_due" }).text).toContain("no la ha confirmado");
+  });
+});
+
+describe("cronología e importe devuelto", () => {
+  it("las etiquetas de la cronología no dicen nunca que Convivo da la fecha por confirmada", () => {
+    for (const kind of ["keys_declared", "keys_confirmed", "keys_reminder", "keys_unconfirmed_due"]) {
+      expect(eventLabel(kind)).not.toMatch(/dio por confirmada|da por confirmada|7 días/);
+    }
+    expect(eventLabel("keys_declared")).toContain("sin confirmar por el casero");
+    expect(eventLabel("settlement_confirmed", { party: "tenant" })).toBe("El inquilino confirmó la liquidación");
+    expect(eventLabel("settlement_answered", { accepted: 1, rejected: 2 })).toContain("no acepta 2");
+  });
+
+  it("el importe devuelto es opcional, admite coma y no admite negativos ni letras", () => {
+    const ok = (amount: string) => returnSchema.safeParse({ date: "2020-01-01", amount });
+    expect(ok("").data?.amount).toBeNull();
+    expect(ok("250").data?.amount).toBe(250);
+    expect(ok("250,5").data?.amount).toBe(250.5);
+    expect(ok("-5").success).toBe(false);
+    expect(ok("mucho").success).toBe(false);
+    expect(returnSchema.safeParse({ date: "2999-01-01", amount: "" }).success).toBe(false);
   });
 });

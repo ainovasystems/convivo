@@ -23,6 +23,8 @@ const view = (row: Partial<DepositRow> = {}, extra: Partial<DepositView> = {}): 
   events: [],
   receiptUrl: null,
   canDeclareKeys: true,
+  settlement: null,
+  exitLocked: false,
   ...extra,
 });
 const render = (v: DepositView, o: { landlord: boolean; room?: boolean; galicia?: boolean; deposit?: number }) =>
@@ -81,8 +83,57 @@ describe("apartado «Fianza»", () => {
     const declared = { keys_declared_on: day(-2), keys_declared_at: new Date().toISOString() };
     const landlord = render(view(declared), { landlord: true });
     expect(landlord).toContain("Confirmar la entrega de llaves");
-    expect(landlord).toContain("se dará por confirmada");
+    expect(landlord).toContain("Declarada por el inquilino, sin confirmar");
+    expect(landlord).toContain("recordatorios");
     expect(render(view(declared), { landlord: false })).not.toContain("Confirmar la entrega de llaves");
+  });
+
+  it("Convivo nunca da la fecha de llaves por confirmada: ni a los 7 días ni a los 60", () => {
+    for (const ago of [8, 60]) {
+      const declared = { keys_declared_on: day(-ago), keys_declared_at: day(-ago) + "T10:00:00Z" };
+      for (const landlord of [true, false]) {
+        const html = render(view(declared), { landlord });
+        expect(html).toContain("Declarada por el inquilino, sin confirmar");
+        expect(html).toContain("Convivo no da esta fecha por confirmada");
+        expect(html).not.toMatch(/se dará por confirmada|se da por confirmada|dada por confirmada|Dada por confirmada/);
+        expect(html).not.toContain("7 días");
+      }
+    }
+  });
+
+  it("fecha sin confirmar pasado un mes: el inquilino puede preparar el paquete y la página avisa de que no está confirmada", () => {
+    const declared = { keys_declared_on: day(-45), keys_declared_at: day(-45) + "T10:00:00Z" };
+    const tenant = render(view(declared), { landlord: false });
+    expect(tenant).toContain("Preparar el paquete de pruebas");
+    expect(tenant).toContain("el casero no ha confirmado esa fecha");
+    expect(render(view(declared), { landlord: true })).not.toContain("Preparar el paquete de pruebas");
+    // Antes del mes, no.
+    const recent = { keys_declared_on: day(-10), keys_declared_at: day(-10) + "T10:00:00Z" };
+    expect(render(view(recent), { landlord: false })).not.toContain("Preparar el paquete de pruebas");
+  });
+
+  it("liquidación de salida: se ofrece al casero con el inventario de salida bloqueado; el inquilino solo espera", () => {
+    expect(render(view({}, { exitLocked: false }), { landlord: true })).toContain("Se abre cuando los dos hayáis confirmado el inventario de salida");
+    const landlord = render(view({}, { exitLocked: true }), { landlord: true });
+    expect(landlord).toContain("Abrir la liquidación");
+    expect(landlord).toContain("no media");
+    expect(render(view({}, { exitLocked: true }), { landlord: false })).toContain("todavía no ha abierto la liquidación");
+    const open = { id: "s", status: "disputed" as const, locked_at: null, landlord_confirmed_at: null, tenant_confirmed_at: null, deposit_amount: 320 };
+    expect(render(view({}, { exitLocked: true, settlement: open }), { landlord: false })).toContain("Con discrepancias");
+  });
+
+  it("la devolución muestra el importe indicado por el casero (informativo)", () => {
+    const row = {
+      keys_declared_on: day(-20),
+      keys_declared_at: day(-20) + "T10:00:00Z",
+      keys_confirmed_at: day(-15) + "T10:00:00Z",
+      keys_confirmation: "landlord" as const,
+      return_due_on: day(10),
+      return_marked_on: day(-1),
+      return_marked_at: new Date().toISOString(),
+      returned_amount: 270.5,
+    };
+    expect(render(view(row), { landlord: false })).toContain("importe indicado");
   });
 
   it("con las llaves confirmadas corre el reloj visible para las dos partes", () => {
@@ -90,14 +141,14 @@ describe("apartado «Fianza»", () => {
       keys_declared_on: day(-25),
       keys_declared_at: new Date().toISOString(),
       keys_confirmed_at: new Date().toISOString(),
-      keys_confirmation: "auto" as const,
+      keys_confirmation: "landlord" as const,
       return_due_on: day(5),
     };
     for (const landlord of [true, false]) {
       const html = render(view(row), { landlord });
       expect(html).toContain("Quedan 5 días");
       expect(html).toContain("art. 36.4 LAU");
-      expect(html).toContain("Dada por confirmada");
+      expect(html).toContain("Confirmada por el casero");
       expect(html).not.toContain("Preparar el paquete de pruebas");
     }
   });
