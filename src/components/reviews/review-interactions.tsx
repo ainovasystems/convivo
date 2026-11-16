@@ -8,10 +8,12 @@ import { SelectField, TextAreaField } from "@/components/ui/field";
 import { FormAlert } from "@/components/ui/form-alert";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { initialFormState, type FormState } from "@/lib/forms";
+import { personalDataError, PERSONAL_DATA_HINT } from "@/lib/moderation/personal-data";
 import { REPORT_REASONS } from "@/lib/reviews/schema";
 
 export function RespondForm({ reviewId, path }: { reviewId: string; path: string }) {
   const [submitted, setSubmitted] = useState("");
+  const [live, setLive] = useState<string | null>(null);
   const [state, action] = useActionState(async (prev: FormState, fd: FormData) => {
     setSubmitted(String(fd.get("body") ?? "").trim());
     return respondToReview(prev, fd);
@@ -43,8 +45,9 @@ export function RespondForm({ reviewId, path }: { reviewId: string; path: string
           label="Tu respuesta"
           rows={3}
           maxLength={1000}
-          hint="Solo puedes responder una vez y no podrás editarla. Mantén un tono respetuoso."
-          error={state.errors?.body}
+          onChange={(e) => setLive(personalDataError(e.currentTarget.value, "review"))}
+          hint={`Solo puedes responder una vez y no podrás editarla. Mantén un tono respetuoso. ${PERSONAL_DATA_HINT}`}
+          error={live ?? state.errors?.body}
         />
         <SubmitButton pendingText="Publicando…">Publicar respuesta</SubmitButton>
       </form>

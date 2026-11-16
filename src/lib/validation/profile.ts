@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+import { withoutPersonalData } from "@/lib/moderation/personal-data";
 import { GUESTS, LANGUAGE_CODES, maxBirthYear, SCHEDULES, USER_ROLES } from "@/lib/profile/options";
 
 const optionalText = (max: number, label: string) =>
@@ -30,7 +31,7 @@ export const profileSchema = z.object({
     .trim()
     .min(2, { error: "Tu nombre debe tener al menos 2 caracteres" })
     .max(60, { error: "Tu nombre no puede pasar de 60 caracteres" }),
-  bio: optionalText(1000, "La presentación"),
+  bio: withoutPersonalData(optionalText(1000, "La presentación"), "profile"),
   city: optionalText(80, "La ciudad"),
   occupation: optionalText(80, "La ocupación"),
   birthYear: z.preprocess(

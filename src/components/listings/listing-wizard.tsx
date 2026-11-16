@@ -23,7 +23,8 @@ import {
 } from "@/lib/listings/options";
 import { findCity, KNOWN_CITY_NAMES } from "@/lib/listings/cities";
 import { DISCRIMINATION_MESSAGE } from "@/lib/listings/discrimination";
-import { listingDraftSchema, publishErrors } from "@/lib/listings/schema";
+import { PERSONAL_DATA_HINT } from "@/lib/moderation/personal-data";
+import { listingDraftSchema, listingTextErrors, publishErrors } from "@/lib/listings/schema";
 import { fieldErrors } from "@/lib/validation/profile";
 
 /** Valores del formulario tal como los escribe el usuario (texto). */
@@ -130,7 +131,9 @@ export function ListingWizard({
   const discrimination = Object.fromEntries(
     Object.entries(missing).filter(([, msg]) => msg.startsWith(DISCRIMINATION_MESSAGE)),
   );
-  const errors = { ...serverErrors, ...discrimination, ...fieldErrs };
+  // Lo mismo con los datos personales (teléfono, email, dirección exacta…).
+  const personal = parsed.success ? listingTextErrors(parsed.data) : {};
+  const errors = { ...serverErrors, ...discrimination, ...personal, ...fieldErrs };
 
   const set = useCallback(<K extends keyof WizardValues>(key: K, value: WizardValues[K]) => {
     dirty.current = true;
@@ -253,6 +256,7 @@ export function ListingWizard({
         <div className="space-y-8">
           <fieldset className="space-y-4">
             <legend className="text-lg font-semibold">Lo básico</legend>
+            <p className="text-sm text-muted">{PERSONAL_DATA_HINT}</p>
             {text("title", "Título", {
               maxLength: 120,
               hint: isSeeking ? "Ej.: Enfermera busca habitación tranquila en Lugo" : "Ej.: Habitación exterior junto a la Muralla",
@@ -265,7 +269,7 @@ export function ListingWizard({
               value={values.description}
               onChange={(e) => set("description", e.target.value)}
               error={errors.description}
-              hint="Mínimo 30 caracteres. No incluyas teléfonos ni datos de pago, ni requisitos sobre origen, religión o similares."
+              hint="Mínimo 30 caracteres. Sin teléfonos, emails, datos de pago ni requisitos sobre origen, religión o similares."
             />
             <div className="grid gap-4 sm:grid-cols-2">
               {text("city", "Ciudad", { maxLength: 80, list: "known-cities", autoComplete: "off" })}

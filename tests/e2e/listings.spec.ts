@@ -64,6 +64,30 @@ test.describe("anuncios", () => {
     await expect(page.getByText(/La dirección exacta se comparte/)).toBeVisible();
   });
 
+  test("el asistente rechaza teléfonos, emails y direcciones exactas, pero no precios ni superficies", async ({ page }) => {
+    await login(page, "farid@convivo.test");
+    await page.goto("/publicar");
+    await page.getByRole("button", { name: /^Habitación/ }).click();
+    await expect(page).toHaveURL(/\/publicar\/[0-9a-f-]{36}\?paso=datos/);
+    await expect(page.getByText("No incluyas teléfonos, emails ni direcciones exactas: usa el chat.")).toBeVisible();
+
+    const description = page.getByLabel("Descripción");
+    await description.fill("Habitación de 12 m² por 450 € al mes, disponible desde el 1 de septiembre de 2026.");
+    await expect(page.getByText(/Parece que el texto incluye/)).toHaveCount(0);
+
+    await description.fill("Habitación luminosa, llámame al 600 123 456 y la vemos.");
+    await expect(page.getByText(/Parece que el texto incluye un número de teléfono/)).toBeVisible();
+    await expect(page.getByText(/el contacto va por el chat de Hommie/)).toBeVisible();
+    await expect(page.getByText("600 123 456")).toHaveCount(0); // el mensaje no repite el dato
+    await expect(description).toHaveAttribute("aria-invalid", "true");
+
+    await description.fill("Habitación luminosa, vive en la calle Mayor, 12 y la vemos.");
+    await expect(page.getByText(/una dirección exacta/)).toBeVisible();
+
+    await page.getByLabel("Título").fill("Habitación, escribe a ana@gmail.com");
+    await expect(page.getByText(/un email/)).toBeVisible();
+  });
+
   test("el asistente rechaza requisitos discriminatorios y ya no ofrece el campo de convivencia", async ({ page }) => {
     await login(page, "farid@convivo.test");
     await page.goto("/publicar");

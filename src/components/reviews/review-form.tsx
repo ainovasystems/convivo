@@ -7,6 +7,7 @@ import { TextAreaField } from "@/components/ui/field";
 import { FormAlert } from "@/components/ui/form-alert";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { initialFormState } from "@/lib/forms";
+import { personalDataError, PERSONAL_DATA_HINT } from "@/lib/moderation/personal-data";
 import { CRITERIA_LABELS, type ReviewRelationship } from "@/lib/reviews/labels";
 import { reviewFormDataToObject, reviewSchema } from "@/lib/reviews/schema";
 import { CRITERIA_BY_RELATIONSHIP, CRITERIA_HINTS } from "@/lib/reviews/targets";
@@ -58,8 +59,10 @@ export function ReviewForm({
 }) {
   const [state, action] = useActionState(createReview, initialFormState);
   const { clientErrors, onSubmit } = useClientValidation(reviewSchema, reviewFormDataToObject);
-  const errors = { ...state.errors, ...clientErrors };
   const [length, setLength] = useState(0);
+  const [live, setLive] = useState<string | null>(null);
+  // Datos personales: se avisa mientras escribe, antes de enviar.
+  const errors: Record<string, string | undefined> = { ...state.errors, ...clientErrors, ...(live ? { body: live } : {}) };
 
   return (
     <form action={action} onSubmit={onSubmit} noValidate className="space-y-6">
@@ -88,8 +91,11 @@ export function ReviewForm({
         label="Tu experiencia"
         rows={7}
         maxLength={1500}
-        onChange={(e) => setLength(e.currentTarget.value.trim().length)}
-        hint={`${length}/1500 caracteres (mínimo 50). Sé concreto/a y justo/a. No incluyas teléfonos, direcciones ni datos personales.`}
+        onChange={(e) => {
+          setLength(e.currentTarget.value.trim().length);
+          setLive(personalDataError(e.currentTarget.value, "review"));
+        }}
+        hint={`${length}/1500 caracteres (mínimo 50). Sé concreto/a y justo/a. ${PERSONAL_DATA_HINT}`}
         error={errors.body}
       />
 

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 
 import { updateProfile } from "@/app/perfil/editar/actions";
 import { FormAlert } from "@/components/ui/form-alert";
@@ -21,6 +21,7 @@ import {
   type Habits,
   maxBirthYear,
 } from "@/lib/profile/options";
+import { personalDataError } from "@/lib/moderation/personal-data";
 import { useClientValidation } from "@/lib/use-client-validation";
 import { profileFormDataToObject, profileSchema } from "@/lib/validation/profile";
 
@@ -48,6 +49,7 @@ export function ProfileForm({ initial }: { initial: ProfileFormValues }) {
   const [state, action] = useActionState(updateProfile, initialFormState);
   const { clientErrors, onSubmit } = useClientValidation(profileSchema, profileFormDataToObject);
   const errors = { ...state.errors, ...clientErrors };
+  const [bioLive, setBioLive] = useState<string | null>(null);
 
   return (
     <form action={action} onSubmit={onSubmit} noValidate className="space-y-8">
@@ -69,8 +71,9 @@ export function ProfileForm({ initial }: { initial: ProfileFormValues }) {
           rows={5}
           maxLength={1000}
           defaultValue={initial.bio ?? ""}
-          hint="Cuéntales a tus futuros compañeros cómo eres en casa (máx. 1000 caracteres)."
-          error={errors.bio}
+          onChange={(e) => setBioLive(personalDataError(e.currentTarget.value, "profile"))}
+          hint="Cuéntales a tus futuros compañeros cómo eres en casa (máx. 1000 caracteres). No incluyas teléfonos, emails ni direcciones exactas: usa el chat."
+          error={bioLive ?? errors.bio}
         />
         <div className="grid gap-4 sm:grid-cols-2">
           <TextField

@@ -2,6 +2,7 @@ import { z } from "zod";
 
 import { findCity } from "@/lib/listings/cities";
 import { listingTextSchema } from "@/lib/listings/discrimination";
+import { listingPersonalDataSchema } from "@/lib/moderation/personal-data";
 import { LISTING_KINDS, MAX_PHOTOS, PROVINCES, RENTAL_TERMS, RULE_KEYS } from "@/lib/listings/options";
 
 /**
@@ -68,6 +69,14 @@ export type ListingDraftInput = z.input<typeof listingDraftSchema>;
 
 const required = <T>(v: T | null | undefined) => v !== null && v !== undefined;
 
+/** Datos personales en el texto público del anuncio, por campo. Se aplica también al guardar un borrador. */
+export function listingTextErrors(d: Pick<ListingDraft, "title" | "description" | "zones" | "neighborhood">): Record<string, string> {
+  const e: Record<string, string> = {};
+  const r = listingPersonalDataSchema.safeParse(d);
+  if (!r.success) for (const issue of r.error.issues) e[String(issue.path[0])] ??= issue.message;
+  return e;
+}
+
 /**
  * Comprueba lo necesario para publicar. Devuelve errores por campo (vacío si
  * se puede publicar). Separado del esquema de borrador para poder enseñar en
@@ -93,6 +102,8 @@ export function publishErrors(kind: (typeof LISTING_KINDS)[number], d: ListingDr
   if (!text.success) {
     for (const issue of text.error.issues) e[String(issue.path[0])] ??= issue.message;
   }
+  // Sin teléfonos, emails ni direcciones exactas (src/lib/moderation/personal-data.ts).
+  for (const [field, message] of Object.entries(listingTextErrors(d))) e[field] ??= message;
 
   const start = kind === "seeking" ? d.moveInDate : d.availableFrom;
   if (d.rentalTerm !== "indefinite") {

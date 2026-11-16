@@ -11,6 +11,7 @@ import {
   listingDraftSchema,
   photoPathBelongsTo,
   photosSchema,
+  listingTextErrors,
   publishErrors,
   toListingRow,
 } from "@/lib/listings/schema";
@@ -94,6 +95,10 @@ export async function saveListing(id: string, input: unknown): Promise<SaveResul
 
   const parsed = listingDraftSchema.safeParse(input);
   if (!parsed.success) return { ok: false, errors: fieldErrors(parsed.error), message: "Revisa los campos marcados." };
+
+  // Datos personales: no se guarda ni en borrador (el borrador ya es texto del anuncio).
+  const personal = listingTextErrors(parsed.data);
+  if (Object.keys(personal).length) return { ok: false, errors: personal, message: "Quita los datos personales marcados." };
 
   if (ctx.listing.status !== "draft") {
     const errors = publishErrors(ctx.listing.kind as ListingKind, parsed.data);

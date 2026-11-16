@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+import { personalDataError } from "@/lib/moderation/personal-data";
 import { CRITERIA_BY_RELATIONSHIP } from "@/lib/reviews/targets";
 
 const RELATIONSHIPS = ["tenant_to_listing", "tenant_to_landlord", "landlord_to_tenant", "flatmate_to_flatmate"] as const;
@@ -20,6 +21,8 @@ export const reviewSchema = z
       .max(1500, { error: "Máximo 1500 caracteres" }),
   })
   .superRefine((d, ctx) => {
+    const personal = personalDataError(d.body, "review");
+    if (personal) ctx.addIssue({ code: "custom", path: ["body"], message: personal });
     const expected = CRITERIA_BY_RELATIONSHIP[d.relationship];
     for (const key of expected) {
       if (d.criteria[key] === undefined) {
@@ -59,7 +62,15 @@ export function reviewFormDataToObject(fd: FormData) {
 
 export const responseSchema = z.object({
   reviewId: z.uuid(),
-  body: z.string().trim().min(10, { error: "Mínimo 10 caracteres" }).max(1000, { error: "Máximo 1000 caracteres" }),
+  body: z
+    .string()
+    .trim()
+    .min(10, { error: "Mínimo 10 caracteres" })
+    .max(1000, { error: "Máximo 1000 caracteres" })
+    .superRefine((v, ctx) => {
+      const message = personalDataError(v, "review");
+      if (message) ctx.addIssue({ code: "custom", message });
+    }),
 });
 
 export const REPORT_REASONS = {
