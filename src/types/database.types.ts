@@ -134,6 +134,7 @@ export type Database = {
           keys_declared_on: string | null;
           receipt_number: string | null;
           receipt_path: string | null;
+          returned_amount: number | null;
           return_due_on: string | null;
           return_marked_at: string | null;
           return_marked_on: string | null;
@@ -154,6 +155,7 @@ export type Database = {
           keys_declared_on?: string | null;
           receipt_number?: string | null;
           receipt_path?: string | null;
+          returned_amount?: number | null;
           return_due_on?: string | null;
           return_marked_at?: string | null;
           return_marked_on?: string | null;
@@ -173,6 +175,7 @@ export type Database = {
           keys_declared_on?: string | null;
           receipt_number?: string | null;
           receipt_path?: string | null;
+          returned_amount?: number | null;
           return_due_on?: string | null;
           return_marked_at?: string | null;
           return_marked_on?: string | null;
@@ -187,6 +190,134 @@ export type Database = {
             columns: ["contract_id"];
             isOneToOne: true;
             referencedRelation: "contracts";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      contract_settlements: {
+        Row: {
+          contract_id: string;
+          created_at: string;
+          created_by: string | null;
+          deposit_amount: number;
+          exit_inventory_id: string;
+          final_hash: string | null;
+          id: string;
+          landlord_confirmed_at: string | null;
+          locked_at: string | null;
+          responded_at: string | null;
+          sent_at: string | null;
+          sent_hash: string | null;
+          status: Database["public"]["Enums"]["settlement_status"];
+          tenant_confirmed_at: string | null;
+          updated_at: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          contract_id: string;
+          created_at?: string;
+          created_by?: string | null;
+          deposit_amount: number;
+          exit_inventory_id: string;
+          final_hash?: string | null;
+          id?: string;
+          landlord_confirmed_at?: string | null;
+          locked_at?: string | null;
+          responded_at?: string | null;
+          sent_at?: string | null;
+          sent_hash?: string | null;
+          status?: Database["public"]["Enums"]["settlement_status"];
+          tenant_confirmed_at?: string | null;
+          updated_at?: string;
+        };
+        Update: {
+          contract_id?: string;
+          created_at?: string;
+          created_by?: string | null;
+          deposit_amount?: number;
+          exit_inventory_id?: string;
+          final_hash?: string | null;
+          id?: string;
+          landlord_confirmed_at?: string | null;
+          locked_at?: string | null;
+          responded_at?: string | null;
+          sent_at?: string | null;
+          sent_hash?: string | null;
+          status?: Database["public"]["Enums"]["settlement_status"];
+          tenant_confirmed_at?: string | null;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "contract_settlements_contract_id_fkey";
+            columns: ["contract_id"];
+            isOneToOne: true;
+            referencedRelation: "contracts";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "contract_settlements_exit_inventory_id_fkey";
+            columns: ["exit_inventory_id"];
+            isOneToOne: false;
+            referencedRelation: "contract_inventories";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      settlement_items: {
+        Row: {
+          amount: number;
+          concept: string;
+          created_at: string;
+          id: string;
+          inventory_item_id: string | null;
+          responded_at: string | null;
+          settlement_id: string;
+          sort_order: number;
+          tenant_comment: string | null;
+          tenant_response: string | null;
+          updated_at: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          amount: number;
+          concept: string;
+          created_at?: string;
+          id?: string;
+          inventory_item_id?: string | null;
+          responded_at?: string | null;
+          settlement_id: string;
+          sort_order?: number;
+          tenant_comment?: string | null;
+          tenant_response?: string | null;
+          updated_at?: string;
+        };
+        Update: {
+          amount?: number;
+          concept?: string;
+          created_at?: string;
+          id?: string;
+          inventory_item_id?: string | null;
+          responded_at?: string | null;
+          settlement_id?: string;
+          sort_order?: number;
+          tenant_comment?: string | null;
+          tenant_response?: string | null;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "settlement_items_inventory_item_id_fkey";
+            columns: ["inventory_item_id"];
+            isOneToOne: false;
+            referencedRelation: "inventory_items";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "settlement_items_settlement_id_fkey";
+            columns: ["settlement_id"];
+            isOneToOne: false;
+            referencedRelation: "contract_settlements";
             referencedColumns: ["id"];
           },
         ];
@@ -1600,7 +1731,7 @@ export type Database = {
         };
       };
       mark_deposit_returned: {
-        Args: { p_contract_id: string; p_returned_on: string };
+        Args: { p_contract_id: string; p_returned_amount?: number; p_returned_on: string };
         Returns: {
           contract_id: string;
           created_at: string;
@@ -1613,6 +1744,7 @@ export type Database = {
           keys_declared_on: string | null;
           receipt_number: string | null;
           receipt_path: string | null;
+          returned_amount: number | null;
           return_due_on: string | null;
           return_marked_at: string | null;
           return_marked_on: string | null;
@@ -1698,6 +1830,162 @@ export type Database = {
           party: string;
           user_id: string;
         }[];
+      };
+      open_settlement: {
+        Args: { p_contract_id: string };
+        Returns: {
+          contract_id: string;
+          created_at: string;
+          created_by: string | null;
+          deposit_amount: number;
+          exit_inventory_id: string;
+          final_hash: string | null;
+          id: string;
+          landlord_confirmed_at: string | null;
+          locked_at: string | null;
+          responded_at: string | null;
+          sent_at: string | null;
+          sent_hash: string | null;
+          status: Database["public"]["Enums"]["settlement_status"];
+          tenant_confirmed_at: string | null;
+          updated_at: string;
+        };
+        SetofOptions: {
+          from: "*";
+          to: "contract_settlements";
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
+      save_settlement_item: {
+        Args: { p_amount: number; p_concept: string; p_inventory_item_id?: string; p_item_id: string; p_settlement_id: string };
+        Returns: {
+          amount: number;
+          concept: string;
+          created_at: string;
+          id: string;
+          inventory_item_id: string | null;
+          responded_at: string | null;
+          settlement_id: string;
+          sort_order: number;
+          tenant_comment: string | null;
+          tenant_response: string | null;
+          updated_at: string;
+        };
+        SetofOptions: {
+          from: "*";
+          to: "settlement_items";
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
+      delete_settlement_item: {
+        Args: { p_item_id: string };
+        Returns: undefined;
+      };
+      send_settlement: {
+        Args: { p_settlement_id: string };
+        Returns: {
+          contract_id: string;
+          created_at: string;
+          created_by: string | null;
+          deposit_amount: number;
+          exit_inventory_id: string;
+          final_hash: string | null;
+          id: string;
+          landlord_confirmed_at: string | null;
+          locked_at: string | null;
+          responded_at: string | null;
+          sent_at: string | null;
+          sent_hash: string | null;
+          status: Database["public"]["Enums"]["settlement_status"];
+          tenant_confirmed_at: string | null;
+          updated_at: string;
+        };
+        SetofOptions: {
+          from: "*";
+          to: "contract_settlements";
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
+      respond_settlement: {
+        Args: { p_responses: Json; p_settlement_id: string };
+        Returns: {
+          contract_id: string;
+          created_at: string;
+          created_by: string | null;
+          deposit_amount: number;
+          exit_inventory_id: string;
+          final_hash: string | null;
+          id: string;
+          landlord_confirmed_at: string | null;
+          locked_at: string | null;
+          responded_at: string | null;
+          sent_at: string | null;
+          sent_hash: string | null;
+          status: Database["public"]["Enums"]["settlement_status"];
+          tenant_confirmed_at: string | null;
+          updated_at: string;
+        };
+        SetofOptions: {
+          from: "*";
+          to: "contract_settlements";
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
+      reopen_settlement: {
+        Args: { p_settlement_id: string };
+        Returns: {
+          contract_id: string;
+          created_at: string;
+          created_by: string | null;
+          deposit_amount: number;
+          exit_inventory_id: string;
+          final_hash: string | null;
+          id: string;
+          landlord_confirmed_at: string | null;
+          locked_at: string | null;
+          responded_at: string | null;
+          sent_at: string | null;
+          sent_hash: string | null;
+          status: Database["public"]["Enums"]["settlement_status"];
+          tenant_confirmed_at: string | null;
+          updated_at: string;
+        };
+        SetofOptions: {
+          from: "*";
+          to: "contract_settlements";
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
+      confirm_settlement: {
+        Args: { p_settlement_id: string };
+        Returns: {
+          contract_id: string;
+          created_at: string;
+          created_by: string | null;
+          deposit_amount: number;
+          exit_inventory_id: string;
+          final_hash: string | null;
+          id: string;
+          landlord_confirmed_at: string | null;
+          locked_at: string | null;
+          responded_at: string | null;
+          sent_at: string | null;
+          sent_hash: string | null;
+          status: Database["public"]["Enums"]["settlement_status"];
+          tenant_confirmed_at: string | null;
+          updated_at: string;
+        };
+        SetofOptions: {
+          from: "*";
+          to: "contract_settlements";
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
       };
       confirm_inventory: {
         Args: { p_inventory_id: string };
@@ -1932,6 +2220,7 @@ export type Database = {
       deposit_status: "pending" | "deposited" | "returned" | "claimed";
       interest_status: "pending" | "accepted" | "declined" | "withdrawn";
       inventory_stage: "entry" | "exit";
+      settlement_status: "draft" | "sent" | "agreed" | "disputed";
       item_condition: "new" | "good" | "worn" | "damaged";
       listing_kind: "room" | "flat" | "seeking";
       listing_status: "draft" | "active" | "paused" | "closed";
@@ -2073,6 +2362,7 @@ export const Constants = {
       deposit_status: ["pending", "deposited", "returned", "claimed"],
       interest_status: ["pending", "accepted", "declined", "withdrawn"],
       inventory_stage: ["entry", "exit"],
+      settlement_status: ["draft", "sent", "agreed", "disputed"],
       item_condition: ["new", "good", "worn", "damaged"],
       listing_kind: ["room", "flat", "seeking"],
       listing_status: ["draft", "active", "paused", "closed"],

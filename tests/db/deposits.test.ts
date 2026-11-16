@@ -62,7 +62,8 @@ const record = (user: string, id: string, on: string, number = "RES-2027/00123",
   run(user, "select * from public.record_deposit($1, $2::date, $3, $4)", [id, on, number, path]);
 const declare = (user: string, id: string, on: string) => run(user, "select * from public.declare_keys_handover($1, $2::date)", [id, on]);
 const confirmKeys = (user: string, id: string) => run(user, "select * from public.confirm_keys_handover($1)", [id]);
-const markReturned = (user: string, id: string, on: string) => run(user, "select * from public.mark_deposit_returned($1, $2::date)", [id, on]);
+const markReturned = (user: string, id: string, on: string, amount: number | null = null) =>
+  run(user, "select * from public.mark_deposit_returned($1, $2::date, $3)", [id, on, amount]);
 const respond = (user: string, id: string, received: boolean) => run(user, "select * from public.respond_deposit_return($1, $2)", [id, received]);
 const deposit = async (id: string) =>
   (await db.query<Row>("select * from public.contract_deposits where contract_id = $1", [id])).rows[0];
@@ -212,35 +213,57 @@ describe("seguimiento de la fianza · entrega de llaves y plazo", () => {
     await expect(db.query("update public.contract_deposits set return_due_on = return_due_on + 10 where contract_id = $1", [c.id])).rejects.toThrow(/ya está confirmada/);
   });
 
-  it("sin respuesta del casero en 7 días se da por confirmada, con constancia y aviso a los dos (una sola vez)", async () => {
+  it("nada da por confirmada la entrega de llaves: sin respuesta del casero consta como declarada y sin confirmar", async () => {
     const c = await contract();
     await declare(c.guest, c.id, await day(-2));
-    // Todavía no han pasado 7 días: la tarea no hace nada.
-    expect((await timers()).filter((r) => r.contract_id === c.id)).toEqual([]);
-
-    await db.query("update public.contract_deposits set keys_declared_at = now() - interval '8 days' where contract_id = $1", [c.id]);
-    const out = (await timers()).filter((r) => r.contract_id === c.id);
-    expect(out.map((r) => `${r.party}:${r.kind}`).sort()).toEqual(["landlord:keys_auto_confirmed", "tenant:keys_auto_confirmed"]);
+    await db.query("update public.contract_deposits set keys_declared_at = now() - interval '60 days' where contract_id = $1", [c.id]);
+    await timers();
+    // Ni la tarea diaria ni ninguna acción de las partes la confirman.
+    await expect(declare(c.guest, c.id, await day(-3))).resolves.toBeTruthy();
     const row = await deposit(c.id);
-    expect(row.keys_confirmation).toBe("auto");
-    expect(row.return_due_on).toBeTruthy();
-    expect(await events(c.id)).toEqual(["keys_declared", "keys_auto_confirmed"]);
-    expect(await kinds(c.host)).toContain("deposit_keys_confirmed");
-    expect(await kinds(c.guest)).toContain("deposit_keys_confirmed");
-    // Idempotente.
-    expect((await timers()).filter((r) => r.contract_id === c.id && r.kind === "keys_auto_confirmed")).toEqual([]);
-    // Y la confirmación posterior del casero no la cambia.
-    await expect(confirmKeys(c.host, c.id)).rejects.toThrow(/ya está confirmada/);
-    expect((await deposit(c.id)).keys_confirmation).toBe("auto");
-    expect(await events(c.id)).toEqual(["keys_declared", "keys_auto_confirmed"]);
+    expect(row.keys_confirmed_at).toBeNull();
+    expect(row.keys_confirmation).toBeNull();
+    expect(row.return_due_on).toBeNull();
+    expect(row.keys_declared_at).toBeTruthy();
+    expect(await events(c.id)).not.toContain("keys_auto_confirmed");
+    // El casero sí puede confirmarla cuando quiera.
+    expect((await confirmKeys(c.host, c.id)).keys_confirmation).toBe("landlord");
   });
 
-  it("también se da por confirmada cuando alguna de las partes actúa después de los 7 días (sin esperar a la tarea)", async () => {
+  it("el casero recibe recordatorios (app y tarea de email) mientras no responda, y dejan de llegar al confirmar", async () => {
     const c = await contract();
     await declare(c.guest, c.id, await day(-2));
-    await db.query("update public.contract_deposits set keys_declared_at = now() - interval '9 days' where contract_id = $1", [c.id]);
-    expect((await confirmKeys(c.host, c.id)).keys_confirmation).toBe("auto");
-    expect(await events(c.id)).toEqual(["keys_declared", "keys_auto_confirmed"]);
+    const mine = async () => (await timers()).filter((r) => r.contract_id === c.id && r.kind === "keys_reminder");
+    expect(await mine()).toEqual([]); // aún no han pasado 3 días
+
+    await db.query("update public.contract_deposits set keys_declared_at = now() - interval '4 days' where contract_id = $1", [c.id]);
+    const first = await mine();
+    expect(first.map((r) => `${r.party}:${r.kind}`)).toEqual(["landlord:keys_reminder"]);
+    expect(await mine()).toEqual([]); // idempotente
+    expect(await kinds(c.host)).toContain("deposit_keys_reminder");
+    expect(await kinds(c.guest)).not.toContain("deposit_keys_reminder");
+
+    await db.query("update public.contract_deposits set keys_declared_at = now() - interval '8 days' where contract_id = $1", [c.id]);
+    expect(await mine()).toHaveLength(1); // segundo recordatorio (a los 7 días)
+    expect((await events(c.id)).filter((k) => k === "keys_reminder")).toHaveLength(2);
+
+    await confirmKeys(c.host, c.id);
+    expect(await mine()).toEqual([]);
+  });
+
+  it("pasado un mes desde la fecha declarada y sin confirmar, se avisa a las dos partes una sola vez; la fecha sigue sin confirmar", async () => {
+    const c = await contract();
+    await declare(c.guest, c.id, await day(-40));
+    const due = (await timers()).filter((r) => r.contract_id === c.id && r.kind === "keys_unconfirmed_due");
+    expect(due.map((r) => r.party).sort()).toEqual(["landlord", "tenant"]);
+    expect((await timers()).filter((r) => r.contract_id === c.id && r.kind === "keys_unconfirmed_due")).toEqual([]);
+    expect(await kinds(c.guest)).toContain("deposit_keys_unconfirmed_due");
+    expect(await kinds(c.host)).toContain("deposit_keys_unconfirmed_due");
+    const row = await deposit(c.id);
+    expect(row.keys_confirmed_at).toBeNull();
+    expect(row.return_due_on).toBeNull();
+    // Aún no empieza el reloj de devolución: no hay avisos de «vence» ni «vencido».
+    expect(await events(c.id)).not.toContain("return_overdue");
   });
 
   it("avisa 7 días antes de que venza el plazo y cuando vence, una vez cada aviso", async () => {
@@ -310,6 +333,20 @@ describe("seguimiento de la fianza · devolución", () => {
     expect(await events(c.id)).toEqual([
       "keys_declared", "keys_confirmed", "return_marked", "return_disputed", "return_marked", "return_confirmed",
     ]);
+  });
+
+  it("la devolución admite anotar el importe devuelto (informativo, nunca mayor que la fianza)", async () => {
+    const c = await withKeys(10);
+    await expect(markReturned(c.host, c.id, await day(-1), 321)).rejects.toThrow(/importe devuelto/);
+    await expect(markReturned(c.host, c.id, await day(-1), -1)).rejects.toThrow(/importe devuelto/);
+    const row = await markReturned(c.host, c.id, await day(-1), 270.5);
+    expect(Number(row.returned_amount)).toBe(270.5);
+    const seen = await run(c.guest, "select returned_amount from public.contract_deposits where contract_id = $1", [c.id]);
+    expect(Number(seen.returned_amount)).toBe(270.5);
+    expect(await kinds(c.guest)).toContain("deposit_return_marked");
+    // Sin importe sigue valiendo.
+    await respond(c.guest, c.id, false);
+    expect((await markReturned(c.host, c.id, await day(-1))).returned_amount).toBeNull();
   });
 
   it("un depósito anotado se conserva en el estado al devolver; sin anotar vuelve a «pendiente»", async () => {
