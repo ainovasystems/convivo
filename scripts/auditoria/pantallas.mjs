@@ -29,7 +29,14 @@ const rest = async (path, init = {}) => {
 };
 
 const browser = await chromium.launch();
-const ctx = async () =>
+// Las acciones definitivas (enviar el contrato, confirmar el inventario…) piden
+// confirmación con un diálogo del navegador: aquí se acepta siempre.
+const ctx = async () => {
+  const context = await newContext();
+  context.on("page", (page) => page.on("dialog", (dialog) => void dialog.accept()));
+  return context;
+};
+const newContext = async () =>
   browser.newContext({
     viewport: { width: 375, height: 812 },
     deviceScaleFactor: 1,

@@ -150,7 +150,16 @@ export function ContractEditor({
           </p>
         ) : null}
         <div className="flex flex-wrap gap-3">
-          <button type="button" className={buttonClass} disabled={pending || !preview} onClick={() => run(() => sendContract(contractId, payload()), true)}>
+          <button type="button" className={buttonClass} disabled={pending || !preview} onClick={() => {
+              if (
+                window.confirm(
+                  "¿Enviar el contrato para firmar?\n\nEl texto quedará cerrado tal como está en la vista previa: si luego hay que cambiar algo, habrá que cancelarlo y preparar otro.",
+                )
+              ) {
+                run(() => sendContract(contractId, payload()), true);
+              }
+            }}
+          >
             {pending ? "Enviando…" : "Enviar para firmar"}
           </button>
           <button

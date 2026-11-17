@@ -141,7 +141,16 @@ export function ConfirmKeysButton({ contractId }: { contractId: string }) {
   const { result, pending, run } = useDepositAction();
   return (
     <div className="space-y-2">
-      <button type="button" className={buttonClass} disabled={pending} onClick={() => run(() => confirmKeys(contractId))}>
+      <button type="button" className={buttonClass} disabled={pending} onClick={() => {
+          if (
+            window.confirm(
+              "¿Confirmas la fecha de entrega de llaves que ha declarado tu inquilino?\n\nEs definitivo: desde esa fecha empieza a contar el plazo de un mes para devolver la fianza y ya no se podrá cambiar.",
+            )
+          ) {
+            run(() => confirmKeys(contractId));
+          }
+        }}
+      >
         {pending ? "Confirmando…" : "Confirmar la entrega de llaves"}
       </button>
       <Message result={result} />

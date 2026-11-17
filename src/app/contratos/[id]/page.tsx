@@ -16,6 +16,7 @@ import { STAGE_LABELS, STAGE_SLUGS, INVENTORY_STAGES } from "@/lib/contracts/inv
 import { listContractInventories } from "@/lib/contracts/inventory-queries";
 import { getContract } from "@/lib/contracts/queries";
 import { CONTRACT_KIND_LABELS, type ContractKind } from "@/lib/contracts/schema";
+import { signatureLabel } from "@/lib/contracts/signature";
 
 export const metadata: Metadata = { title: "Contrato", robots: { index: false } };
 
@@ -120,10 +121,10 @@ export default async function ContractPage({ params }: { params: Promise<{ id: s
               <h2 className="font-bold">Registro de firmas</h2>
               <p>Enviado: {c.sent_at ? dateTime.format(new Date(c.sent_at)) : "—"}</p>
               <p>
-                Parte arrendadora: {c.landlord_signed_at ? `${c.landlord_signature} · ${dateTime.format(new Date(c.landlord_signed_at))}` : "pendiente"}
+                Parte arrendadora: {c.landlord_signed_at ? `${signatureLabel(c.landlord_signed_name, terms.landlord_name, c.landlord_signature)} · ${dateTime.format(new Date(c.landlord_signed_at))}` : "pendiente"}
               </p>
               <p>
-                Parte arrendataria: {c.tenant_signed_at ? `${c.tenant_signature} · ${dateTime.format(new Date(c.tenant_signed_at))}` : "pendiente"}
+                Parte arrendataria: {c.tenant_signed_at ? `${signatureLabel(c.tenant_signed_name, terms.tenant_name, c.tenant_signature)} · ${dateTime.format(new Date(c.tenant_signed_at))}` : "pendiente"}
               </p>
               <p className="break-all text-xs text-muted">Huella del texto (SHA-256): {c.document_hash}</p>
             </section>

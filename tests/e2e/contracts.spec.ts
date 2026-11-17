@@ -5,8 +5,15 @@ import { requireSupabase, uniqueEmail } from "./support";
 // Habitación en Elviña (A Coruña) del seed, de Diego.
 const LISTING = "/anuncios/b0000000-0000-4000-8000-000000000005";
 
-async function newUser(browser: Browser, name: string) {
+/** Las acciones definitivas piden confirmación con un diálogo del navegador: aquí se acepta siempre. */
+async function newPage(browser: Browser) {
   const page = await (await browser.newContext()).newPage();
+  page.on("dialog", (dialog) => void dialog.accept());
+  return page;
+}
+
+async function newUser(browser: Browser, name: string) {
+  const page = await newPage(browser);
   await page.goto("/registro");
   await page.getByLabel("Nombre").fill(name);
   await page.getByLabel("Email").fill(uniqueEmail("contrato"));
@@ -19,7 +26,7 @@ async function newUser(browser: Browser, name: string) {
 }
 
 async function login(browser: Browser, email: string) {
-  const page = await (await browser.newContext()).newPage();
+  const page = await newPage(browser);
   await page.goto("/entrar");
   await page.getByLabel("Email").fill(email);
   await page.getByLabel("Contraseña", { exact: true }).fill("convivo-dev-1234");
@@ -130,6 +137,48 @@ test.describe("contrato firmado en Hommie", () => {
     await host.getByRole("button", { name: "Empezar el inventario" }).click();
     await host.getByRole("button", { name: /Copiar los elementos del inventario de entrada/ }).click();
     await expect(host.getByText("A la entrada: Buen estado")).toBeVisible();
+
+    // Auditoría B1 e I5. El inquilino abre el inventario de salida y lo deja abierto…
+    await guest.goto(`${contractUrl}/inventario/salida`);
+    await expect(guest.getByText("A la entrada: Buen estado")).toBeVisible();
+    // …y el casero corrige el colchón a «dañado» sin quitarlo (se conserva la comparación con la entrada).
+    await host.getByRole("button", { name: "Corregir Colchón" }).click();
+    const edit = host.getByRole("form", { name: "Corregir Colchón" });
+    await edit.getByLabel("Estado").selectOption("damaged");
+    await edit.getByLabel(/Notas/).fill("Mancha grande y un muelle roto");
+    await edit.getByRole("button", { name: "Guardar la corrección" }).click();
+    await expect(host.getByText("A la entrada: Buen estado · daño nuevo")).toBeVisible();
+    await expect(host.getByText("Mancha grande y un muelle roto")).toBeVisible();
+
+    // El inquilino confirma SIN recargar: no se guarda, se le avisa y se le enseña lo nuevo.
+    await guest.getByRole("button", { name: /Confirmo que el inventario es correcto/ }).click();
+    await expect(guest.getByTestId("inventory-changed")).toContainText("tu confirmación no se ha guardado");
+    await expect(guest.getByText("Corregido desde que lo abriste")).toBeVisible();
+    await expect(guest.getByText("A la entrada: Buen estado · daño nuevo")).toBeVisible();
+    await expect(guest.getByText("Todavía no lo has confirmado.")).toBeVisible();
+    await host.reload();
+    await expect(host.getByText(/todavía no lo ha confirmado/)).toBeVisible();
+    // Ahora que lo ha visto, sí puede confirmar; después el casero, y queda bloqueado.
+    await guest.getByRole("button", { name: /Confirmo que el inventario es correcto/ }).click();
+    await expect(guest.getByText("Ya lo has confirmado.")).toBeVisible();
+    await host.reload();
+    await host.getByRole("button", { name: /Confirmo que el inventario es correcto/ }).click();
+    await expect(host.getByText(/Confirmado por las dos partes el/)).toBeVisible();
+
+    // Auditoría B2: los céntimos se ven exactos en la liquidación, en el resumen y en el aviso.
+    await host.goto(`${contractUrl}/fianza/liquidacion`);
+    await host.getByRole("button", { name: "Abrir la liquidación" }).click();
+    await host.getByLabel("Concepto").fill("Limpieza final");
+    await host.getByLabel("Importe en €").fill("12,50");
+    await host.getByRole("button", { name: "Añadir la partida" }).click();
+    await expect(host.getByTestId("settlement-totals")).toContainText("Total de descuentos: 12,50");
+    await expect(host.getByTestId("settlement-totals")).not.toContainText("13");
+    await host.getByRole("button", { name: "Enviar al inquilino" }).click();
+    await expect(host.getByText("Enviada", { exact: true }).first()).toBeVisible();
+    await host.goto(`${contractUrl}/fianza/liquidacion/resumen`);
+    await expect(host.getByText(/Limpieza final · 12,50\s€/)).toBeVisible();
+    await guest.goto("/mis-resenas");
+    await expect(guest.getByText(/1 partida por un total de 12,50 €/)).toBeVisible();
 
     await guest.goto("/mis-estancias");
     await expect(guest.getByText("Activa", { exact: true })).toBeVisible();

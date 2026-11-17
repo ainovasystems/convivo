@@ -27,7 +27,7 @@ export async function buildDataExport(supabase: SupabaseClient<Database>, user: 
       supabase.from("reports").select("id, reason, details, status, created_at, target_listing_id, target_user_id, target_review_id").eq("reporter_id", uid),
       supabase
         .from("contracts")
-        .select("id, kind, status, template_version, terms, document_text, document_hash, sent_at, landlord_signed_at, landlord_signature, tenant_signed_at, tenant_signature, signed_at, cancelled_at, landlord_id, tenant_id, listing_id, stay_id, created_at")
+        .select("id, kind, status, template_version, terms, document_text, document_hash, sent_at, landlord_signed_at, landlord_signature, landlord_signed_name, tenant_signed_at, tenant_signature, tenant_signed_name, signed_at, cancelled_at, landlord_id, tenant_id, listing_id, stay_id, created_at")
         .or(`landlord_id.eq.${uid},tenant_id.eq.${uid}`),
       supabase.from("contract_inventories").select("*"),
       supabase.from("inventory_items").select("id, inventory_id, area, name, condition, notes, photos, created_by, created_at"),
