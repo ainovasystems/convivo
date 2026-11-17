@@ -1,6 +1,6 @@
 # Hommie · Contexto del proyecto (para planificar)
 
-> Documento para el chat de planificación del proyecto. Estado a **17 de noviembre de 2026** (cierre de «CI en verde»).
+> Documento para el chat de planificación del proyecto. Estado a **17 de noviembre de 2026** (cierre de «Herramientas de revisión: skills de Supabase y gitleaks»).
 > **El nombre definitivo es Hommie (dominio hommie.es)**; «Convivo» era provisional. La web ya dice Hommie en todo lo que ve el usuario; la búsqueda en TMview está hecha y hommie.es está comprado (el registrador aún no lo ha entregado); el riesgo de confusión con «homming» sigue como pregunta al abogado (ver `docs/HOJA-DE-RUTA.md`). El detalle técnico completo está en `CLAUDE.md` (raíz del repositorio).
 > Qué toca ahora y qué falta: `docs/HOJA-DE-RUTA.md`. Cómo trabajamos: `docs/COMO-TRABAJAMOS.md`.
 
@@ -133,6 +133,8 @@ Plataforma web en español (España) para **vivienda compartida**: un «LinkedIn
 - **Emails:** con Resend; el código está listo pero falta configurarlo.
 - **Avisos de errores:** Sentry, en la UE y sin datos personales. Está apagado hasta que se ponga su clave en producción, y vigila también la tarea diaria y que la web responda.
 - **Copias:** diarias en Supabase Pro, más una copia propia mensual con las fotos, que la copia de Supabase no incluye. Ver `docs/COPIAS-DE-SEGURIDAD.md`.
+- **Búsqueda de claves en el historial:** en cada subida a GitHub, la comprobación automática (gitleaks) recorre todo el historial y falla si encuentra una clave o un secreto, sin mostrar nunca su valor. Al instalarla: 134 commits, 0 hallazgos. Si algún día salta uno real, la clave se rota a mano en Supabase o Vercel (nunca por el chat).
+- **Skills oficiales de Supabase:** dos guías de buenas prácticas (seguridad/RLS y rendimiento de Postgres) instaladas sin modificar en `.claude/skills/`, fijadas a una versión concreta y sin actualización automática. Claude Code las consulta al tocar SQL o migraciones; si chocan con una decisión del proyecto, manda `CLAUDE.md`.
 - **Trabajo:** el chat de planificación decide y redacta los encargos; Claude Code los ejecuta en el repositorio. Ver `docs/COMO-TRABAJAMOS.md`.
 
 ## 5. Decisiones de producto ya tomadas (no reabrir sin motivo)

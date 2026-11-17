@@ -215,6 +215,7 @@ Antes de cada commit: `npm run lint && npm run typecheck && npm test && npm run 
 - **CI** (`.github/workflows/ci.yml`): en cada push y pull request.
   - Trabajo «comprobaciones»: `lint`, `typecheck`, `npm test` (unitarios y PGlite) y `build`.
   - Trabajo «e2e»: levanta un **Supabase local** en la máquina de GitHub (`supabase start -x …`, con migraciones y seed), escribe `.env.local` con sus claves de desarrollo, más `CRON_SECRET` y `SIGNAL_SECRET` aleatorios, y pasa `playwright test` completo.
+  - Trabajo «secretos»: **gitleaks 8.30.1** recorre **todo el historial de git** (`fetch-depth: 0`) y falla si encuentra una clave o un secreto. Se descarga del release oficial con el **SHA-256 fijado** en el workflow y se comprueba antes de usarlo (no se usa su GitHub Action, que pide licencia en cuentas de organización). Va con `--redact=100`: **el valor encontrado nunca sale en el log**, y no se sube ningún informe. Estado al instalarlo (17-nov-2026): 134 commits, 0 hallazgos con las reglas por defecto, así que **no hay `.gitleaks.toml`**; si algún día salta un falso positivo, se crea con `[extend] useDefault = true` y una excepción mínima y justificada (nunca se desactiva el trabajo). Si salta un secreto real: parar, **rotar la clave a mano** en Supabase o Vercel (nunca por el chat) y no reescribir el historial sin decidirlo en la planificación. Para actualizar gitleaks: nueva versión y nuevo hash en `ci.yml`.
   - **No necesita ni usa ninguna clave real** y nunca toca «Convivo pruebas» ni producción.
   - Si falla, sube el informe de Playwright como artefacto (7 días).
   - Duración: unos 5 minutos.
@@ -237,6 +238,15 @@ Antes de cada commit: `npm run lint && npm run typecheck && npm test && npm run 
   - `docs/CHECKLIST-LANZAMIENTO.md`: única lista de lo que falta antes de abrir.
   - `docs/PESO-DE-LAS-FOTOS.md`: medición; se repite con `scripts/auditoria/peso-fotos/`, solo en local.
 - **Producción se instala por el editor SQL** (`instalar-base-de-datos.sql` una vez y después cada migración nueva a mano, anotada en `DEPLOY.md`). **Nunca `db push` ni seed en producción.** Claude Code no toca producción: solo aplica migraciones a «Convivo pruebas».
+- **Skills de Supabase** (`.claude/skills/`, copias **sin modificar** de https://github.com/supabase/agent-skills, MIT, commit `c9be0e931b7930f7d02126d04774d904c381e7d7`; origen y cómo actualizarlas en `.claude/skills/ORIGEN-SKILLS.md`):
+  - `supabase` (seguridad, RLS, auth, CLI, depuración) y `supabase-postgres-best-practices` (rendimiento, esquema, bloqueos). Cárgalas al escribir o revisar SQL, RLS, migraciones o código de Supabase.
+  - Son solo Markdown (revisadas el 17-nov-2026: sin scripts ni ejecutables). Sin plugin, sin marketplace y sin hooks: **no se actualizan solas**.
+  - **Gana siempre este fichero.** Cosas de las skills que NO se aplican aquí:
+    - Crear un `.mcp.json` para conectar el MCP de Supabase, o usar `supabase login`/MCP con un proyecto real: Claude Code no toca producción ni usa claves personales (decisión 59). Las claves nunca van en el chat.
+    - Cambiar el esquema con `execute_sql` o `supabase db query` y generar la migración después con `supabase db pull`: aquí las migraciones son ficheros SQL en `supabase/migrations/`, con test en `tests/db/`, y solo se aplican a «Convivo pruebas».
+    - «Prefiere `SECURITY INVOKER`»: las RPC de Hommie son `security definer` a propósito (decisiones 15, 17 y 39), siempre con `set search_path = ''`, permisos mínimos y el test de lista blanca de funciones.
+    - `references/skill-feedback.md` (abrir una incidencia **pública** en el GitHub de Supabase): nunca sin preguntar antes al usuario, y sin nombres, rutas, datos ni código de Hommie.
+  - Para la skill de Postgres, lo que ya está decidido aquí (`(select auth.uid())` en las políticas, RLS en todas las tablas, `revoke all` + `grant` mínimo) coincide con lo que recomienda. Lo nuevo que sugiera (índices, consultas, bloqueos) va a «Ideas aparcadas» si queda fuera del bloque.
 
 ## Diagnóstico y errores
 

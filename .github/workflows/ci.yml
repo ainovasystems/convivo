@@ -4,6 +4,8 @@
 #   y se destruye en la propia máquina de GitHub. Nunca toca «Convivo pruebas» ni
 #   producción, y no necesita ninguna clave real: las de Supabase local son de
 #   desarrollo y CRON_SECRET / SIGNAL_SECRET se generan al vuelo.
+# - secretos: gitleaks recorre TODO el historial de git y falla si encuentra una clave
+#   o un secreto. Versión y hash fijados; los valores encontrados nunca salen en el log.
 name: CI
 
 on:
@@ -34,6 +36,27 @@ jobs:
       - run: npm run typecheck
       - run: npm test
       - run: npm run build
+
+  secretos:
+    name: Buscar claves y secretos en el historial (gitleaks)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0 # historial completo, no solo el último commit
+      - name: Instalar gitleaks (versión y hash fijados)
+        env:
+          GITLEAKS_VERSION: 8.30.1
+          GITLEAKS_SHA256: 551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb
+        run: |
+          set -euo pipefail
+          curl -fsSL -o "$RUNNER_TEMP/gitleaks.tar.gz" \
+            "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz"
+          echo "${GITLEAKS_SHA256}  $RUNNER_TEMP/gitleaks.tar.gz" | sha256sum --check --strict
+          tar -xzf "$RUNNER_TEMP/gitleaks.tar.gz" -C "$RUNNER_TEMP" gitleaks
+      - name: Escanear el historial (valores ocultos en el log)
+        run: '"$RUNNER_TEMP/gitleaks" git --redact=100 --no-banner --verbose .'
 
   e2e:
     name: Pruebas e2e (navegador + Supabase local)
