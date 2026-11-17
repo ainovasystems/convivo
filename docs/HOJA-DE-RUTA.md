@@ -2,7 +2,7 @@
 
 > **Fuente única de «qué toca ahora».** Solo se trabaja en el bloque marcado como **SIGUIENTE**. Lo que surja por el camino va a «Ideas aparcadas», no se hace en ese momento.
 > La actualiza Claude Code al cerrar cada bloque y se vuelve a subir al proyecto de Claude.
-> Última actualización: **17 de noviembre de 2026** (cierre de «CI en verde: e2e del asistente y chips de búsqueda»).
+> Última actualización: **17 de noviembre de 2026** (cierre de «Auditoría exploratoria de la web de pruebas»).
 > Lo que falta antes de abrir, con responsable y estado: `docs/CHECKLIST-LANZAMIENTO.md`.
 
 ## Hecho
@@ -24,6 +24,7 @@
 | Datos sensibles de terceros (Russmedia) | Aviso visible sobre datos sensibles en la reseña, la respuesta pública y la biografía; el motivo «datos personales» de las denuncias lo dice expresamente; `/terminos` y `/privacidad` ajustadas (uso del contenido solo para prestar el servicio, retirada y cómo notificar). Sin detección automática |
 | Renombrado a Hommie y emails de acceso | Todo lo que ve el usuario dice Hommie (cabecera, portada, títulos, tarjetas para compartir, manifest, emails de la app, errores, contratos, PDF y páginas legales, que siguen en borrador). `/terminos` §3 ya no permite «solo chicas/chicos». Plantillas de los emails de acceso de Supabase en español en `docs/EMAILS-DE-ACCESO.md`. Los nombres internos no cambian |
 | CI en verde (e2e del asistente y de los chips) | Dos pruebas fallaban en la CI. (1) La del asistente comprobaba mal que el aviso no repite el teléfono: encontraba el propio campo, no el aviso (el aviso **nunca** lo repitió); ahora mira el aviso. (2) Los chips «Quitar filtro» fallaban a veces de verdad: el esqueleto de carga `src/app/anuncios/loading.tsx` dejaba bloqueada la navegación por parámetros de búsqueda; se quitó (como en el perfil) |
+| Auditoría exploratoria de la web de pruebas (solo informe) | Recorrido completo como usuario real, en móvil y escritorio, con cuentas «[AUDITORÍA]»: `docs/AUDITORIA-PRUEBAS-2026-11.md`. 2 hallazgos bloqueantes, 15 importantes, 27 menores, 10 dudas de producto y 7 posibles preguntas para el abogado. No se cambió código ni base de datos. Sin probar: `/admin` (no hay administradores en pruebas), la tarea diaria y los emails |
 | Fase 7a · SEO técnico y auditoría | Páginas de ciudad (`/habitaciones/lugo`, `/pisos/lugo`…), `sitemap.xml`, `robots.txt`, datos estructurados, tarjetas para compartir, indexación apagada con una variable, y `docs/REVISION-FASE-7.md` (Lighthouse, axe y 52 capturas en móvil) |
 
 ## SIGUIENTE (en este orden, decidido en la planificación)
@@ -93,8 +94,14 @@ Después del piloto: contratos · fase 3 / **Fase B de pagos** con socio regulad
 
 24. (l) **Russmedia (TJUE C-492/23):** ¿bastan el aviso de datos sensibles, el canal de denuncias, la ocultación cautelar y los cambios de `/terminos` y `/privacidad` (ver CLAUDE.md, «Datos sensibles de terceros») para no ser corresponsable de los datos de terceros que publican los usuarios? ¿Hace falta un control previo (no solo aviso) en reseñas, con riesgo de falsos positivos? ¿Es suficiente la cláusula «Tu contenido» (uso solo para prestar el servicio) o hace falta una licencia expresa mínima?
 
+**Nuevas (auditoría de noviembre de 2026, detalle en `docs/AUDITORIA-PRUEBAS-2026-11.md` §7; posibles preguntas, sin respuesta)**
+
+25. (m) Notas «[Revisar con el abogado…]» dentro del texto que se firma; fianza muy por encima de la legal llamada «fianza»; ocultación cautelar de una reseña sin avisar a su autor (art. 17 DSA); `/privacidad` y `/cuenta` no mencionan contratos, inventarios, resguardo ni liquidación ni que se conservan; nombre de la firma guardado tal como se teclea; fecha de llaves declarada con retraso y el texto «el casero no la ha confirmado»; `/terminos` habla de suspender cuentas de menores y aún no existe.
+
 ## Ideas aparcadas (no hacer sin decidirlo antes en la planificación)
 
+- **App nativa: requisitos de la App Store y estudiar un MCP de App Store Connect cuando se prepare.**
+- **De la auditoría de noviembre de 2026** (`docs/AUDITORIA-PRUEBAS-2026-11.md`), hallazgos menores que no entren en el siguiente bloque: §5 completo (27 menores: casillas del registro, iniciales del avatar, chips duplicados, doble clic que crea dos borradores, avisos por capas del asistente, fechas pasadas, textos de las fotos, estancias «Activa» con fecha pasada, registro de firmas, contrato cancelado sin autor, cronología sin importes, textos del aviso de datos sensibles…). Y pendiente de repetir cuando se pueda: `/admin` con un administrador nombrado, y la tarea diaria (recordatorios de llaves y plazos) con `CRON_SECRET` bien puesto.
 - **Nombres técnicos que todavía dicen «convivo»** (no los ve el usuario; renombrarlos solo con un motivo y con cuidado): repositorio, `package.json`, variables de sesión de la BD (`convivo.contract_rpc`, `convivo.anonymizing`), usuarios de ejemplo `@convivo.test`, contraseña de desarrollo, dominio de prueba de los e2e. Y los textos de las migraciones ya aplicadas.
 - Las plantillas de Supabase Auth hay que pegarlas a mano en el panel (pasos en `docs/EMAILS-DE-ACCESO.md`); el cambio de contraseña y el de email aún no tienen pantalla en la app.
 

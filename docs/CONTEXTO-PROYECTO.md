@@ -115,6 +115,7 @@ Plataforma web en español (España) para **vivienda compartida**: un «LinkedIn
 - Al compartir un anuncio o una ciudad en WhatsApp o redes sale una tarjeta con título, foto (o una imagen de marca) y precio.
 - Existen `sitemap.xml`, `robots.txt` y datos estructurados, sin dirección exacta ni coordenadas.
 - **La web de pruebas no se indexa**: `noindex` en todo y `robots.txt` que bloquea todo. Se enciende con una sola variable (`INDEXING_ENABLED`) en producción el día del lanzamiento. Los perfiles de personas y los anuncios «busco» no se indexan nunca.
+- `docs/AUDITORIA-PRUEBAS-2026-11.md`: auditoría exploratoria de la web de pruebas (17 de noviembre de 2026), recorriéndola como un usuario real en móvil y escritorio. 2 fallos bloqueantes (se puede confirmar un inventario sin haber visto un cambio; los importes con céntimos se enseñan redondeados en la liquidación), 15 importantes y 27 menores, más dudas de producto y preguntas legales. Sirve para decidir qué arreglar antes del piloto.
 - `docs/REVISION-FASE-7.md` lista los problemas de diseño, accesibilidad y rendimiento (con capturas en móvil) para decidir el bloque 7b.
 
 **Admins (`/admin`)**
