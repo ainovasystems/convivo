@@ -78,7 +78,13 @@ test.describe("anuncios", () => {
     await description.fill("Habitación luminosa, llámame al 600 123 456 y la vemos.");
     await expect(page.getByText(/Parece que el texto incluye un número de teléfono/)).toBeVisible();
     await expect(page.getByText(/el contacto va por el chat de Hommie/)).toBeVisible();
-    await expect(page.getByText("600 123 456")).toHaveCount(0); // el mensaje no repite el dato
+    // El aviso no repite el dato. Se mira el propio aviso y no `getByText` en toda la página: React
+    // copia el valor del campo controlado en el texto del <textarea>, así que «600 123 456» salía
+    // siempre una vez (el campo, no el aviso).
+    const aviso = page.locator("#description-error");
+    await expect(aviso).toContainText("Parece que el texto incluye");
+    await expect(aviso).not.toContainText("600");
+    await expect(aviso).not.toContainText("123");
     await expect(description).toHaveAttribute("aria-invalid", "true");
 
     await description.fill("Habitación luminosa, vive en la calle Mayor, 12 y la vemos.");
@@ -86,6 +92,7 @@ test.describe("anuncios", () => {
 
     await page.getByLabel("Título").fill("Habitación, escribe a ana@gmail.com");
     await expect(page.getByText(/un email/)).toBeVisible();
+    await expect(page.locator("#title-error")).not.toContainText("ana@gmail.com");
   });
 
   test("el asistente rechaza requisitos discriminatorios y ya no ofrece el campo de convivencia", async ({ page }) => {
