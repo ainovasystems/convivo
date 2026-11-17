@@ -47,6 +47,32 @@ export const inventoryItemSchema = z.object({
 });
 export type InventoryItemInput = z.infer<typeof inventoryItemSchema>;
 
+/**
+ * Corregir un elemento: estado, notas y fotos. La zona y el nombre no se tocan,
+ * porque son lo que une el elemento de la salida con el de la entrada.
+ */
+export const inventoryItemEditSchema = inventoryItemSchema.pick({ condition: true, notes: true, photos: true });
+export type InventoryItemEdit = z.infer<typeof inventoryItemEditSchema>;
+
+/** Código de la BD cuando se intenta confirmar un inventario que ha cambiado. */
+export const INVENTORY_STALE_CODE = "P0409";
+export const INVENTORY_STALE_MESSAGE =
+  "El inventario ha cambiado desde que lo abriste, así que no hemos guardado tu confirmación. Abajo tienes marcado lo que ha cambiado: revísalo y, si estás de acuerdo, vuelve a confirmar.";
+
+/**
+ * Qué ha cambiado entre lo que tenía delante quien iba a confirmar y lo que hay
+ * ahora: elementos nuevos, corregidos y quitados.
+ */
+export function inventoryChanges<T extends { id: string; updated_at: string; area: string; name: string }>(seen: T[], current: T[]) {
+  const before = new Map(seen.map((i) => [i.id, i]));
+  const now = new Set(current.map((i) => i.id));
+  return {
+    added: current.filter((i) => !before.has(i.id)).map((i) => i.id),
+    edited: current.filter((i) => before.has(i.id) && before.get(i.id)!.updated_at !== i.updated_at).map((i) => i.id),
+    removed: seen.filter((i) => !now.has(i.id)).map((i) => `${i.area} · ${i.name}`),
+  };
+}
+
 /** Agrupa los elementos por zona, en el orden en que aparece cada zona. */
 export function groupByArea<T extends { area: string }>(items: T[]): { area: string; items: T[] }[] {
   const groups = new Map<string, T[]>();

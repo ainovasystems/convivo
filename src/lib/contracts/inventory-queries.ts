@@ -12,6 +12,7 @@ export type InventoryItemView = {
   photos: { path: string; url: string | null }[];
   created_by: string | null;
   created_at: string;
+  updated_at: string;
 };
 
 export type InventoryView = {
@@ -20,6 +21,8 @@ export type InventoryView = {
   landlord_confirmed_at: string | null;
   tenant_confirmed_at: string | null;
   locked_at: string | null;
+  /** Sube con cada cambio; hay que enviarla al confirmar (solo se confirma lo que se ha visto). */
+  revision: number;
   items: InventoryItemView[];
 };
 
@@ -38,7 +41,7 @@ export async function getInventory(contractId: string, stage: InventoryStage): P
   const supabase = await createClient();
   const { data: inv } = await supabase
     .from("contract_inventories")
-    .select("id, stage, landlord_confirmed_at, tenant_confirmed_at, locked_at")
+    .select("id, stage, landlord_confirmed_at, tenant_confirmed_at, locked_at, revision")
     .eq("contract_id", contractId)
     .eq("stage", stage)
     .maybeSingle();
@@ -46,7 +49,7 @@ export async function getInventory(contractId: string, stage: InventoryStage): P
 
   const { data: items } = await supabase
     .from("inventory_items")
-    .select("id, area, name, condition, notes, photos, created_by, created_at")
+    .select("id, area, name, condition, notes, photos, created_by, created_at, updated_at")
     .eq("inventory_id", inv.id)
     .order("created_at", { ascending: true })
     .limit(200);

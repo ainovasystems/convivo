@@ -107,7 +107,7 @@ describe("formularios", () => {
 
 describe("pantalla de la liquidación", () => {
   const view = (condition: InventoryItemView["condition"]): InventoryItemView => ({
-    id: "i", area: "Cocina", name: "Nevera", condition, notes: "Puerta rota", created_by: null, created_at: "2027-01-01T00:00:00Z",
+    id: "i", area: "Cocina", name: "Nevera", condition, notes: "Puerta rota", created_by: null, created_at: "2027-01-01T00:00:00Z", updated_at: "2027-01-01T00:00:00Z",
     photos: [{ path: "p", url: "https://example.test/foto.webp" }],
   });
 

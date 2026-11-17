@@ -3,14 +3,28 @@
 import { z } from "zod";
 
 import { getCurrentUser } from "@/lib/auth";
-import { INVENTORY_STAGES, inventoryItemSchema, isInventoryPhotoPath } from "@/lib/contracts/inventory";
+import {
+  INVENTORY_STAGES,
+  INVENTORY_STALE_CODE,
+  INVENTORY_STALE_MESSAGE,
+  inventoryItemEditSchema,
+  inventoryItemSchema,
+  isInventoryPhotoPath,
+} from "@/lib/contracts/inventory";
 import { emailUser } from "@/lib/email/notify";
 import { inventoryToConfirmEmail } from "@/lib/email/templates";
 import { getSiteUrl } from "@/lib/site-url";
 import { createClient } from "@/lib/supabase/server";
 import { fieldErrors } from "@/lib/validation/profile";
 
-export type InventoryResult = { ok: boolean; message?: string; errors?: Record<string, string>; inventoryId?: string };
+export type InventoryResult = {
+  ok: boolean;
+  message?: string;
+  errors?: Record<string, string>;
+  inventoryId?: string;
+  /** El inventario cambió desde que se abrió: no se ha guardado la confirmación. */
+  stale?: boolean;
+};
 
 const uuid = z.uuid();
 
@@ -52,6 +66,34 @@ export async function addInventoryItem(inventoryId: string, input: unknown): Pro
   const { error } = await supabase.from("inventory_items").insert({ inventory_id: inv.id, ...parsed.data });
   if (error) return { ok: false, message: error.message };
   return { ok: true, message: "Elemento añadido." };
+}
+
+/**
+ * Corrige un elemento (estado, notas y fotos) sin quitarlo: conserva la zona y
+ * el nombre, y con ellos la comparación entre la entrada y la salida. Las fotos
+ * que se quitan se borran del bucket. La BD anula las confirmaciones.
+ */
+export async function updateInventoryItem(itemId: string, input: unknown): Promise<InventoryResult> {
+  if (!uuid.safeParse(itemId).success) return { ok: false, message: "Elemento no encontrado." };
+  const parsed = inventoryItemEditSchema.safeParse(input);
+  if (!parsed.success) return { ok: false, errors: fieldErrors(parsed.error), message: "Revisa los campos marcados." };
+  if (!(await getCurrentUser())) return { ok: false, message: "Tu sesión ha caducado. Vuelve a entrar." };
+  const supabase = await createClient();
+  const { data: item } = await supabase.from("inventory_items").select("id, inventory_id, photos").eq("id", itemId).maybeSingle();
+  if (!item) return { ok: false, message: "Elemento no encontrado." };
+  const { inv } = await inventoryContext(item.inventory_id);
+  if (!inv) return { ok: false, message: "Inventario no encontrado." };
+  if (parsed.data.photos.some((p) => !isInventoryPhotoPath(p, inv.contract_id, inv.id))) {
+    return { ok: false, message: "Alguna foto no es válida. Vuelve a subirla." };
+  }
+  const { error } = await supabase
+    .from("inventory_items")
+    .update({ condition: parsed.data.condition, notes: parsed.data.notes, photos: parsed.data.photos })
+    .eq("id", itemId);
+  if (error) return { ok: false, message: error.message };
+  const dropped = item.photos.filter((p) => !parsed.data.photos.includes(p));
+  if (dropped.length > 0) await supabase.storage.from("inventory-photos").remove(dropped);
+  return { ok: true, message: "Elemento corregido. Las confirmaciones se han anulado: hay que volver a confirmar." };
 }
 
 /** Quita un elemento y borra sus fotos del bucket. */
@@ -100,13 +142,19 @@ export async function copyEntryItems(exitInventoryId: string): Promise<Inventory
   return { ok: true, message: `${entryItems.length === 1 ? "1 elemento copiado" : `${entryItems.length} elementos copiados`}. Revisa el estado de cada uno y añade fotos.` };
 }
 
-/** Confirma el inventario por la parte que llama; si es la primera, avisa por email a la otra. */
-export async function confirmInventory(inventoryId: string): Promise<InventoryResult> {
-  if (!uuid.safeParse(inventoryId).success) return { ok: false, message: "Inventario no encontrado." };
+/**
+ * Confirma el inventario por la parte que llama; si es la primera, avisa por email a la otra.
+ * Solo se confirma lo que se ha visto (hallazgo B1 de la auditoría).
+ */
+export async function confirmInventory(inventoryId: string, revision: number): Promise<InventoryResult> {
+  if (!uuid.safeParse(inventoryId).success || !Number.isInteger(revision)) return { ok: false, message: "Inventario no encontrado." };
   const user = await getCurrentUser();
   if (!user) return { ok: false, message: "Inicia sesión para continuar." };
   const supabase = await createClient();
-  const { data, error } = await supabase.rpc("confirm_inventory", { p_inventory_id: inventoryId });
+  // `revision` es la versión que tenía delante quien confirma: si la otra parte
+  // cambió algo mientras tanto, la BD no guarda la confirmación.
+  const { data, error } = await supabase.rpc("confirm_inventory", { p_inventory_id: inventoryId, p_revision: revision });
+  if (error?.code === INVENTORY_STALE_CODE) return { ok: false, stale: true, message: INVENTORY_STALE_MESSAGE };
   if (error || !data) return { ok: false, message: error?.message ?? "No se pudo confirmar." };
 
   if (!data.locked_at) {

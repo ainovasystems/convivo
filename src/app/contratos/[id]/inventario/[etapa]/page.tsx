@@ -110,6 +110,7 @@ export default async function InventoryPage({ params }: { params: Promise<{ id: 
       <InventoryEditor
         contractId={id}
         inventoryId={inventory.id}
+        revision={inventory.revision}
         stage={stage}
         items={inventory.items}
         locked={Boolean(inventory.locked_at)}

@@ -2,12 +2,68 @@ import { describe, expect, it } from "vitest";
 
 import * as depositsModule from "@/lib/contracts/deposits";
 import { depositGuideFor } from "@/lib/contracts/deposits";
-import { compareWithEntry, groupByArea, inventoryItemSchema, isInventoryPhotoPath, stageFromSlug } from "@/lib/contracts/inventory";
+import {
+  compareWithEntry,
+  groupByArea,
+  inventoryChanges,
+  inventoryItemEditSchema,
+  inventoryItemSchema,
+  isInventoryPhotoPath,
+  stageFromSlug,
+} from "@/lib/contracts/inventory";
+import { signatureLabel } from "@/lib/contracts/signature";
+import { formatMoney } from "@/lib/money";
 
 const C = "11111111-1111-4111-8111-111111111111";
 const I = "22222222-2222-4222-8222-222222222222";
 
+describe("importes (auditoría B2)", () => {
+  const plain = (n: number) => formatMoney(n).replace(/\u00a0/g, " ");
+  it("nunca redondea a euros: los céntimos se ven siempre, con coma decimal", () => {
+    expect(plain(12.5)).toBe("12,50 €");
+    expect(plain(962.5)).toBe("962,50 €");
+    expect(plain(100.5)).toBe("100,50 €");
+    expect(plain(0.05)).toBe("0,05 €");
+    expect(plain(19.99)).toBe("19,99 €");
+  });
+  it("los euros justos van sin decimales, y los millares con punto a partir de 10.000 (igual que private.format_eur)", () => {
+    expect(plain(900)).toBe("900 €");
+    expect(plain(1800)).toBe("1800 €");
+    expect(plain(12345.6)).toBe("12.345,60 €");
+    expect(plain(1000000)).toBe("1.000.000 €");
+    expect(plain(0)).toBe("0 €");
+  });
+  it("no arrastra errores de coma flotante", () => {
+    expect(plain(0.1 + 0.2)).toBe("0,30 €");
+    expect(plain(162.99999999999997)).toBe("163 €");
+  });
+});
+
+describe("registro de firmas (auditoría, menor 20)", () => {
+  it("enseña el nombre como figura en el contrato y, si difiere, lo tecleado", () => {
+    expect(signatureLabel("Iván Inquilino Prueba", "x", "iván INQUILINO prueba")).toBe("Iván Inquilino Prueba (tecleado al firmar: «iván INQUILINO prueba»)");
+    expect(signatureLabel("Carmen Casera Prueba", "x", "Carmen Casera Prueba")).toBe("Carmen Casera Prueba");
+    // Contratos firmados antes de guardar ese nombre: se usa el de las condiciones.
+    expect(signatureLabel(null, "Iván Inquilino Prueba", "iván INQUILINO prueba")).toContain("Iván Inquilino Prueba (tecleado");
+    expect(signatureLabel(null, undefined, "Ana")).toBe("Ana");
+  });
+});
+
 describe("inventario", () => {
+  it("auditoría B1: dice qué ha cambiado desde lo que se tenía delante", () => {
+    const item = (id: string, updated_at = "2027-01-01T10:00:00Z", name = id) => ({ id, updated_at, area: "Cocina", name });
+    const seen = [item("a"), item("b"), item("c", undefined, "Nevera")];
+    const current = [item("a"), item("b", "2027-01-01T10:05:00Z"), item("d")];
+    expect(inventoryChanges(seen, current)).toEqual({ added: ["d"], edited: ["b"], removed: ["Cocina · Nevera"] });
+    expect(inventoryChanges(seen, seen)).toEqual({ added: [], edited: [], removed: [] });
+  });
+
+  it("auditoría I5: al corregir un elemento no se envían la zona ni el nombre", () => {
+    const parsed = inventoryItemEditSchema.safeParse({ area: "Otra", name: "Otro", condition: "damaged", notes: " Roto ", photos: [] });
+    expect(parsed.success && parsed.data).toEqual({ condition: "damaged", notes: "Roto", photos: [] });
+    expect(inventoryItemEditSchema.safeParse({ condition: "fatal" }).success).toBe(false);
+  });
+
   it("valida el elemento y limita las fotos", () => {
     expect(inventoryItemSchema.safeParse({ area: "Cocina", name: "Nevera", condition: "good" }).success).toBe(true);
     expect(inventoryItemSchema.safeParse({ area: "", name: "Nevera", condition: "good" }).success).toBe(false);
