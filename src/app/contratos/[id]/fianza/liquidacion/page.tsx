@@ -12,11 +12,11 @@ import {
   RespondForm,
   SendSettlementButton,
 } from "@/components/contracts/settlement-actions";
+import { DepositTimeline } from "@/components/contracts/deposit-timeline";
 import { ElementCompare } from "@/components/contracts/settlement-element";
 import { Chip } from "@/components/ui/chip";
 import { getCurrentUser } from "@/lib/auth";
 import { getDepositView } from "@/lib/contracts/deposit-queries";
-import { eventLabel } from "@/lib/contracts/deposit-tracking";
 import { CONDITION_LABELS } from "@/lib/contracts/inventory";
 import { getContract } from "@/lib/contracts/queries";
 import {
@@ -28,7 +28,7 @@ import {
   settlementTotals,
 } from "@/lib/contracts/settlement";
 import { getSettlementView } from "@/lib/contracts/settlement-queries";
-import { formatEuros } from "@/lib/listings/options";
+import { formatMoney } from "@/lib/money";
 
 export const metadata: Metadata = { title: "Liquidación de la fianza", robots: { index: false } };
 
@@ -78,7 +78,7 @@ export default async function SettlementPage({ params }: { params: Promise<{ id:
         {isLandlord && depositView.exitLocked ? (
           <div className="space-y-3 rounded-2xl border border-border p-4">
             <p>
-              El inventario de salida está confirmado por los dos. Abre la liquidación para anotar los descuentos de la fianza ({formatEuros(deposit)}) con el inventario delante.
+              El inventario de salida está confirmado por los dos. Abre la liquidación para anotar los descuentos de la fianza ({formatMoney(deposit)}) con el inventario delante.
             </p>
             <OpenSettlementButton contractId={id} />
           </div>
@@ -113,9 +113,9 @@ export default async function SettlementPage({ params }: { params: Promise<{ id:
 
       <section aria-label="Total" className="space-y-1 rounded-2xl bg-surface p-4" data-testid="settlement-totals">
         <p>
-          Fianza: <strong>{formatEuros(totals.deposit)}</strong> · Total de descuentos: <strong>{formatEuros(totals.total)}</strong>
+          Fianza: <strong>{formatMoney(totals.deposit)}</strong> · Total de descuentos: <strong>{formatMoney(totals.total)}</strong>
         </p>
-        <p className="text-sm text-muted">Resultado si se aplicaran todas las partidas: {formatEuros(totals.remaining)} a devolver.</p>
+        <p className="text-sm text-muted">Resultado si se aplicaran todas las partidas: {formatMoney(totals.remaining)} a devolver.</p>
         {totals.exceeds ? (
           <p role="status" className="text-sm font-semibold text-red-700">
             Los descuentos superan el importe de la fianza. Hommie solo lo señala; no decide nada.
@@ -131,7 +131,7 @@ export default async function SettlementPage({ params }: { params: Promise<{ id:
             <li key={i.id} className="space-y-2 rounded-2xl border border-border p-4" data-testid="settlement-item">
               <div className="flex flex-wrap items-baseline justify-between gap-2">
                 <p className="font-bold">{i.concept}</p>
-                <p className="font-bold">{formatEuros(i.amount)}</p>
+                <p className="font-bold">{formatMoney(i.amount)}</p>
               </div>
               {i.exit ? (
                 <>
@@ -197,7 +197,7 @@ export default async function SettlementPage({ params }: { params: Promise<{ id:
         <RespondForm
           contractId={id}
           settlementId={s.id}
-          items={items.map((i) => ({ id: i.id, concept: i.concept, amountLabel: formatEuros(i.amount), response: null, comment: null }))}
+          items={items.map((i) => ({ id: i.id, concept: i.concept, amountLabel: formatMoney(i.amount), response: null, comment: null }))}
         />
       ) : null}
       {s.status === "sent" && isLandlord ? <p className="rounded-2xl bg-surface p-4 text-muted">Enviada el {when(s.sent_at)}. Esperando la respuesta de {otherName}.</p> : null}
@@ -226,7 +226,7 @@ export default async function SettlementPage({ params }: { params: Promise<{ id:
                 <RespondForm
                   contractId={id}
                   settlementId={s.id}
-                  items={items.map((i) => ({ id: i.id, concept: i.concept, amountLabel: formatEuros(i.amount), response: i.tenant_response, comment: i.tenant_comment }))}
+                  items={items.map((i) => ({ id: i.id, concept: i.concept, amountLabel: formatMoney(i.amount), response: i.tenant_response, comment: i.tenant_comment }))}
                 />
                 <p className="mt-2 text-muted">Si las cambias, se anulan las confirmaciones y hay que volver a confirmar.</p>
               </div>
@@ -253,13 +253,7 @@ export default async function SettlementPage({ params }: { params: Promise<{ id:
       {events.length > 0 ? (
         <details className="rounded-2xl border border-border p-4 text-sm">
           <summary className="cursor-pointer font-semibold">Cronología de la liquidación ({events.length})</summary>
-          <ul className="mt-3 space-y-1">
-            {events.map((e) => (
-              <li key={e.id}>
-                <span className="text-muted">{when(e.created_at)}</span> · {eventLabel(e.kind, e.data)}
-              </li>
-            ))}
-          </ul>
+          <DepositTimeline events={events} when={when} />
         </details>
       ) : null}
     </div>

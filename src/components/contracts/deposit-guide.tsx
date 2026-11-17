@@ -1,5 +1,5 @@
 import { DEPOSIT_RETURN_TEXT, depositGuideFor } from "@/lib/contracts/deposits";
-import { formatEuros } from "@/lib/listings/options";
+import { formatMoney } from "@/lib/money";
 
 /**
  * Ayuda con la fianza (información orientativa). Solo la ve el casero, y
@@ -17,7 +17,7 @@ export function DepositGuide({ province, deposit }: { province: string | null; d
       </summary>
       <div className="mt-4 space-y-2">
         <h2 className="font-bold">
-          {guide.title} · {formatEuros(deposit)}
+          {guide.title} · {formatMoney(deposit)}
         </h2>
         {guide.paragraphs.map((p) => (
           <p key={p}>{p}</p>

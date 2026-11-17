@@ -112,6 +112,23 @@ describe("apartado «Fianza»", () => {
     expect(render(view(recent), { landlord: false })).not.toContain("Preparar el paquete de pruebas");
   });
 
+  it("auditoría I6: declarada hoy una fecha antigua, el casero la ve pendiente de confirmar y aún no hay paquete ni «no la ha confirmado»", () => {
+    const justDeclared = { keys_declared_on: day(-45), keys_declared_at: new Date().toISOString() };
+    for (const landlord of [true, false]) {
+      const html = render(view(justDeclared), { landlord });
+      expect(html).toContain("Pendiente de confirmar");
+      expect(html).toContain("Pendiente de que el casero confirme la fecha de llaves");
+      expect(html).not.toMatch(/no la ha confirmado|el casero no ha confirmado/);
+      expect(html).not.toContain("Preparar el paquete de pruebas");
+      expect(html).not.toMatch(/se dará por confirmada|se da por confirmada/);
+    }
+    expect(render(view(justDeclared), { landlord: true })).toContain("Confirmar la entrega de llaves");
+    // A los 7 días de registrarla (y pasado el mes desde la fecha declarada) ya sí.
+    const weekAgo = { keys_declared_on: day(-45), keys_declared_at: new Date(Date.now() - 7 * 86_400_000 - 60_000).toISOString() };
+    expect(render(view(weekAgo), { landlord: false })).toContain("Preparar el paquete de pruebas");
+    expect(render(view(weekAgo), { landlord: true })).toContain("el casero no la ha confirmado");
+  });
+
   it("liquidación de salida: se ofrece al casero con el inventario de salida bloqueado; el inquilino solo espera", () => {
     expect(render(view({}, { exitLocked: false }), { landlord: true })).toContain("Se abre cuando los dos hayáis confirmado el inventario de salida");
     const landlord = render(view({}, { exitLocked: true }), { landlord: true });

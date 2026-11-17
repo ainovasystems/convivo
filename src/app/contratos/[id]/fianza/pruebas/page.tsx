@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { z } from "zod";
 
+import { DepositTimeline } from "@/components/contracts/deposit-timeline";
 import { PrintButton } from "@/components/contracts/print-button";
 import { getCurrentUser } from "@/lib/auth";
 import { getDepositView } from "@/lib/contracts/deposit-queries";
@@ -11,7 +12,6 @@ import {
   DEPOSIT_TRACKING_NOTICE,
   KEYS_UNCONFIRMED_LABEL,
   KEYS_UNCONFIRMED_NOTE,
-  eventLabel,
   RETURN_DEADLINE_TEXT,
   addOneMonth,
   canDownloadEvidence,
@@ -23,7 +23,8 @@ import { CONDITION_LABELS, INVENTORY_STAGES, STAGE_LABELS, compareWithEntry, gro
 import { getInventory } from "@/lib/contracts/inventory-queries";
 import { getContract } from "@/lib/contracts/queries";
 import { CONTRACT_KIND_LABELS, type ContractKind } from "@/lib/contracts/schema";
-import { formatEuros } from "@/lib/listings/options";
+import { signatureLabel } from "@/lib/contracts/signature";
+import { formatMoney } from "@/lib/money";
 
 export const metadata: Metadata = { title: "Paquete de pruebas de la fianza", robots: { index: false } };
 
@@ -54,8 +55,9 @@ export default async function DepositEvidencePage({ params }: { params: Promise<
         </Link>
         <h1 className="text-2xl font-extrabold tracking-tight">Paquete de pruebas de la fianza</h1>
         <p className="rounded-2xl bg-surface p-4 text-muted">
-          El paquete se puede preparar cuando ha vencido el plazo de un mes para devolver la fianza y esta no consta como devuelta. Si el casero no ha confirmado la fecha de entrega de
-          llaves, se puede preparar pasado un mes desde la fecha que declaraste, y el paquete lo dirá de forma expresa.
+          El paquete se puede preparar cuando ha vencido el plazo de un mes para devolver la fianza y esta no consta como devuelta. Si la fecha de entrega de llaves está
+          sin confirmar por el casero, se puede preparar pasado un mes desde la fecha que declaraste y, como mínimo, 7 días después de haberla registrado aquí (para que el casero haya
+          podido verla); el paquete dirá de forma expresa que la fecha no está confirmada.
         </p>
       </div>
     );
@@ -111,17 +113,17 @@ export default async function DepositEvidencePage({ params }: { params: Promise<
           <dt className="font-semibold">Parte arrendataria</dt>
           <dd>{String(terms.tenant_name ?? c.tenant?.display_name ?? "—")}</dd>
           <dt className="font-semibold">Renta mensual</dt>
-          <dd>{formatEuros(Number(terms.monthly_rent ?? 0))}</dd>
+          <dd>{formatMoney(Number(terms.monthly_rent ?? 0))}</dd>
           <dt className="font-semibold">Fianza</dt>
-          <dd>{formatEuros(Number(terms.deposit ?? 0))}</dd>
+          <dd>{formatMoney(Number(terms.deposit ?? 0))}</dd>
           <dt className="font-semibold">Inicio / fin</dt>
           <dd>
             {terms.start_date ? formatDay(String(terms.start_date)) : "—"} / {terms.end_date ? formatDay(String(terms.end_date)) : "sin fecha de fin"}
           </dd>
           <dt className="font-semibold">Firma de la parte arrendadora</dt>
-          <dd>{c.landlord_signed_at ? `${c.landlord_signature} · ${when(c.landlord_signed_at)}` : "—"}</dd>
+          <dd>{c.landlord_signed_at ? `${signatureLabel(c.landlord_signed_name, terms.landlord_name, c.landlord_signature)} · ${when(c.landlord_signed_at)}` : "—"}</dd>
           <dt className="font-semibold">Firma de la parte arrendataria</dt>
-          <dd>{c.tenant_signed_at ? `${c.tenant_signature} · ${when(c.tenant_signed_at)}` : "—"}</dd>
+          <dd>{c.tenant_signed_at ? `${signatureLabel(c.tenant_signed_name, terms.tenant_name, c.tenant_signature)} · ${when(c.tenant_signed_at)}` : "—"}</dd>
           <dt className="font-semibold">Identificador del contrato</dt>
           <dd className="break-all">{c.id}</dd>
           <dt className="font-semibold">Huella del texto (SHA-256)</dt>
@@ -216,13 +218,7 @@ export default async function DepositEvidencePage({ params }: { params: Promise<
         {events.length === 0 ? (
           <p className="text-sm text-muted">Sin registros.</p>
         ) : (
-          <ol className="space-y-1 text-sm">
-            {events.map((e) => (
-              <li key={e.id}>
-                <span className="text-muted">{when(e.created_at)}</span> · {eventLabel(e.kind, e.data)}
-              </li>
-            ))}
-          </ol>
+          <DepositTimeline events={events} when={when} className="space-y-1 text-sm" />
         )}
       </section>
 

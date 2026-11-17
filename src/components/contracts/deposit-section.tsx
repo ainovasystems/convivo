@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 
+import { DepositTimeline } from "@/components/contracts/deposit-timeline";
 import { ConfirmKeysButton, DateActionForm, RecordDepositForm, RespondReturn } from "@/components/contracts/deposit-actions";
 import { Chip } from "@/components/ui/chip";
 import {
@@ -12,13 +13,12 @@ import {
   canDownloadEvidence,
   clockSentence,
   depositClock,
-  eventLabel,
   formatDay,
   madridToday,
 } from "@/lib/contracts/deposit-tracking";
 import type { DepositView } from "@/lib/contracts/deposit-queries";
 import { SETTLEMENT_NOTICE, settlementStatusLabel } from "@/lib/contracts/settlement";
-import { formatEuros } from "@/lib/listings/options";
+import { formatMoney } from "@/lib/money";
 
 const dateTime = new Intl.DateTimeFormat("es-ES", { dateStyle: "long", timeStyle: "short", timeZone: "Europe/Madrid" });
 
@@ -78,7 +78,7 @@ export function DepositSection({
     <section id="fianza" aria-label="Fianza" className="space-y-5 rounded-3xl border border-border p-5 text-sm print:hidden" data-testid="deposit-section">
       <div className="flex flex-wrap items-baseline justify-between gap-3">
         <h2 className="text-lg font-bold">
-          Fianza · {formatEuros(deposit)}
+          Fianza · {formatMoney(deposit)}
         </h2>
         <Chip tone={row.status === "returned" ? "success" : "neutral"}>{DEPOSIT_STATUS_LABELS[row.status]}</Chip>
       </div>
@@ -161,7 +161,21 @@ export function DepositSection({
           )}
         </Step>
 
-        <Step n={3} title="Plazo para devolver la fianza" state={clock.state === "overdue" ? "Vencido" : clock.state === "closing" ? "Se acerca" : clock.state === "unconfirmed" || clock.state === "unconfirmed_overdue" ? "Sin fecha confirmada" : undefined}>
+        <Step
+          n={3}
+          title="Plazo para devolver la fianza"
+          state={
+            clock.state === "overdue"
+              ? "Vencido"
+              : clock.state === "closing"
+                ? "Se acerca"
+                : clock.state === "unconfirmed_pending"
+                  ? "Pendiente de confirmar"
+                  : clock.state === "unconfirmed" || clock.state === "unconfirmed_overdue"
+                    ? "Sin fecha confirmada"
+                    : undefined
+          }
+        >
           <p className={clock.state === "overdue" || clock.state === "unconfirmed_overdue" ? "font-semibold text-red-700" : undefined}>{clockSentence(clock)}</p>
           <p className="text-muted">{RETURN_DEADLINE_TEXT}</p>
         </Step>
@@ -170,14 +184,14 @@ export function DepositSection({
           {row.status === "returned" && row.return_marked_on ? (
             <p>
               Devuelta el {formatDay(row.return_marked_on)}
-              {row.returned_amount !== null ? <> · importe indicado por el casero: <strong>{formatEuros(row.returned_amount)}</strong></> : null} y confirmada por el inquilino. El registro ya
+              {row.returned_amount !== null ? <> · importe indicado por el casero: <strong>{formatMoney(row.returned_amount)}</strong></> : null} y confirmada por el inquilino. El registro ya
               no se puede cambiar.
             </p>
           ) : returnAwaitingTenant && row.return_marked_on ? (
             <>
               <p>
                 El casero marcó la fianza como devuelta el {formatDay(row.return_marked_on)}
-                {row.returned_amount !== null ? <> · importe indicado: <strong>{formatEuros(row.returned_amount)}</strong></> : null}.
+                {row.returned_amount !== null ? <> · importe indicado: <strong>{formatMoney(row.returned_amount)}</strong></> : null}.
               </p>
               {isLandlord ? <p className="text-muted">Falta que {otherName} confirme que la ha recibido.</p> : <RespondReturn contractId={contractId} />}
             </>
@@ -253,13 +267,7 @@ export function DepositSection({
       {view.events.length > 0 ? (
         <details className="rounded-2xl border border-border p-4">
           <summary className="cursor-pointer font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand">Cronología ({view.events.length})</summary>
-          <ul className="mt-3 space-y-1">
-            {view.events.map((e) => (
-              <li key={e.id}>
-                <span className="text-muted">{dateTime.format(new Date(e.created_at))}</span> · {eventLabel(e.kind, e.data)}
-              </li>
-            ))}
-          </ul>
+          <DepositTimeline events={view.events} when={(iso) => dateTime.format(new Date(iso))} />
         </details>
       ) : null}
     </section>

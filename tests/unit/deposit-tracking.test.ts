@@ -2,12 +2,14 @@ import { describe, expect, it } from "vitest";
 
 import {
   EMPTY_DEPOSIT,
+  KEYS_CONFIRM_GRACE_DAYS,
   canDownloadEvidence,
   clockSentence,
   daysBetween,
   depositClock,
   isReceiptPath,
   addOneMonth,
+  eventDetails,
   eventLabel,
   returnSchema,
   madridToday,
@@ -43,13 +45,58 @@ describe("reloj del plazo de devolución", () => {
 
   it("fecha declarada y sin confirmar: no hay reloj oficial; pasado un mes se puede descargar el paquete", () => {
     const declared = { ...EMPTY_DEPOSIT, keys_declared_on: "2027-06-30", keys_declared_at: "2027-07-01T10:00:00Z" };
-    expect(depositClock(declared, "2027-07-10")).toMatchObject({ state: "unconfirmed", dueOn: "2027-07-30", daysLeft: 20 });
-    expect(depositClock(declared, "2027-07-30")).toMatchObject({ state: "unconfirmed", daysLeft: 0 });
-    expect(depositClock(declared, "2027-07-31")).toMatchObject({ state: "unconfirmed_overdue", daysLate: 1 });
-    expect(canDownloadEvidence(declared, "2027-07-30")).toBe(false);
-    expect(canDownloadEvidence(declared, "2027-07-31")).toBe(true);
-    expect(canDownloadEvidence({ ...declared, status: "returned" }, "2027-09-01")).toBe(false);
-    expect(clockSentence(depositClock(declared, "2027-07-10"))).toContain("no ha confirmado");
+    const at = (d: string) => new Date(`${d}T12:00:00Z`);
+    expect(depositClock(declared, "2027-07-10", at("2027-07-10"))).toMatchObject({ state: "unconfirmed", dueOn: "2027-07-30", daysLeft: 20 });
+    expect(depositClock(declared, "2027-07-30", at("2027-07-30"))).toMatchObject({ state: "unconfirmed", daysLeft: 0 });
+    expect(depositClock(declared, "2027-07-31", at("2027-07-31"))).toMatchObject({ state: "unconfirmed_overdue", daysLate: 1 });
+    expect(canDownloadEvidence(declared, "2027-07-30", at("2027-07-30"))).toBe(false);
+    expect(canDownloadEvidence(declared, "2027-07-31", at("2027-07-31"))).toBe(true);
+    expect(canDownloadEvidence({ ...declared, status: "returned" }, "2027-09-01", at("2027-09-01"))).toBe(false);
+    expect(clockSentence(depositClock(declared, "2027-07-10", at("2027-07-10")))).toContain("no ha confirmado");
+  });
+
+  it("auditoría I6: hasta 7 días después de REGISTRAR la declaración no se dice que el casero no la ha confirmado ni hay paquete", () => {
+    // Declara hoy (1 de julio) una entrega de llaves de hace dos meses.
+    const late = { ...EMPTY_DEPOSIT, keys_declared_on: "2027-05-01", keys_declared_at: "2027-07-01T10:00:00Z" };
+    const sameDay = new Date("2027-07-01T10:05:00Z");
+    expect(depositClock(late, "2027-07-01", sameDay)).toMatchObject({ state: "unconfirmed_pending", graceEndsOn: "2027-07-08" });
+    expect(canDownloadEvidence(late, "2027-07-01", sameDay)).toBe(false);
+    const pending = clockSentence(depositClock(late, "2027-07-01", sameDay));
+    expect(pending).toContain("Pendiente de que el casero confirme la fecha de llaves");
+    expect(pending).not.toMatch(/7 días|se dará por confirmada/);
+    expect(pending).not.toMatch(/no la ha confirmado|no ha confirmado/);
+    // Justo antes de cumplirse los 7 días sigue pendiente; al cumplirse, ya no.
+    expect(depositClock(late, "2027-07-08", new Date("2027-07-08T09:59:00Z")).state).toBe("unconfirmed_pending");
+    const after = new Date("2027-07-08T10:00:00Z");
+    expect(depositClock(late, "2027-07-08", after).state).toBe("unconfirmed_overdue");
+    expect(canDownloadEvidence(late, "2027-07-08", after)).toBe(true);
+    // Corregir la fecha vuelve a registrar la declaración: el margen empieza de nuevo.
+    const corrected = { ...late, keys_declared_at: "2027-07-08T11:00:00Z" };
+    expect(depositClock(corrected, "2027-07-09", new Date("2027-07-09T10:00:00Z")).state).toBe("unconfirmed_pending");
+    // Con la fecha confirmada el margen no pinta nada: manda el plazo oficial.
+    expect(KEYS_CONFIRM_GRACE_DAYS).toBe(7);
+  });
+
+  it("auditoría B2 y menor 25: la cronología dice la fecha y el importe exacto de cada devolución, y lo que había antes de reabrir", () => {
+    expect(eventLabel("return_marked", { returned_on: "2026-11-10", returned_amount: 100.5 })).toBe(
+      "El casero marcó la fianza como devuelta el 10 de noviembre de 2026 · importe indicado: 100,50\u00a0€",
+    );
+    expect(eventLabel("return_marked", { returned_on: "2026-11-16", returned_amount: null })).toContain("sin importe indicado");
+    expect(eventLabel("return_marked", {})).toBe("El casero marcó la fianza como devuelta");
+    const lines = eventDetails("settlement_reopened", {
+      previous: [
+        { concept: "Limpieza", amount: 12.5, response: "accepted", comment: null },
+        { concept: "Nevera", amount: 800, response: "rejected", comment: "Ya estaba rota" },
+        { concept: "Pintura", amount: 60, response: null, comment: null },
+      ],
+    });
+    expect(lines).toEqual([
+      "«Limpieza» · 12,50\u00a0€ · el inquilino había aceptado",
+      "«Nevera» · 800\u00a0€ · el inquilino no había aceptado: «Ya estaba rota»",
+      "«Pintura» · 60\u00a0€ · sin respuesta del inquilino",
+    ]);
+    expect(eventDetails("settlement_sent", { previous: [] })).toEqual([]);
+    expect(eventDetails("settlement_reopened", null)).toEqual([]);
   });
 
   it("un mes se suma como Postgres (31 de enero + 1 mes = 28 de febrero)", () => {

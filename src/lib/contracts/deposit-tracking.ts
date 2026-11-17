@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+import { formatMoney } from "@/lib/money";
 import { sniffImageType } from "@/lib/validation/image";
 
 /**
@@ -20,6 +21,14 @@ export const DEPOSIT_STATUS_LABELS: Record<DepositStatus, string> = {
 
 /** Días antes del vencimiento en que se avisa. */
 export const RETURN_CLOSING_DAYS = 7;
+
+/**
+ * Margen para que el casero vea la declaración de llaves: hasta que no pasan
+ * estos días desde que el inquilino la REGISTRÓ (no desde la fecha declarada),
+ * no se dice que «no la ha confirmado» ni se ofrece el paquete de pruebas.
+ * La tarea diaria de la BD aplica el mismo margen.
+ */
+export const KEYS_CONFIRM_GRACE_DAYS = 7;
 
 export const DEPOSIT_TRACKING_NOTICE =
   "Hommie no cobra, no guarda ni mueve dinero: solo deja constancia de lo que anotáis. Información orientativa y borrador pendiente de revisión legal; no es asesoría jurídica.";
@@ -100,6 +109,8 @@ export function addOneMonth(iso: string): string {
 export type DepositClock =
   | { state: "not_started" }
   /** Fecha de llaves declarada por el inquilino y NO confirmada por el casero: no hay reloj oficial. `dueOn` = un mes desde la fecha declarada. */
+  /** Declarada hace menos de 7 días: el casero todavía está a tiempo de verla. `graceEndsOn` = día (AAAA-MM-DD) en que termina el margen. */
+  | { state: "unconfirmed_pending"; dueOn: string; graceEndsOn: string }
   | { state: "unconfirmed"; dueOn: string; daysLeft: number }
   | { state: "unconfirmed_overdue"; dueOn: string; daysLate: number }
   | { state: "running"; daysLeft: number; dueOn: string }
@@ -113,10 +124,14 @@ function pendingReturn(row: DepositRow) {
   return row.status !== "returned" && (row.return_marked_at === null || row.return_response === "not_received");
 }
 
-export function depositClock(row: DepositRow, today: string): DepositClock {
+export function depositClock(row: DepositRow, today: string, now: Date = new Date()): DepositClock {
   if (!row.keys_confirmed_at || !row.return_due_on) {
     if (row.keys_declared_on && !row.keys_confirmed_at && row.status !== "returned") {
       const dueOn = addOneMonth(row.keys_declared_on);
+      if (row.keys_declared_at) {
+        const graceEnds = new Date(new Date(row.keys_declared_at).getTime() + KEYS_CONFIRM_GRACE_DAYS * 86_400_000);
+        if (now < graceEnds) return { state: "unconfirmed_pending", dueOn, graceEndsOn: madridToday(graceEnds) };
+      }
       const left = daysBetween(today, dueOn);
       return left < 0 ? { state: "unconfirmed_overdue", dueOn, daysLate: -left } : { state: "unconfirmed", dueOn, daysLeft: left };
     }
@@ -133,10 +148,11 @@ export function depositClock(row: DepositRow, today: string): DepositClock {
 /**
  * El inquilino puede descargar el paquete de pruebas si venció el plazo y la
  * fianza no está devuelta: con la fecha confirmada, desde que vence el mes; con
- * la fecha solo declarada, pasado un mes desde ella (el paquete lo dice).
+ * la fecha solo declarada, pasado un mes desde ella Y al menos 7 días desde que
+ * se registró la declaración (el paquete dice que no está confirmada).
  */
-export function canDownloadEvidence(row: DepositRow, today: string): boolean {
-  const state = depositClock(row, today).state;
+export function canDownloadEvidence(row: DepositRow, today: string, now: Date = new Date()): boolean {
+  const state = depositClock(row, today, now).state;
   return state === "overdue" || state === "unconfirmed_overdue";
 }
 
@@ -150,6 +166,9 @@ export function clockSentence(clock: DepositClock): string {
   switch (clock.state) {
     case "not_started":
       return "El plazo empieza cuando se confirme la entrega de llaves.";
+    case "unconfirmed_pending":
+      // Sin plazos que suenen a confirmación automática: Hommie nunca la da por confirmada (decisión 68).
+      return "Pendiente de que el casero confirme la fecha de llaves: la declaración se acaba de registrar. Hommie no la da nunca por confirmada.";
     case "unconfirmed":
       return `El casero no ha confirmado la fecha de llaves. Si no la confirma, el inquilino podrá descargar el paquete de pruebas pasado el ${formatDay(clock.dueOn)} (un mes desde la fecha declarada).`;
     case "unconfirmed_overdue":
@@ -242,5 +261,29 @@ export function eventLabel(kind: string, data?: unknown): string {
   if (kind === "settlement_answered" && typeof d.accepted === "number" && typeof d.rejected === "number") {
     return `El inquilino respondió a la liquidación: acepta ${d.accepted}, no acepta ${d.rejected}`;
   }
+  if (kind === "return_marked" && typeof d.returned_on === "string") {
+    const amount = typeof d.returned_amount === "number" ? ` · importe indicado: ${formatMoney(d.returned_amount)}` : " · sin importe indicado";
+    return `El casero marcó la fianza como devuelta el ${formatDay(d.returned_on)}${amount}`;
+  }
   return EVENT_LABELS[kind] ?? kind;
+}
+
+/**
+ * Líneas de detalle de un evento. Hoy solo la reapertura de la liquidación:
+ * las partidas y las respuestas que había antes de reabrirla, para que sigan
+ * a la vista (la reapertura las borra de la liquidación, no de la cronología).
+ */
+export function eventDetails(kind: string, data?: unknown): string[] {
+  if (kind !== "settlement_reopened") return [];
+  const previous = (data as { previous?: unknown } | null)?.previous;
+  if (!Array.isArray(previous)) return [];
+  return previous.map((raw) => {
+    const p = (raw ?? {}) as Record<string, unknown>;
+    const concept = typeof p.concept === "string" ? p.concept : "Partida";
+    const amount = typeof p.amount === "number" ? ` · ${formatMoney(p.amount)}` : "";
+    const comment = typeof p.comment === "string" && p.comment.trim() ? `: «${p.comment.trim()}»` : "";
+    const answer =
+      p.response === "accepted" ? "el inquilino había aceptado" : p.response === "rejected" ? `el inquilino no había aceptado${comment}` : "sin respuesta del inquilino";
+    return `«${concept}»${amount} · ${answer}`;
+  });
 }

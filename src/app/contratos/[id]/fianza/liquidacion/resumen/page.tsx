@@ -3,11 +3,11 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { z } from "zod";
 
+import { DepositTimeline } from "@/components/contracts/deposit-timeline";
 import { PrintButton } from "@/components/contracts/print-button";
 import { ElementCompare } from "@/components/contracts/settlement-element";
 import { getCurrentUser } from "@/lib/auth";
 import { getDepositView } from "@/lib/contracts/deposit-queries";
-import { eventLabel } from "@/lib/contracts/deposit-tracking";
 import { getContract } from "@/lib/contracts/queries";
 import {
   SETTLEMENT_DISPUTE_NOTICE,
@@ -17,7 +17,7 @@ import {
   settlementTotals,
 } from "@/lib/contracts/settlement";
 import { getSettlementView } from "@/lib/contracts/settlement-queries";
-import { formatEuros } from "@/lib/listings/options";
+import { formatMoney } from "@/lib/money";
 
 export const metadata: Metadata = { title: "Resumen de la liquidación de la fianza", robots: { index: false } };
 
@@ -97,15 +97,15 @@ export default async function SettlementSummaryPage({ params }: { params: Promis
         <h2 className="text-lg font-bold">2. Importes</h2>
         <dl className="grid gap-x-4 gap-y-1 text-sm sm:grid-cols-[13rem_1fr]">
           <dt className="font-semibold">Fianza</dt>
-          <dd>{formatEuros(totals.deposit)}</dd>
+          <dd>{formatMoney(totals.deposit)}</dd>
           <dt className="font-semibold">Total de partidas</dt>
-          <dd>{formatEuros(totals.total)}</dd>
+          <dd>{formatMoney(totals.total)}</dd>
           <dt className="font-semibold">Partidas aceptadas</dt>
-          <dd>{formatEuros(ans.accepted)}</dd>
+          <dd>{formatMoney(ans.accepted)}</dd>
           <dt className="font-semibold">Partidas no aceptadas</dt>
-          <dd>{formatEuros(ans.rejected)}</dd>
+          <dd>{formatMoney(ans.rejected)}</dd>
           <dt className="font-semibold">Importe devuelto (indicado por el casero)</dt>
-          <dd>{depositView.row.returned_amount !== null ? formatEuros(depositView.row.returned_amount) : "No consta"}</dd>
+          <dd>{depositView.row.returned_amount !== null ? formatMoney(depositView.row.returned_amount) : "No consta"}</dd>
         </dl>
         {totals.exceeds ? <p className="text-sm font-semibold">Los descuentos superan el importe de la fianza.</p> : null}
       </section>
@@ -117,7 +117,7 @@ export default async function SettlementSummaryPage({ params }: { params: Promis
           {items.map((i, n) => (
             <li key={i.id} className="space-y-2 break-inside-avoid text-sm">
               <p className="font-bold">
-                {n + 1}. {i.concept} · {formatEuros(i.amount)}
+                {n + 1}. {i.concept} · {formatMoney(i.amount)}
               </p>
               {i.exit ? <ElementCompare entry={i.entry} exit={i.exit} /> : <p className="text-muted">Sin elemento del inventario.</p>}
               <p>
@@ -133,13 +133,7 @@ export default async function SettlementSummaryPage({ params }: { params: Promis
 
       <section className="space-y-2 break-inside-avoid">
         <h2 className="text-lg font-bold">4. Cronología</h2>
-        <ol className="space-y-1 text-sm">
-          {events.map((e) => (
-            <li key={e.id}>
-              <span className="text-muted">{when(e.created_at)}</span> · {eventLabel(e.kind, e.data)}
-            </li>
-          ))}
-        </ol>
+        <DepositTimeline events={events} when={when} className="space-y-1 text-sm" />
       </section>
 
       <section className="space-y-1 break-inside-avoid text-sm">
