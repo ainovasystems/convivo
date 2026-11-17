@@ -33,7 +33,7 @@ Plataforma web en español (España) para **vivienda compartida**: un «LinkedIn
 - **Web de pruebas:** https://convivo-six.vercel.app (Vercel, funciones en París).
 - **Base de datos:** Supabase, proyecto «Convivo pruebas», en Europa. No hay todavía un proyecto de producción.
 - **Código:** GitHub `ainovasystems/convivo`, rama `claude/new-session-734nfk`, con unos 100 commits. **Cada cambio pasa solo las comprobaciones en GitHub** (pestaña Actions).
-- **Pruebas automáticas:** 298 de lógica y base de datos, y 87 de recorrido completo en el navegador (móvil y escritorio; otras 7 se saltan a propósito). Todas pasan, en local y en GitHub.
+- **Pruebas automáticas:** 541 de lógica y base de datos, y 87 de recorrido completo en el navegador (móvil y escritorio; otras 7 se saltan a propósito). Todas pasan, en local y en GitHub.
 - **Datos de ejemplo:** 8 usuarios `@convivo.test` con la contraseña `convivo-dev-1234`, y anuncios en Lugo, A Coruña, Madrid y Barcelona.
 
 ## 3. Qué puede hacer hoy un usuario
@@ -115,6 +115,7 @@ Plataforma web en español (España) para **vivienda compartida**: un «LinkedIn
 - Al compartir un anuncio o una ciudad en WhatsApp o redes sale una tarjeta con título, foto (o una imagen de marca) y precio.
 - Existen `sitemap.xml`, `robots.txt` y datos estructurados, sin dirección exacta ni coordenadas.
 - **La web de pruebas no se indexa**: `noindex` en todo y `robots.txt` que bloquea todo. Se enciende con una sola variable (`INDEXING_ENABLED`) en producción el día del lanzamiento. Los perfiles de personas y los anuncios «busco» no se indexan nunca.
+- **Arreglos de la auditoría 1 (hecho):** ya no se puede confirmar un inventario sin haber visto un cambio de la otra parte; los importes con céntimos se ven exactos en todas partes; se puede corregir un elemento del inventario sin quitarlo; la entrega de llaves recién declarada sale como «pendiente de confirmar» durante 7 días; las acciones definitivas piden confirmación, y el registro de firmas enseña el nombre del contrato. Quedan los bloques 2, 3 y 4 (ver `HOJA-DE-RUTA.md`).
 - `docs/AUDITORIA-PRUEBAS-2026-11.md`: auditoría exploratoria de la web de pruebas (17 de noviembre de 2026), recorriéndola como un usuario real en móvil y escritorio. 2 fallos bloqueantes (se puede confirmar un inventario sin haber visto un cambio; los importes con céntimos se enseñan redondeados en la liquidación), 15 importantes y 27 menores, más dudas de producto y preguntas legales. Sirve para decidir qué arreglar antes del piloto.
 - `docs/REVISION-FASE-7.md` lista los problemas de diseño, accesibilidad y rendimiento (con capturas en móvil) para decidir el bloque 7b.
 

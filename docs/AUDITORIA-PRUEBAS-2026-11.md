@@ -5,6 +5,8 @@
 > Fecha: 17 de noviembre de 2026. Navegador: Chromium (Playwright), en **escritorio** (1280 px) y **móvil** (375 px, táctil).
 > Cada hallazgo se comprobó en la web real. Donde se indica, se miró además la base de datos **solo en lectura** para confirmar lo que la pantalla decía.
 
+> **Estado a 17 de noviembre de 2026 (bloque «Arreglos de la auditoría 1»):** arreglados **B1, B2, I5, I6** y los menores **20, 24 y 25**. Cada uno lleva su nota «✅ Arreglado» más abajo. El resto sigue pendiente, repartido en los bloques 2, 3 y 4 de `docs/HOJA-DE-RUTA.md`.
+
 ## 1. Resumen
 
 | Gravedad | N.º | Qué significa aquí |
@@ -19,7 +21,7 @@
 
 ## 2. Cómo repetir las pruebas
 
-Cuentas creadas para la auditoría (contraseña de las tres: `auditoria-2026-xyz`):
+Cuentas creadas para la auditoría (la contraseña no se guarda en el repositorio; pídesela a Claude Code o cámbiala desde el panel de Supabase):
 
 | Papel | Email | Dispositivo |
 |---|---|---|
@@ -40,6 +42,8 @@ Direcciones que se citan en los pasos:
 
 ### B1 · Se puede confirmar un inventario con elementos que no se han visto
 
+> ✅ **Arreglado.** Cada cambio del inventario sube su «revisión» y, para confirmar, hay que enviar la que se tenía delante: si no coincide, la base de datos no guarda la confirmación. La pantalla avisa («El inventario ha cambiado: tu confirmación no se ha guardado»), trae la versión actual y marca lo nuevo, lo corregido y lo quitado. Vale para entrada y salida, en móvil y escritorio.
+
 - **Pantalla:** `/contratos/[id]/inventario/entrada` o `/salida`. Móvil y escritorio.
 - **Pasos:** (1) El inquilino abre el inventario y lo deja abierto. (2) La casera, en su sesión, añade un elemento nuevo (en la prueba: «Cocina · Nevera · Dañado o roto»). (3) El inquilino, **sin recargar**, pulsa «Confirmo que el inventario es correcto».
 - **Esperaba:** que no le dejara confirmar, o que le avisara de que el inventario ha cambiado y se lo enseñara antes.
@@ -47,6 +51,8 @@ Direcciones que se citan en los pasos:
 - **Por qué es bloqueante:** la app dice «si alguien cambia algo, las confirmaciones se anulan», pero no protege contra una pantalla desactualizada, y el inventario bloqueado es la prueba para la fianza.
 
 ### B2 · Los importes con céntimos se enseñan redondeados en la liquidación y en su resumen
+
+> ✅ **Arreglado.** Un solo formato en toda la fianza (pantalla, resumen en PDF, paquete de pruebas, devolución, cronología y avisos): coma decimal, con céntimos cuando los hay («12,50 €», «962,50 €») y sin ellos en euros justos («900 €»). Los registros ya cerrados no se han tocado: ahora se ven con su cifra exacta.
 
 - **Pantalla:** `/contratos/[id]/fianza/liquidacion`, su `/resumen` (PDF) y el paso «4. Devolución». Móvil y escritorio.
 - **Pasos:** (1) La casera añade una partida con importe `12,50`. (2) Envía la liquidación. (3) Marca la fianza como devuelta con importe `100,50`.
@@ -86,11 +92,15 @@ Direcciones que se citan en los pasos:
 
 ### I5 · En el inventario no se puede corregir un elemento
 
+> ✅ **Arreglado.** Cada elemento tiene «Corregir» (estado, notas y fotos). La zona y el nombre no cambian, así que se conserva la comparación con la entrada. Al guardar se anulan las confirmaciones.
+
 - **Pantalla:** inventario de salida, tras «Copiar los elementos del inventario de entrada».
 - **Esperaba:** cambiar el estado y añadir fotos a cada elemento, como dice el propio mensaje («Revisa el estado de cada uno y añade fotos»).
 - **Pasó:** solo existe «Quitar». Para cambiar «Buen estado» por «Dañado» hay que quitarlo y volver a escribirlo **con la misma zona y el mismo nombre**; si se teclea distinto, se pierde la comparación con la entrada.
 
 ### I6 · Declarar hoy una entrega de llaves antigua dice al instante que el casero no la ha confirmado
+
+> ✅ **Arreglado.** Hasta 7 días después de **registrar** la declaración, las dos partes la ven como «Pendiente de confirmar» y no hay paquete de pruebas ni aviso de «no la ha confirmado». Pasados esos 7 días (y el mes desde la fecha declarada) vuelve lo de antes. Corregir la fecha reinicia el margen. Hommie sigue sin dar nunca la fecha por confirmada.
 
 - **Pantalla:** `/contratos/[id]`, paso «2. Entrega de llaves». Inquilino, móvil.
 - **Pasos:** declarar una fecha de hace más de un mes (en la prueba, 5 de octubre).
@@ -182,12 +192,12 @@ Direcciones que se citan en los pasos:
 **Contratos, inventario y fianza**
 
 19. Fianza de 99999 en el borrador: «Fianza: escribe un número» (el problema es el máximo).
-20. El registro de firmas guarda el nombre tal como se tecleó («iván INQUILINO prueba»), no como figura en el contrato.
+20. ✅ **Arreglado.** ~~El registro de firmas guarda el nombre tal como se tecleó («iván INQUILINO prueba»), no como figura en el contrato.~~ Ahora guarda y enseña el nombre del contrato y, si difiere, lo tecleado.
 21. Tras firmar salen dos frases casi iguales: «Ya has firmado. Falta que firme la otra parte.» y «Has firmado. Falta la otra parte.»
 22. Un contrato cancelado no dice quién lo canceló ni cuándo, y el aviso «Se ha cancelado un contrato» no dice cuál.
 23. Vista de la casera: «…y el casero no la ha confirmado», en tercera persona.
-24. «Confirmar la entrega de llaves» no pide confirmación y es definitivo; «Enviar para firmar» tampoco.
-25. La cronología no dice la fecha ni el importe de cada «marcó la fianza como devuelta»; tras reabrir la liquidación, las respuestas anteriores no se ven (el aviso dice que «quedan en la cronología»).
+24. ✅ **Arreglado.** ~~«Confirmar la entrega de llaves» no pide confirmación y es definitivo; «Enviar para firmar» tampoco.~~ Las dos, y confirmar el inventario, piden una confirmación clara antes.
+25. ✅ **Arreglado.** ~~La cronología no dice la fecha ni el importe de cada «marcó la fianza como devuelta»; tras reabrir la liquidación, las respuestas anteriores no se ven.~~ Ahora salen la fecha y el importe de cada devolución y, en la reapertura, las partidas y respuestas que había.
 26. «Elemento añadido» sale al final de una página larga, lejos del botón.
 
 **Textos**

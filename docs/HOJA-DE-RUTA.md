@@ -2,7 +2,7 @@
 
 > **Fuente única de «qué toca ahora».** Solo se trabaja en el bloque marcado como **SIGUIENTE**. Lo que surja por el camino va a «Ideas aparcadas», no se hace en ese momento.
 > La actualiza Claude Code al cerrar cada bloque y se vuelve a subir al proyecto de Claude.
-> Última actualización: **17 de noviembre de 2026** (cierre de «Auditoría exploratoria de la web de pruebas»).
+> Última actualización: **17 de noviembre de 2026** (cierre de «Arreglos de la auditoría 1: lo que queda fijado»).
 > Lo que falta antes de abrir, con responsable y estado: `docs/CHECKLIST-LANZAMIENTO.md`.
 
 ## Hecho
@@ -26,11 +26,17 @@
 | CI en verde (e2e del asistente y de los chips) | Dos pruebas fallaban en la CI. (1) La del asistente comprobaba mal que el aviso no repite el teléfono: encontraba el propio campo, no el aviso (el aviso **nunca** lo repitió); ahora mira el aviso. (2) Los chips «Quitar filtro» fallaban a veces de verdad: el esqueleto de carga `src/app/anuncios/loading.tsx` dejaba bloqueada la navegación por parámetros de búsqueda; se quitó (como en el perfil) |
 | Herramientas de revisión (skills de Supabase y gitleaks) | Las dos skills oficiales de Supabase (`supabase` y `supabase-postgres-best-practices`) instaladas sin modificar en `.claude/skills/`, fijadas a un commit y sin hooks ni actualización automática, para que Claude Code las consulte al tocar SQL, RLS o migraciones (origen y reglas en `CLAUDE.md` y `.claude/skills/ORIGEN-SKILLS.md`). Nuevo trabajo «secretos» en la CI: gitleaks recorre todo el historial y falla si hay una clave, sin mostrar nunca su valor. Resultado inicial: 134 commits, 0 hallazgos. Sin cambios en la app ni en la base de datos |
 | Auditoría exploratoria de la web de pruebas (solo informe) | Recorrido completo como usuario real, en móvil y escritorio, con cuentas «[AUDITORÍA]»: `docs/AUDITORIA-PRUEBAS-2026-11.md`. 2 hallazgos bloqueantes, 15 importantes, 27 menores, 10 dudas de producto y 7 posibles preguntas para el abogado. No se cambió código ni base de datos. Sin probar: `/admin` (no hay administradores en pruebas), la tarea diaria y los emails |
+| Arreglos de la auditoría 1 · lo que queda fijado (inventario y fianza) | **B1**: solo se confirma el inventario que se ha visto (si la otra parte lo cambió, no se guarda la confirmación, se avisa y se marca lo nuevo; protegido también en la base de datos). **B2**: importes siempre exactos y con coma decimal en pantalla, PDF, devolución y avisos. **I5**: «Corregir» un elemento del inventario sin quitarlo. **I6**: «el casero no la ha confirmado» y el paquete de pruebas esperan 7 días desde que se registró la declaración de llaves. **Menores 20, 24 y 25**: nombre del contrato en el registro de firmas, confirmación previa en las acciones definitivas, cronología con fecha e importe de cada devolución y con lo que había antes de reabrir la liquidación |
 | Fase 7a · SEO técnico y auditoría | Páginas de ciudad (`/habitaciones/lugo`, `/pisos/lugo`…), `sitemap.xml`, `robots.txt`, datos estructurados, tarjetas para compartir, indexación apagada con una variable, y `docs/REVISION-FASE-7.md` (Lighthouse, axe y 52 capturas en móvil) |
 
 ## SIGUIENTE (en este orden, decidido en la planificación)
 
-1. **Piloto** en una ciudad (Galicia, que es donde hay contrato de habitación): montar producción con `docs/DEPLOY.md`, completar `docs/CHECKLIST-LANZAMIENTO.md`, objetivos y captación.
+Antes del piloto quedan tres bloques de arreglos de la auditoría (`docs/AUDITORIA-PRUEBAS-2026-11.md`; el bloque 1 ya está hecho):
+
+1. **Arreglos de la auditoría 2 · que nadie se pierda ni vea «Algo se ha torcido»:** **I1** (avisos con contador, enlace y fecha, y acceso a «Contratos» en el menú), **I2** (resguardo de fianza grande), **I3** (sesión caducada al guardar el perfil), **I4** (búsqueda con una página que no existe), **I7** (foto de perfil con «Guardar perfil»), **I8** (el asistente deja de guardar sin avisar) e **I9** (horas del chat en UTC).
+2. **Arreglos de la auditoría 3 · acceso, denuncias y lo que prometen los textos:** **I10** (el registro dice si un email tiene cuenta), **I11** (las condiciones prometen borrar una reseña propia), **I12** (recuperar y cambiar la contraseña), **I13** (denuncias con enlaces que no son de Hommie), **I15** («Curso universitario» propone 2028) e **I14** (notas internas en el contrato firmado: necesita antes al abogado, porque toca el texto de las plantillas).
+3. **Arreglos de la auditoría 4 · menores y dudas:** los 24 menores que quedan (§5 del informe, todos menos el 20, el 24 y el 25) y las 10 dudas de producto (§6), que hay que decidir antes en la planificación.
+4. **Piloto** en una ciudad (Galicia, que es donde hay contrato de habitación): montar producción con `docs/DEPLOY.md`, completar `docs/CHECKLIST-LANZAMIENTO.md`, objetivos y captación.
 
 Después del piloto: contratos · fase 3 / **Fase B de pagos** con socio regulado, y app nativa (Expo / React Native) reutilizando la misma base de datos.
 
@@ -106,7 +112,8 @@ Después del piloto: contratos · fase 3 / **Fase B de pagos** con socio regulad
 - **Herramientas evaluadas y descartadas (noviembre de 2026):** ECC (`affaan-m/ecc`), superpowers, squawk y awesome-claude-code. Duplican el proceso que ya hay o recargan el contexto de Claude Code sin aportar lo que no tenemos.
 
 - **App nativa: requisitos de la App Store y estudiar un MCP de App Store Connect cuando se prepare.**
-- **De la auditoría de noviembre de 2026** (`docs/AUDITORIA-PRUEBAS-2026-11.md`), hallazgos menores que no entren en el siguiente bloque: §5 completo (27 menores: casillas del registro, iniciales del avatar, chips duplicados, doble clic que crea dos borradores, avisos por capas del asistente, fechas pasadas, textos de las fotos, estancias «Activa» con fecha pasada, registro de firmas, contrato cancelado sin autor, cronología sin importes, textos del aviso de datos sensibles…). Y pendiente de repetir cuando se pueda: `/admin` con un administrador nombrado, y la tarea diaria (recordatorios de llaves y plazos) con `CRON_SECRET` bien puesto.
+- **De la auditoría de noviembre de 2026** (`docs/AUDITORIA-PRUEBAS-2026-11.md`): los hallazgos pendientes ya están repartidos en los bloques 2, 3 y 4 de «SIGUIENTE». Queda aparcado repetir cuando se pueda: `/admin` con un administrador nombrado, y la tarea diaria (recordatorios de llaves y plazos) con `CRON_SECRET` bien puesto.
+- **Del bloque «Arreglos de la auditoría 1»:** avisar en directo (sin esperar a pulsar «Confirmar») cuando la otra parte cambia el inventario que se tiene abierto; permitir corregir también la zona o el nombre de un elemento manteniendo el vínculo con la entrada; sustituir los diálogos del navegador de las acciones definitivas por un diálogo propio con la marca; e2e de las llaves «pendiente de confirmar» (hoy cubierto con pruebas de lógica, de componente y de base de datos).
 - **Nombres técnicos que todavía dicen «convivo»** (no los ve el usuario; renombrarlos solo con un motivo y con cuidado): repositorio, `package.json`, variables de sesión de la BD (`convivo.contract_rpc`, `convivo.anonymizing`), usuarios de ejemplo `@convivo.test`, contraseña de desarrollo, dominio de prueba de los e2e. Y los textos de las migraciones ya aplicadas.
 - Las plantillas de Supabase Auth hay que pegarlas a mano en el panel (pasos en `docs/EMAILS-DE-ACCESO.md`); el cambio de contraseña y el de email aún no tienen pantalla en la app.
 
