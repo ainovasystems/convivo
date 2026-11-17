@@ -60,7 +60,7 @@ const addItem = (user: string, inventoryId: string, photos: string[] = []) =>
       [inventoryId, photos],
     )).rows[0].id,
   );
-const confirm = (user: string, inventoryId: string) => as(db, user, (tx) => tx.query("select public.confirm_inventory($1)", [inventoryId]));
+const confirm = (user: string, inventoryId: string) => as(db, user, (tx) => tx.query("select public.confirm_inventory($1, (select revision from public.contract_inventories where id = $1))", [inventoryId]));
 const inventory = async (id: string) =>
   (await db.query<{ landlord_confirmed_at: Date | null; tenant_confirmed_at: Date | null; locked_at: Date | null }>(
     "select * from public.contract_inventories where id = $1",
@@ -109,6 +109,67 @@ describe("inventario del contrato", () => {
     await expect(addItem(c.host, inv)).rejects.toThrow(/no se puede modificar/);
     await expect(db.query("update public.inventory_items set notes = 'admin' where id = $1", [item])).rejects.toThrow(/no se puede modificar/);
     await expect(db.query("delete from public.contract_inventories where id = $1", [inv])).rejects.toThrow(/no se puede modificar/);
+  });
+
+  it("auditoría B1: solo se confirma el inventario que se ha visto; si cambió, la confirmación no se guarda", async () => {
+    const c = await contract();
+    const inv = await open(c.guest, c.id);
+    const item = await addItem(c.guest, inv);
+    const revision = async () => (await db.query<{ revision: number }>("select revision from public.contract_inventories where id = $1", [inv])).rows[0].revision;
+    const confirmSeen = (user: string, seen: number | null) => as(db, user, (tx) => tx.query("select public.confirm_inventory($1, $2)", [inv, seen]));
+
+    // El inquilino abre la página: ve la revisión de ese momento.
+    const seenByTenant = await revision();
+    // La casera, mientras tanto, añade un elemento, corrige otro y quita uno: cada cambio sube la revisión.
+    await as(db, c.host, (tx) =>
+      tx.query("insert into public.inventory_items (inventory_id, area, name, condition) values ($1, 'Cocina', 'Nevera', 'damaged')", [inv]),
+    );
+    expect(await revision()).toBe(seenByTenant + 1);
+    await as(db, c.host, (tx) => tx.query("update public.inventory_items set condition = 'worn' where id = $1", [item]));
+    expect(await revision()).toBe(seenByTenant + 2);
+    const extra = await addItem(c.host, inv);
+    await as(db, c.host, (tx) => tx.query("delete from public.inventory_items where id = $1", [extra]));
+    expect(await revision()).toBe(seenByTenant + 4);
+
+    // El inquilino confirma lo que tenía delante: la BD lo rechaza y no guarda nada.
+    await expect(confirmSeen(c.guest, seenByTenant)).rejects.toMatchObject({ code: "P0409", message: expect.stringMatching(/ha cambiado/) });
+    await expect(confirmSeen(c.guest, null)).rejects.toMatchObject({ code: "P0409" });
+    await expect(confirmSeen(c.guest, seenByTenant + 99)).rejects.toMatchObject({ code: "P0409" });
+    expect((await inventory(inv)).tenant_confirmed_at).toBeNull();
+    expect((await db.query("select 1 from public.notifications where user_id = $1 and kind = 'inventory_to_confirm'", [c.host])).rows).toEqual([]);
+
+    // La versión antigua de la función (sin revisión) ya no existe: no hay atajo por la API.
+    await expect(as(db, c.guest, (tx) => tx.query("select public.confirm_inventory($1::uuid)", [inv]))).rejects.toThrow(/does not exist/);
+    // Nadie se sube la revisión a mano para colar una confirmación.
+    await expect(as(db, c.guest, (tx) => tx.query("update public.contract_inventories set revision = 0 where id = $1", [inv]))).rejects.toThrow(/permission denied/);
+
+    // Con la revisión actual (ya ha visto lo nuevo) sí confirma; y la otra parte igual.
+    await confirmSeen(c.guest, await revision());
+    expect((await inventory(inv)).tenant_confirmed_at).not.toBeNull();
+    // Si justo después cambia algo, la confirmación se anula y la revisión vieja ya no vale.
+    const afterTenant = await revision();
+    await as(db, c.guest, (tx) => tx.query("update public.inventory_items set notes = 'Mancha pequeña' where id = $1", [item]));
+    expect((await inventory(inv)).tenant_confirmed_at).toBeNull();
+    await expect(confirmSeen(c.host, afterTenant)).rejects.toMatchObject({ code: "P0409" });
+    await confirmSeen(c.host, await revision());
+    await confirmSeen(c.guest, await revision());
+    expect((await inventory(inv)).locked_at).not.toBeNull();
+  });
+
+  it("auditoría I5: se corrige el estado, las notas y las fotos de un elemento sin quitarlo", async () => {
+    const c = await contract();
+    const inv = await open(c.host, c.id);
+    const item = await addItem(c.host, inv);
+    const photo = `${c.id}/${inv}/${randomUUID()}.webp`;
+    await as(db, c.guest, (tx) =>
+      tx.query("update public.inventory_items set condition = 'damaged', notes = 'Muelle roto', photos = $2 where id = $1", [item, [photo]]),
+    );
+    const row = (await db.query<{ area: string; name: string; condition: string; notes: string; photos: string[] }>("select * from public.inventory_items where id = $1", [item])).rows[0];
+    expect(row).toMatchObject({ area: "Habitación", name: "Colchón", condition: "damaged", notes: "Muelle roto", photos: [photo] });
+    // Las fotos corregidas siguen teniendo que ser de la carpeta de ese inventario.
+    await expect(
+      as(db, c.guest, (tx) => tx.query("update public.inventory_items set photos = $2 where id = $1", [item, [`${c.guest}/x/${randomUUID()}.webp`]])),
+    ).rejects.toThrow(/Foto no válida/);
   });
 
   it("terceros no lo ven ni lo tocan; las fotos van en la carpeta del inventario", async () => {

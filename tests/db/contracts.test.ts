@@ -81,6 +81,13 @@ describe("contratos", () => {
     await sign(w.host, c.id, "Ana Casera López");
     const done = await contract(c.id);
     expect(done.status).toBe("signed");
+    // Auditoría, menor 20: se guarda el nombre tal como figura en el contrato y, además, lo tecleado.
+    expect(done).toMatchObject({
+      tenant_signed_name: "Bruno Inquilino Pérez",
+      tenant_signature: "bruno   inquilino pérez",
+      landlord_signed_name: "Ana Casera López",
+      landlord_signature: "Ana Casera López",
+    });
     const stay = await db.query<{ status: string; host_confirmed_at: Date | null; guest_confirmed_at: Date | null; start_date: string }>(
       "select status, host_confirmed_at, guest_confirmed_at, start_date::text from public.stays where id = $1",
       [done.stay_id],

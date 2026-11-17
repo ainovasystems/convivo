@@ -330,6 +330,7 @@ export type Database = {
           id: string;
           landlord_confirmed_at: string | null;
           locked_at: string | null;
+          revision: number;
           stage: Database["public"]["Enums"]["inventory_stage"];
           tenant_confirmed_at: string | null;
           updated_at: string;
@@ -342,6 +343,7 @@ export type Database = {
           id?: string;
           landlord_confirmed_at?: string | null;
           locked_at?: string | null;
+          revision?: number;
           stage: Database["public"]["Enums"]["inventory_stage"];
           tenant_confirmed_at?: string | null;
           updated_at?: string;
@@ -353,6 +355,7 @@ export type Database = {
           id?: string;
           landlord_confirmed_at?: string | null;
           locked_at?: string | null;
+          revision?: number;
           stage?: Database["public"]["Enums"]["inventory_stage"];
           tenant_confirmed_at?: string | null;
           updated_at?: string;
@@ -387,6 +390,7 @@ export type Database = {
           landlord_id: string;
           landlord_signature: string | null;
           landlord_signed_at: string | null;
+          landlord_signed_name: string | null;
           listing_id: string | null;
           sent_at: string | null;
           signed_at: string | null;
@@ -396,6 +400,7 @@ export type Database = {
           tenant_id: string;
           tenant_signature: string | null;
           tenant_signed_at: string | null;
+          tenant_signed_name: string | null;
           terms: NonNullable<Json>;
           updated_at: string;
         };
@@ -412,6 +417,7 @@ export type Database = {
           landlord_id: string;
           landlord_signature?: string | null;
           landlord_signed_at?: string | null;
+          landlord_signed_name?: string | null;
           listing_id?: string | null;
           sent_at?: string | null;
           signed_at?: string | null;
@@ -421,6 +427,7 @@ export type Database = {
           tenant_id: string;
           tenant_signature?: string | null;
           tenant_signed_at?: string | null;
+          tenant_signed_name?: string | null;
           terms?: NonNullable<Json>;
           updated_at?: string;
         };
@@ -436,6 +443,7 @@ export type Database = {
           landlord_id?: string;
           landlord_signature?: string | null;
           landlord_signed_at?: string | null;
+          landlord_signed_name?: string | null;
           listing_id?: string | null;
           sent_at?: string | null;
           signed_at?: string | null;
@@ -445,6 +453,7 @@ export type Database = {
           tenant_id?: string;
           tenant_signature?: string | null;
           tenant_signed_at?: string | null;
+          tenant_signed_name?: string | null;
           terms?: NonNullable<Json>;
           updated_at?: string;
         };
@@ -1596,6 +1605,7 @@ export type Database = {
           landlord_id: string;
           landlord_signature: string | null;
           landlord_signed_at: string | null;
+          landlord_signed_name: string | null;
           listing_id: string | null;
           sent_at: string | null;
           signed_at: string | null;
@@ -1605,6 +1615,7 @@ export type Database = {
           tenant_id: string;
           tenant_signature: string | null;
           tenant_signed_at: string | null;
+          tenant_signed_name: string | null;
           terms: NonNullable<Json>;
           updated_at: string;
         };
@@ -1988,7 +1999,7 @@ export type Database = {
         };
       };
       confirm_inventory: {
-        Args: { p_inventory_id: string };
+        Args: { p_inventory_id: string; p_revision: number };
         Returns: {
           contract_id: string;
           created_at: string;
@@ -1996,6 +2007,7 @@ export type Database = {
           id: string;
           landlord_confirmed_at: string | null;
           locked_at: string | null;
+          revision: number;
           stage: Database["public"]["Enums"]["inventory_stage"];
           tenant_confirmed_at: string | null;
           updated_at: string;
@@ -2146,6 +2158,7 @@ export type Database = {
           landlord_id: string;
           landlord_signature: string | null;
           landlord_signed_at: string | null;
+          landlord_signed_name: string | null;
           listing_id: string | null;
           sent_at: string | null;
           signed_at: string | null;
@@ -2155,6 +2168,7 @@ export type Database = {
           tenant_id: string;
           tenant_signature: string | null;
           tenant_signed_at: string | null;
+          tenant_signed_name: string | null;
           terms: NonNullable<Json>;
           updated_at: string;
         };
@@ -2179,6 +2193,7 @@ export type Database = {
           landlord_id: string;
           landlord_signature: string | null;
           landlord_signed_at: string | null;
+          landlord_signed_name: string | null;
           listing_id: string | null;
           sent_at: string | null;
           signed_at: string | null;
@@ -2188,6 +2203,7 @@ export type Database = {
           tenant_id: string;
           tenant_signature: string | null;
           tenant_signed_at: string | null;
+          tenant_signed_name: string | null;
           terms: NonNullable<Json>;
           updated_at: string;
         };

@@ -55,8 +55,8 @@ async function lockedInventory(host: string, guest: string, contractId: string, 
     // created_at distinto para que «el último» sea determinista
     await db.query("select pg_sleep(0.002)");
   }
-  await run(host, "select public.confirm_inventory($1)", [inv]);
-  await run(guest, "select public.confirm_inventory($1)", [inv]);
+  await run(host, "select public.confirm_inventory($1, (select revision from public.contract_inventories where id = $1))", [inv]);
+  await run(guest, "select public.confirm_inventory($1, (select revision from public.contract_inventories where id = $1))", [inv]);
   return { inv, ids };
 }
 
@@ -187,6 +187,10 @@ describe("liquidación de salida · envío, respuesta y confirmación", () => {
     expect(row.sent_at).toBeTruthy();
     expect(String(row.sent_hash)).toMatch(/^[0-9a-f]{64}$/);
     expect(await kinds(w.guest)).toContain("settlement_sent");
+    // Auditoría B2: el aviso dice el total exacto y con coma decimal (120 + 45,50).
+    const body = (await db.query<{ body: string }>("select body from public.notifications where user_id = $1 and kind = 'settlement_sent'", [w.guest])).rows[0].body;
+    expect(body).toContain("2 partidas por un total de 165,50 €. Responde");
+    expect(body).not.toContain("165.50");
     await expect(send(w.host, s)).rejects.toThrow(/ya está enviada/);
     await expect(save(w.host, s, "Nueva", 10)).rejects.toThrow(/ya está enviada/);
     await expect(save(w.host, s, "Cambio", 10, null, fridge)).rejects.toThrow(/ya está enviada/);

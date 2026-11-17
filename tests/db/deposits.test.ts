@@ -254,6 +254,13 @@ describe("seguimiento de la fianza · entrega de llaves y plazo", () => {
   it("pasado un mes desde la fecha declarada y sin confirmar, se avisa a las dos partes una sola vez; la fecha sigue sin confirmar", async () => {
     const c = await contract();
     await declare(c.guest, c.id, await day(-40));
+    // Auditoría I6: aunque la fecha DECLARADA sea de hace más de un mes, no se dice
+    // que el casero no la ha confirmado hasta 7 días después de REGISTRARLA.
+    expect((await timers()).filter((r) => r.contract_id === c.id && r.kind === "keys_unconfirmed_due")).toEqual([]);
+    await db.query("update public.contract_deposits set keys_declared_at = now() - interval '6 days 23 hours' where contract_id = $1", [c.id]);
+    expect((await timers()).filter((r) => r.contract_id === c.id && r.kind === "keys_unconfirmed_due")).toEqual([]);
+    expect(await kinds(c.host)).not.toContain("deposit_keys_unconfirmed_due");
+    await db.query("update public.contract_deposits set keys_declared_at = now() - interval '7 days 1 hour' where contract_id = $1", [c.id]);
     const due = (await timers()).filter((r) => r.contract_id === c.id && r.kind === "keys_unconfirmed_due");
     expect(due.map((r) => r.party).sort()).toEqual(["landlord", "tenant"]);
     expect((await timers()).filter((r) => r.contract_id === c.id && r.kind === "keys_unconfirmed_due")).toEqual([]);
@@ -344,6 +351,22 @@ describe("seguimiento de la fianza · devolución", () => {
     const seen = await run(c.guest, "select returned_amount from public.contract_deposits where contract_id = $1", [c.id]);
     expect(Number(seen.returned_amount)).toBe(270.5);
     expect(await kinds(c.guest)).toContain("deposit_return_marked");
+    // Auditoría B2: el aviso dice el importe exacto y con coma decimal, como la app.
+    const notice = await db.query<{ body: string }>(
+      "select body from public.notifications where user_id = $1 and kind = 'deposit_return_marked' order by created_at desc limit 1",
+      [c.guest],
+    );
+    expect(notice.rows[0].body).toContain("importe indicado: 270,50 €");
+    expect(notice.rows[0].body).not.toContain("270.50");
+    const fmt = async (n: number | null) => (await db.query<{ t: string | null }>("select private.format_eur($1::numeric) as t", [n])).rows[0].t;
+    expect(await fmt(12.5)).toBe("12,50 €");
+    expect(await fmt(900)).toBe("900 €");
+    expect(await fmt(962.5)).toBe("962,50 €");
+    expect(await fmt(0.05)).toBe("0,05 €");
+    expect(await fmt(1800)).toBe("1800 €");
+    expect(await fmt(12345.6)).toBe("12.345,60 €");
+    expect(await fmt(1000000)).toBe("1.000.000 €");
+    expect(await fmt(null)).toBeNull();
     // Sin importe sigue valiendo.
     await respond(c.guest, c.id, false);
     expect((await markReturned(c.host, c.id, await day(-1))).returned_amount).toBeNull();
