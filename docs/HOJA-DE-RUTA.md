@@ -2,7 +2,7 @@
 
 > **Fuente única de «qué toca ahora».** Solo se trabaja en el bloque marcado como **SIGUIENTE**. Lo que surja por el camino va a «Ideas aparcadas», no se hace en ese momento.
 > La actualiza Claude Code al cerrar cada bloque y se vuelve a subir al proyecto de Claude.
-> Última actualización: **19 de noviembre de 2026** (cierre de «Renombrado a Hommie y emails de acceso»).
+> Última actualización: **17 de noviembre de 2026** (cierre de «CI en verde: e2e del asistente y chips de búsqueda»).
 > Lo que falta antes de abrir, con responsable y estado: `docs/CHECKLIST-LANZAMIENTO.md`.
 
 ## Hecho
@@ -23,6 +23,7 @@
 | Control previo de datos personales | Anuncios (título, descripción, zonas y barrio), reseñas, respuestas públicas y biografía rechazan teléfonos, emails (también «arroba»), DNI/NIE, IBAN y tarjetas, canales de contacto externos y direcciones exactas. Aviso en vivo y de nuevo en el servidor; no se repite el dato. Reseñas y respuestas, además, con respaldo en la base de datos. El chat no se toca |
 | Datos sensibles de terceros (Russmedia) | Aviso visible sobre datos sensibles en la reseña, la respuesta pública y la biografía; el motivo «datos personales» de las denuncias lo dice expresamente; `/terminos` y `/privacidad` ajustadas (uso del contenido solo para prestar el servicio, retirada y cómo notificar). Sin detección automática |
 | Renombrado a Hommie y emails de acceso | Todo lo que ve el usuario dice Hommie (cabecera, portada, títulos, tarjetas para compartir, manifest, emails de la app, errores, contratos, PDF y páginas legales, que siguen en borrador). `/terminos` §3 ya no permite «solo chicas/chicos». Plantillas de los emails de acceso de Supabase en español en `docs/EMAILS-DE-ACCESO.md`. Los nombres internos no cambian |
+| CI en verde (e2e del asistente y de los chips) | Dos pruebas fallaban en la CI. (1) La del asistente comprobaba mal que el aviso no repite el teléfono: encontraba el propio campo, no el aviso (el aviso **nunca** lo repitió); ahora mira el aviso. (2) Los chips «Quitar filtro» fallaban a veces de verdad: el esqueleto de carga `src/app/anuncios/loading.tsx` dejaba bloqueada la navegación por parámetros de búsqueda; se quitó (como en el perfil) |
 | Fase 7a · SEO técnico y auditoría | Páginas de ciudad (`/habitaciones/lugo`, `/pisos/lugo`…), `sitemap.xml`, `robots.txt`, datos estructurados, tarjetas para compartir, indexación apagada con una variable, y `docs/REVISION-FASE-7.md` (Lighthouse, axe y 52 capturas en móvil) |
 
 ## SIGUIENTE (en este orden, decidido en la planificación)
@@ -35,20 +36,18 @@ Después del piloto: contratos · fase 3 / **Fase B de pagos** con socio regulad
 
 | Qué | Para qué | Urgencia |
 |---|---|---|
-| **Pegar las 5 plantillas de `docs/EMAILS-DE-ACCESO.md`** en Supabase (primero «Convivo pruebas», luego producción) y poner «Hommie» como nombre del remitente | Que los emails de acceso estén en español y con la marca | Antes de abrir |
+| **Pegar las 5 plantillas de `docs/EMAILS-DE-ACCESO.md`** (ya traducidas) en Supabase (primero «Convivo pruebas», luego producción) y poner «Hommie» como nombre del remitente | Que los emails de acceso estén en español y con la marca | Antes de abrir |
 | Configurar Resend + dominio propio y pegar `resendkey` y `emailfrom` en Vercel | Que los emails lleguen a cualquier usuario | Alta |
 | Después: reactivar «Confirm email» en Supabase → Authentication | Obligatorio antes de abrir | Alta |
 | Variable `CRON_SECRET`, con ese nombre exacto, en Vercel | Avisos diarios de reseña. Vercel solo envía el secreto con ese nombre | Media |
 | Comprobar en Supabase Site URL y Redirect URLs = dominio real + `/auth/callback` | Enlaces de los emails | Alta |
 | Rellenar los `[POR COMPLETAR]` de `/privacidad` y `/terminos`: responsable, NIF, dirección y email de contacto y de reclamaciones | Textos legales | Antes de abrir |
-| Nombre definitivo y dominio | Marca y emails | Antes de abrir |
+| **hommie.es**: comprado; esperar a que el registrador lo entregue y entonces apuntarlo a Vercel y verificarlo en Resend | Marca y emails | Antes de abrir |
 | Cuando haya dominio: variable `siteurl` = `https://<dominio>` y, **solo en producción**, `INDEXING_ENABLED=true` (pasos en `CLAUDE.md` → «SEO técnico e indexación») | Que Google indexe la web. En la web de pruebas **no** se enciende | El día del lanzamiento |
 | Dar de alta el sitemap en Google Search Console | Que Google encuentre las páginas de ciudad | Tras encender la indexación |
 | Nombrar admins (SQL en `CLAUDE.md`) | Moderación | Antes del piloto |
-| Comprobar «Hommie» en TMview / OEPM (ojo con «homming») antes de comprar o renombrar nada | Marca | Alta |
-| Montar producción siguiendo `docs/DEPLOY.md` (Supabase Pro en la UE, Vercel Pro, Resend, Sentry en la UE con sus 3 alertas) | Producción | Antes del piloto |
+| Montar producción siguiendo `docs/DEPLOY.md` (Supabase Pro en la UE, Vercel Pro, Resend, Sentry en la UE). De Sentry ya está la alerta de error nuevo; cuando exista producción faltan el monitor de `/api/salud` y el del cron `review-windows` | Producción | Antes del piloto |
 | **Pasada manual (A8):** probar con teclado y con lector de pantalla (VoiceOver o TalkBack) las 5 pantallas clave: inicio, búsqueda, ficha, perfil y chat (30-60 min) | Accesibilidad real: axe no lo detecta todo | Antes del piloto |
-| Traducir al español las plantillas de email de Supabase Auth | Emails de acceso | Antes de abrir |
 
 ## Preguntas para el abogado (agrupadas)
 
@@ -117,6 +116,8 @@ Después del piloto: contratos · fase 3 / **Fase B de pagos** con socio regulad
 - Sentry: subir los *source maps* en el build (`withSentryConfig` con una clave de Sentry) para leer las trazas de errores del navegador, que hoy salen minificadas.
 - Vigilar con monitores de disponibilidad también la portada, `/anuncios` y `/habitaciones/lugo` (Sentry de pago o UptimeRobot gratis): decisión del usuario.
 - Corregir una prueba e2e de tiempo real que a veces falla en móvil justo tras arrancar.
+- **Navegación por parámetros y `loading.tsx`:** en Next 15.5 un `loading.tsx` en una ruta cuya navegación es solo por `searchParams` bloquea el router. Si se quiere un esqueleto en `/anuncios`, probar un `<Suspense key={filtros}>` propio alrededor de los resultados y repetir la prueba de los chips ~20 veces con el build real.
+- **CSP por http:** `upgrade-insecure-requests` convierte en https las redirecciones del propio sitio cuando se sirve por http (`next start` en local y en la CI): el precargado de `/publicar` → `/entrar` falla con `ERR_SSL_PROTOCOL_ERROR`. No afecta a producción (https) ni causaba lo de los chips; valorar emitirla solo cuando la petición sea https.
 - Modo oscuro.
 - Páginas de ciudad para más ciudades (Santiago, Valencia, Sevilla…): basta añadir el nombre a `SEO_CITIES`; decidir cuándo, según haya anuncios.
 - Página de ciudad con texto propio (barrios, precios medios, guía de la zona) para posicionar mejor que la lista de anuncios.

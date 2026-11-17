@@ -1,7 +1,7 @@
 # Hommie · Contexto del proyecto (para planificar)
 
-> Documento para el chat de planificación del proyecto. Estado a **19 de noviembre de 2026** (cierre del renombrado a Hommie).
-> **El nombre definitivo es Hommie (dominio hommie.es)**; «Convivo» era provisional. La web ya dice Hommie en todo lo que ve el usuario; sigue pendiente comprobar la marca en TMview / OEPM (ver `docs/HOJA-DE-RUTA.md`). El detalle técnico completo está en `CLAUDE.md` (raíz del repositorio).
+> Documento para el chat de planificación del proyecto. Estado a **17 de noviembre de 2026** (cierre de «CI en verde»).
+> **El nombre definitivo es Hommie (dominio hommie.es)**; «Convivo» era provisional. La web ya dice Hommie en todo lo que ve el usuario; la búsqueda en TMview está hecha y hommie.es está comprado (el registrador aún no lo ha entregado); el riesgo de confusión con «homming» sigue como pregunta al abogado (ver `docs/HOJA-DE-RUTA.md`). El detalle técnico completo está en `CLAUDE.md` (raíz del repositorio).
 > Qué toca ahora y qué falta: `docs/HOJA-DE-RUTA.md`. Cómo trabajamos: `docs/COMO-TRABAJAMOS.md`.
 
 ## 1. Qué es

@@ -4,16 +4,16 @@
 > Estados: ✅ hecho · 🔄 en curso · ⏳ pendiente · ➖ no aplica todavía.
 > Responsables: **Usuario** (tú), **Abogado**, **Claude Code** (programación), **Moderador** (quien haga de admin).
 > Pasos detallados de montaje: `docs/DEPLOY.md`. Copias: `docs/COPIAS-DE-SEGURIDAD.md`. Plan de trabajo: `docs/HOJA-DE-RUTA.md`.
-> Última actualización: 14 de noviembre de 2026 (Fase 8a).
+> Última actualización: 17 de noviembre de 2026 (CI en verde, control previo de datos personales, fianza y renombrado a Hommie).
 
 ## 1. Marca y dominio
 
 | Tarea | Responsable | Estado | Cuándo |
 |---|---|---|---|
-| Buscar «Hommie» en **TMview** (tmdn.org/tmview) y en el **localizador de la OEPM**. Mirar sobre todo marcas parecidas como «**homming**» en las clases 35, 36 (inmobiliario), 42 (software) y 45. Si hay alguna parecida, consultarlo antes de seguir | Usuario (o Abogado de marcas) | ⏳ | Antes de comprar nada más |
-| Comprar el dominio **hommie.es** (y, si se puede, hommie.com) | Usuario | ⏳ | Antes de abrir |
+| Buscar «Hommie» en **TMview** (tmdn.org/tmview) y en el **localizador de la OEPM**. Mirar sobre todo marcas parecidas como «**homming**» en las clases 35, 36 (inmobiliario), 42 (software) y 45. Si hay alguna parecida, consultarlo antes de seguir | Usuario (o Abogado de marcas) | ✅ | Búsqueda en TMview hecha. Lo de «homming» sigue como pregunta 18 para el abogado |
+| Comprar el dominio **hommie.es** (y, si se puede, hommie.com) | Usuario | ✅ | Comprado; el registrador aún no lo ha entregado. Hasta entonces no se puede apuntar a Vercel ni verificar en Resend |
 | Registrar la marca, si la búsqueda sale limpia | Usuario / Abogado | ⏳ | Antes de abrir (recomendado) |
-| Renombrar Hommie → Hommie en la web: textos, emails, icono, manifiesto y metadatos | Claude Code | ⏳ | Bloque propio, con la marca confirmada |
+| Renombrar **Convivo → Hommie** en la web: textos, emails, icono, manifiesto y metadatos | Claude Code | ✅ | Hecho (nov 2026). Los nombres internos (repositorio, variables, `@convivo.test`) no cambian, a propósito (decisión 73) |
 
 ## 2. Cuentas y configuración (ver `docs/DEPLOY.md`)
 
@@ -21,14 +21,15 @@
 |---|---|---|---|
 | Supabase de **producción** nuevo, en la UE, plan Pro, sin datos de ejemplo (DEPLOY §1.1-1.2) | Usuario | ⏳ | Antes de abrir |
 | Auth: **Confirm email**, Site URL y Redirect URLs de hommie.es (DEPLOY §1.3) | Usuario | ⏳ | Antes de abrir |
-| Traducir al español las **plantillas de email de Auth**: confirmación, enlace mágico y cambio de contraseña (DEPLOY §1.3) | Usuario (Claude Code puede redactarlas) | ⏳ | Antes de abrir |
+| Traducir al español las **plantillas de email de Auth**: confirmación, enlace mágico y cambio de contraseña (DEPLOY §1.3) | Claude Code | ✅ | Hechas en `docs/EMAILS-DE-ACCESO.md` (5 plantillas) |
+| **Pegar las 5 plantillas** de `docs/EMAILS-DE-ACCESO.md` en Supabase → Authentication (primero «Convivo pruebas», luego producción) y poner «Hommie» como nombre del remitente | Usuario | ⏳ | Antes de abrir |
 | Vercel de producción: proyecto nuevo, rama `main` y **plan Pro** (el gratuito es para uso no comercial) (DEPLOY §2) | Usuario | ⏳ | Antes de abrir |
 | Decidir el proceso de publicación: fusionar la rama de trabajo en `main` cuando la CI esté en verde | Usuario (en la planificación) | ⏳ | Antes de abrir |
 | Variables de producción en Vercel, sin reutilizar las de pruebas (DEPLOY §2.2) | Usuario | ⏳ | Antes de abrir |
 | `CRON_SECRET` (con ese nombre exacto) y `SIGNAL_SECRET` nuevos para producción | Usuario | ⏳ | Antes de abrir |
 | Resend: dominio verificado (SPF, DKIM y DMARC), clave limitada al dominio y SMTP en Supabase (DEPLOY §3) | Usuario | ⏳ | Antes de abrir |
-| Sentry en la UE: DSN en Vercel, límite de 150 al día, Spike Protection y no guardar IP (DEPLOY §4.1-4.2) | Usuario | ⏳ | Antes de abrir |
-| Sentry: las 3 alertas por email (incidencia nueva, tarea diaria y disponibilidad de `/api/salud`) (DEPLOY §4.3) | Usuario | ⏳ | Antes de abrir |
+| Sentry en la UE: DSN en Vercel, límite de 150 al día, Spike Protection y no guardar IP (DEPLOY §4.1-4.2) | Usuario | 🔄 | Sentry está configurado; falta poner el DSN en el Vercel de **producción** cuando exista |
+| Sentry: las 3 alertas por email (incidencia nueva, tarea diaria y disponibilidad de `/api/salud`) (DEPLOY §4.3) | Usuario | 🔄 | Hecha la alerta de **error nuevo**. Faltan, cuando exista producción: el **monitor de `/api/salud`** y el del cron **`review-windows`** |
 | Decidir si se vigilan también la portada, `/anuncios` y `/habitaciones/lugo`: Sentry de pago (1 $ al mes cada una) o UptimeRobot gratis | Usuario | ⏳ | Antes de abrir |
 | Nombrar admins (DEPLOY §1.5) | Usuario | ⏳ | Antes del piloto |
 | Comprobar `/estado` en verde y hacer un registro de prueba con email real; borrar los datos de prueba | Usuario | ⏳ | Antes de abrir |
@@ -52,11 +53,11 @@
 
 | Tarea | Responsable | Estado | Cuándo |
 |---|---|---|---|
-| **Control previo de datos personales** en reseñas y anuncios (prioritario) | Claude Code | ⏳ | Antes del piloto |
+| **Control previo de datos personales** en anuncios, reseñas, respuestas y biografía, y aviso de datos sensibles de terceros (Russmedia) | Claude Code | ✅ | Hecho (nov 2026); falta que el abogado valide la pregunta 24 |
 | Fase 7b: búsqueda y ficha en móvil, rendimiento y accesibilidad (`docs/REVISION-FASE-7.md`) | Claude Code | ✅ | Hecho (14 nov 2026); falta confirmar el CLS del perfil con Supabase real |
 | Fotos más ligeras en las tarjetas y la galería del móvil (`docs/PESO-DE-LAS-FOTOS.md`, recomendaciones 1 y 2; hechas en la 7b) | Claude Code | ✅ | Hecho (14 nov 2026); repetir la medición con fotos reales |
 | Pasada manual con teclado y lector de pantalla (A8) en las 5 pantallas clave | Usuario | ⏳ | Antes del piloto |
-| Seguimiento de la fianza | Claude Code | ⏳ | Antes del piloto |
+| Seguimiento de la fianza (depósito, llaves, plazo, devolución y liquidación de salida) | Claude Code | ✅ | Hecho (nov 2026); falta su e2e (ver hoja de ruta) y la revisión del abogado |
 | Plan del piloto en una ciudad: objetivos, captación de anuncios y moderación | Usuario (en la planificación) | ⏳ | Antes del piloto |
 | Moderador con tiempo para mirar `/admin` a diario: objetivo de 72 h para las notificaciones DSA | Usuario | ⏳ | Antes del piloto |
 
