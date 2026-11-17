@@ -2,7 +2,7 @@
 
 > **Fuente única de «qué toca ahora».** Solo se trabaja en el bloque marcado como **SIGUIENTE**. Lo que surja por el camino va a «Ideas aparcadas», no se hace en ese momento.
 > La actualiza Claude Code al cerrar cada bloque y se vuelve a subir al proyecto de Claude.
-> Última actualización: **17 de noviembre de 2026** (cierre de «CI en verde: e2e del asistente y chips de búsqueda»).
+> Última actualización: **17 de noviembre de 2026** (cierre de «Herramientas de revisión: skills de Supabase y gitleaks»).
 > Lo que falta antes de abrir, con responsable y estado: `docs/CHECKLIST-LANZAMIENTO.md`.
 
 ## Hecho
@@ -24,6 +24,7 @@
 | Datos sensibles de terceros (Russmedia) | Aviso visible sobre datos sensibles en la reseña, la respuesta pública y la biografía; el motivo «datos personales» de las denuncias lo dice expresamente; `/terminos` y `/privacidad` ajustadas (uso del contenido solo para prestar el servicio, retirada y cómo notificar). Sin detección automática |
 | Renombrado a Hommie y emails de acceso | Todo lo que ve el usuario dice Hommie (cabecera, portada, títulos, tarjetas para compartir, manifest, emails de la app, errores, contratos, PDF y páginas legales, que siguen en borrador). `/terminos` §3 ya no permite «solo chicas/chicos». Plantillas de los emails de acceso de Supabase en español en `docs/EMAILS-DE-ACCESO.md`. Los nombres internos no cambian |
 | CI en verde (e2e del asistente y de los chips) | Dos pruebas fallaban en la CI. (1) La del asistente comprobaba mal que el aviso no repite el teléfono: encontraba el propio campo, no el aviso (el aviso **nunca** lo repitió); ahora mira el aviso. (2) Los chips «Quitar filtro» fallaban a veces de verdad: el esqueleto de carga `src/app/anuncios/loading.tsx` dejaba bloqueada la navegación por parámetros de búsqueda; se quitó (como en el perfil) |
+| Herramientas de revisión (skills de Supabase y gitleaks) | Las dos skills oficiales de Supabase (`supabase` y `supabase-postgres-best-practices`) instaladas sin modificar en `.claude/skills/`, fijadas a un commit y sin hooks ni actualización automática, para que Claude Code las consulte al tocar SQL, RLS o migraciones (origen y reglas en `CLAUDE.md` y `.claude/skills/ORIGEN-SKILLS.md`). Nuevo trabajo «secretos» en la CI: gitleaks recorre todo el historial y falla si hay una clave, sin mostrar nunca su valor. Resultado inicial: 134 commits, 0 hallazgos. Sin cambios en la app ni en la base de datos |
 | Fase 7a · SEO técnico y auditoría | Páginas de ciudad (`/habitaciones/lugo`, `/pisos/lugo`…), `sitemap.xml`, `robots.txt`, datos estructurados, tarjetas para compartir, indexación apagada con una variable, y `docs/REVISION-FASE-7.md` (Lighthouse, axe y 52 capturas en móvil) |
 
 ## SIGUIENTE (en este orden, decidido en la planificación)
@@ -94,6 +95,10 @@ Después del piloto: contratos · fase 3 / **Fase B de pagos** con socio regulad
 24. (l) **Russmedia (TJUE C-492/23):** ¿bastan el aviso de datos sensibles, el canal de denuncias, la ocultación cautelar y los cambios de `/terminos` y `/privacidad` (ver CLAUDE.md, «Datos sensibles de terceros») para no ser corresponsable de los datos de terceros que publican los usuarios? ¿Hace falta un control previo (no solo aviso) en reseñas, con riesgo de falsos positivos? ¿Es suficiente la cláusula «Tu contenido» (uso solo para prestar el servicio) o hace falta una licencia expresa mínima?
 
 ## Ideas aparcadas (no hacer sin decidirlo antes en la planificación)
+
+- **Revisar las migraciones existentes con la skill de Supabase** (solo lectura: Claude Code las repasa con `supabase` y `supabase-postgres-best-practices` y entrega un informe de hallazgos, sin cambiar nada; lo que salga se decide después como bloque aparte).
+- **Skills de Vercel** (`react-best-practices`, `next-best-practices`): aparcadas. Si algún día se instalan, con commit fijado y revisadas antes, y dejando fuera lo de Cache Components de Next 16 (el proyecto está en 15.5, decisión 1).
+- **Herramientas evaluadas y descartadas (noviembre de 2026):** ECC (`affaan-m/ecc`), superpowers, squawk y awesome-claude-code. Duplican el proceso que ya hay o recargan el contexto de Claude Code sin aportar lo que no tenemos.
 
 - **Nombres técnicos que todavía dicen «convivo»** (no los ve el usuario; renombrarlos solo con un motivo y con cuidado): repositorio, `package.json`, variables de sesión de la BD (`convivo.contract_rpc`, `convivo.anonymizing`), usuarios de ejemplo `@convivo.test`, contraseña de desarrollo, dominio de prueba de los e2e. Y los textos de las migraciones ya aplicadas.
 - Las plantillas de Supabase Auth hay que pegarlas a mano en el panel (pasos en `docs/EMAILS-DE-ACCESO.md`); el cambio de contraseña y el de email aún no tienen pantalla en la app.
