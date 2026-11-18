@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { findCity, KNOWN_CITY_NAMES } from "@/lib/listings/cities";
-import { nextAcademicYear, periodText, PROVINCES } from "@/lib/listings/options";
+import { academicYearFor, periodText, PROVINCES } from "@/lib/listings/options";
 import { listingDraftSchema, publishErrors, toListingRow } from "@/lib/listings/schema";
 
 const base = {
@@ -44,9 +44,19 @@ describe("ciudades conocidas", () => {
 });
 
 describe("periodo de alquiler", () => {
-  it("el próximo curso va de septiembre a junio", () => {
-    expect(nextAcademicYear(new Date("2026-11-06"))).toEqual({ from: "2027-09-01", until: "2028-06-30" });
-    expect(nextAcademicYear(new Date("2027-05-10"))).toEqual({ from: "2027-09-01", until: "2028-06-30" });
+  it("auditoría I15: «curso» propone el fin del curso en marcha según la fecha de entrada", () => {
+    const today = new Date("2026-11-17T12:00:00");
+    // Entrando en diciembre de 2026, el curso termina en junio de 2027 (no de 2028).
+    expect(academicYearFor("2026-12-01", today)).toEqual({ from: "2026-12-01", until: "2027-06-30" });
+    expect(academicYearFor("2026-09-01", today)).toEqual({ from: "2026-09-01", until: "2027-06-30" });
+    expect(academicYearFor("2027-02-15", today)).toEqual({ from: "2027-02-15", until: "2027-06-30" });
+    expect(academicYearFor("2027-06-10", today)).toEqual({ from: "2027-06-10", until: "2027-06-30" });
+    // En julio y agosto ya se habla del curso que empieza en septiembre.
+    expect(academicYearFor("2027-07-15", today)).toEqual({ from: "2027-07-15", until: "2028-06-30" });
+    expect(academicYearFor("2027-09-01", today)).toEqual({ from: "2027-09-01", until: "2028-06-30" });
+    // Sin fecha de entrada: hoy, o el 1 de septiembre si es verano.
+    expect(academicYearFor("", today)).toEqual({ from: "2026-11-17", until: "2027-06-30" });
+    expect(academicYearFor(null, new Date("2027-08-03T12:00:00"))).toEqual({ from: "2027-09-01", until: "2028-06-30" });
   });
 
   it("curso o fechas concretas exigen fecha de fin posterior a la entrada", () => {

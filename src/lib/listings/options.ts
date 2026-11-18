@@ -55,10 +55,22 @@ export const RENTAL_TERM_LABELS: Record<RentalTerm, string> = {
   fixed: "Fechas concretas",
 };
 
-/** Próximo curso universitario: del 1 de septiembre al 30 de junio siguiente. */
-export function nextAcademicYear(today = new Date()) {
-  const y = today.getMonth() < 8 ? today.getFullYear() : today.getFullYear() + 1;
-  return { from: `${y}-09-01`, until: `${y + 1}-06-30` };
+/**
+ * Curso universitario EN MARCHA para una fecha de entrada (auditoría I15): el
+ * curso va del 1 de septiembre al 30 de junio. Quien entra de septiembre a junio
+ * termina el 30 de junio de ese curso (entrando en diciembre de 2026, junio de
+ * 2027); quien entra en julio o agosto, el del curso que empieza en septiembre.
+ * Sin fecha de entrada se propone hoy (o el 1 de septiembre si es verano).
+ */
+export function academicYearFor(start?: string | null, today = new Date()) {
+  const iso = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  const valid = start && /^\d{4}-\d{2}-\d{2}$/.test(start) ? start : null;
+  const base = valid ?? iso(today);
+  const year = Number(base.slice(0, 4));
+  const month = Number(base.slice(5, 7));
+  const summer = month === 7 || month === 8;
+  const from = valid ?? (summer ? `${year}-09-01` : base);
+  return { from, until: `${month >= 7 ? year + 1 : year}-06-30` };
 }
 
 /** Texto corto del periodo: "Curso 2027/28", "Hasta 30 jun 2027" o null. */

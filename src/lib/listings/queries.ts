@@ -1,20 +1,38 @@
 import "server-only";
 
-import { applyListingFilters, escapeLike, type FilterableQuery, type ListingFilters } from "@/lib/listings/filters";
+import { applyListingFilters, escapeLike, lastPage, PAGE_SIZE, type FilterableQuery, type ListingFilters } from "@/lib/listings/filters";
 import type { RuleKey } from "@/lib/listings/options";
 import { createClient } from "@/lib/supabase/server";
 
 export const CARD_COLUMNS =
   "id, kind, title, city, province, neighborhood, monthly_rent, max_budget, available_from, move_in_date, rental_term, available_until, furnished, bills_included, photos, published_at";
 
+/**
+ * Búsqueda paginada. Si se pide una página que no existe (un enlace viejo o
+ * `?pagina=99`), no es un error: se devuelve la ÚLTIMA página que sí existe y
+ * `page` dice cuál es (auditoría I4; antes PostgREST respondía 416 y la página caía).
+ */
 export async function searchListings(filters: ListingFilters) {
   const supabase = await createClient();
-  const base = supabase.from("listings").select(CARD_COLUMNS, { count: "exact" });
-  // El builder de Supabase cumple la interfaz mínima de FilterableQuery.
-  const query = applyListingFilters(base as unknown as FilterableQuery<typeof base>, filters) as unknown as typeof base;
-  const { data, error, count } = await query;
+  const run = (f: ListingFilters) => {
+    const base = supabase.from("listings").select(CARD_COLUMNS, { count: "exact" });
+    // El builder de Supabase cumple la interfaz mínima de FilterableQuery.
+    return applyListingFilters(base as unknown as FilterableQuery<typeof base>, f) as unknown as typeof base;
+  };
+  const requested = filters.pagina ?? 1;
+  let page = requested;
+  let { data, error, count } = await run(filters);
+  const outOfRange = Boolean(error) || (requested > 1 && (data ?? []).length === 0);
+  if (outOfRange && requested > 1) {
+    // Cuántos hay de verdad (primera página, con los mismos filtros) y, de ahí, la última página.
+    const first = await run({ ...filters, pagina: 1 });
+    if (first.error) throw first.error;
+    page = lastPage(first.count ?? 0);
+    if (page <= 1) ({ data, error, count } = first);
+    else ({ data, error, count } = await run({ ...filters, pagina: page }));
+  }
   if (error) throw error;
-  return { items: data ?? [], total: count ?? 0 };
+  return { items: data ?? [], total: count ?? 0, page, requestedPage: requested, pageSize: PAGE_SIZE };
 }
 
 export type ListingCardData = Awaited<ReturnType<typeof searchListings>>["items"][number];

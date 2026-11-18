@@ -168,6 +168,21 @@ test.describe("anuncios", () => {
     await expect(page.getByRole("link", { name: "Quitar filtro: Piso entero" })).toHaveCount(0);
   });
 
+  test("auditoría I4: una página de la búsqueda que no existe enseña la última, nunca un error", async ({ page }) => {
+    for (const url of ["/anuncios?pagina=99", "/anuncios?tipo=flat&pagina=7"]) {
+      const response = await page.goto(url);
+      expect(response?.status()).toBe(200);
+      await expect(page.getByText("Algo se ha torcido")).toHaveCount(0);
+      await expect(page.getByRole("status").filter({ hasText: /No hay página (99|7): no hay más anuncios/ })).toBeVisible();
+      await expect(page.getByRole("heading", { level: 1, name: "Anuncios" })).toBeVisible();
+      await expect(page.locator("main ul li a").first()).toBeVisible();
+    }
+    // Sin resultados y con una página imposible: el mensaje de siempre, no un error.
+    const empty = await page.goto("/anuncios?ciudad=Zamora&pagina=5");
+    expect(empty?.status()).toBe(200);
+    await expect(page.getByText("No hay anuncios con estos filtros.")).toBeVisible();
+  });
+
   test("mis anuncios: pausar retira el anuncio del listado y reactivar lo devuelve", async ({ page }, testInfo) => {
     // Modifica un anuncio compartido del seed: solo en un proyecto para no pisarse en paralelo.
     test.skip(testInfo.project.name !== "escritorio", "Solo en escritorio");

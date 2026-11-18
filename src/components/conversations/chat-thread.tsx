@@ -8,7 +8,9 @@ import { buttonClass } from "@/components/ui/submit-button";
 import { inputClass } from "@/components/ui/field";
 import { createClient } from "@/lib/supabase/client";
 
-const timeFmt = new Intl.DateTimeFormat("es-ES", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+// Siempre en hora de España: el servidor (UTC) y el navegador tienen que pintar lo
+// mismo, o la hora «salta» al cargar y React avisa de un error de hidratación (auditoría I9).
+const timeFmt = new Intl.DateTimeFormat("es-ES", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit", timeZone: "Europe/Madrid" });
 
 export function ChatThread({
   interestId,

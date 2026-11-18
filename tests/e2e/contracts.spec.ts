@@ -78,6 +78,19 @@ test.describe("contrato firmado en Hommie", () => {
     await expect(host.getByText("Pendiente de firma").first()).toBeVisible();
     await expect.poll(mailpitSubjects).toContainEqual(expect.stringContaining("te ha enviado un contrato para firmar"));
 
+    // Auditoría I1: el inquilino se entera por el contador de avisos y llega al contrato desde el aviso.
+    await guest.goto("/");
+    await expect(guest.getByTestId("avisos-contador")).toHaveText(/^1/);
+    await guest.getByRole("link", { name: /^Avisos/ }).first().click();
+    await expect(guest).toHaveURL(/\/avisos$/);
+    const todo = guest.getByTestId("avisos-pendientes");
+    await expect(todo.getByRole("link")).toHaveCount(1);
+    await todo.getByRole("link", { name: /Tienes un contrato para firmar/ }).click();
+    await expect(guest).toHaveURL(contractUrl);
+    // Abrirlo no lo da por atendido: sigue contando hasta que firme.
+    await expect(guest.getByTestId("avisos-contador")).toHaveText(/^1/);
+    await expect(guest.getByRole("link", { name: "Contratos", exact: true }).first()).toBeVisible();
+
     // El inquilino lo ve desde el chat y firma.
     await guest.goto(conversation);
     await guest.getByRole("link", { name: "Ver contrato" }).click();
@@ -89,6 +102,11 @@ test.describe("contrato firmado en Hommie", () => {
     await guest.getByLabel("Escribe tu nombre completo").fill(guestLegal.toLowerCase());
     await guest.getByRole("button", { name: "Firmar" }).click();
     await expect(guest.getByText("Ya has firmado. Falta que firme la otra parte.")).toBeVisible();
+    // Firmado por su parte: el aviso deja de pedir acción y el contador desaparece.
+    await guest.goto("/avisos");
+    await expect(guest.getByText("No tienes nada pendiente.", { exact: false })).toBeVisible();
+    await expect(guest.getByTestId("avisos-contador")).toHaveCount(0);
+    await expect(guest.getByRole("heading", { name: "Anteriores" })).toBeVisible();
 
     // Firma el casero: contrato cerrado y estancia activa.
     await host.reload();
@@ -177,8 +195,8 @@ test.describe("contrato firmado en Hommie", () => {
     await expect(host.getByText("Enviada", { exact: true }).first()).toBeVisible();
     await host.goto(`${contractUrl}/fianza/liquidacion/resumen`);
     await expect(host.getByText(/Limpieza final · 12,50\s€/)).toBeVisible();
-    await guest.goto("/mis-resenas");
-    await expect(guest.getByText(/1 partida por un total de 12,50 €/)).toBeVisible();
+    await guest.goto("/avisos");
+    await expect(guest.getByTestId("avisos-pendientes").getByText(/1 partida por un total de 12,50 €/)).toBeVisible();
 
     await guest.goto("/mis-estancias");
     await expect(guest.getByText("Activa", { exact: true })).toBeVisible();

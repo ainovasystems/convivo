@@ -67,6 +67,33 @@ export const listingDraftSchema = z.object({
 export type ListingDraft = z.infer<typeof listingDraftSchema>;
 export type ListingDraftInput = z.input<typeof listingDraftSchema>;
 
+/**
+ * Borrador con algún campo no válido (un precio de -50, un código postal a
+ * medias…): se aparta SOLO lo que está mal y se guarda todo lo demás, para que
+ * un número fuera de rango no impida guardar el resto (auditoría I8).
+ * Devuelve el borrador ya limpio y, por campo, el motivo de lo apartado; `null`
+ * si ni así se puede leer.
+ */
+export function salvageDraft(input: unknown): { data: ListingDraft; dropped: Record<string, string> } | null {
+  const first = listingDraftSchema.safeParse(input);
+  if (first.success) return { data: first.data, dropped: {} };
+  if (typeof input !== "object" || input === null) return null;
+  const copy: Record<string, unknown> = { ...(input as Record<string, unknown>) };
+  const dropped: Record<string, string> = {};
+  for (const issue of first.error.issues) {
+    const [key, sub] = issue.path;
+    if (typeof key !== "string") return null;
+    dropped[issue.path.join(".")] ??= issue.message;
+    if (key === "address" && typeof sub === "string" && typeof copy.address === "object" && copy.address !== null) {
+      copy.address = { ...(copy.address as Record<string, unknown>), [sub]: "" };
+    } else {
+      delete copy[key]; // vuelve a su valor por defecto (vacío)
+    }
+  }
+  const second = listingDraftSchema.safeParse(copy);
+  return second.success ? { data: second.data, dropped } : null;
+}
+
 const required = <T>(v: T | null | undefined) => v !== null && v !== undefined;
 
 /** Datos personales en el texto público del anuncio, por campo. Se aplica también al guardar un borrador. */

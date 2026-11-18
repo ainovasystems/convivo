@@ -42,6 +42,8 @@
 
 **Cambios futuros de la base de datos:** cuando Claude Code añada una migración nueva (un fichero nuevo en `supabase/migrations/`), te dirá cuál es. Pégala en el SQL Editor y anótala en la tabla «Migraciones aplicadas en producción», al final de esta guía. **Nunca** pegues `instalar-base-de-datos.sql` en un proyecto que ya tiene datos.
 
+> **Regla de orden: primero la base de datos, después el código.** Una migración nueva se pega en el SQL Editor **antes** de publicar en Vercel el código que la usa. Al revés, la web se cae: el código nuevo busca columnas o funciones que todavía no existen (pasó en la web de pruebas en noviembre de 2026: las pantallas de contrato dieron «página no encontrada» durante unas horas). En producción, por tanto: (1) pega la migración y comprueba que termina sin errores; (2) anótala en la tabla del final; (3) solo entonces publica el código. Las migraciones se escriben para que el código anterior siga funcionando mientras tanto.
+
 ### 1.3 Usuarios y emails de acceso (Authentication)
 - [ ] Authentication → **Sign In / Providers** → Email: activa **Confirm email**. Es obligatorio: así nadie se registra con un email ajeno.
 - [ ] Authentication → **URL Configuration**:

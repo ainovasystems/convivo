@@ -13,6 +13,11 @@ export const PERIODS = { indefinido: "indefinite", curso: "academic_year", fecha
 export const SORTS = ["recientes", "precio_asc", "precio_desc"] as const;
 export const PAGE_SIZE = 12;
 
+/** Última página que existe para un total de anuncios (como mínimo, la 1). */
+export function lastPage(total: number): number {
+  return Math.max(1, Math.ceil(total / PAGE_SIZE));
+}
+
 const flag = z
   .enum(["1", "true", "si"])
   .optional()

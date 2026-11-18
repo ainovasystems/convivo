@@ -25,8 +25,10 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
 }
 
 export default async function ListingsPage({ searchParams }: Props) {
-  const filters = parseFilters(await searchParams);
-  const { items, total } = await searchListings(filters);
+  const asked = parseFilters(await searchParams);
+  const { items, total, page, requestedPage } = await searchListings(asked);
+  // Si se pidió una página que no existe, se enseña la última que sí (auditoría I4).
+  const filters = page === requestedPage ? asked : { ...asked, pagina: page === 1 ? undefined : page };
 
   return (
     <div className="mx-auto max-w-6xl space-y-6 px-4 py-8">
@@ -40,6 +42,11 @@ export default async function ListingsPage({ searchParams }: Props) {
             {total === 1 ? "1 anuncio" : `${total} anuncios`}
           </p>
         </div>
+        {page !== requestedPage ? (
+          <p role="status" className="rounded-2xl bg-surface px-4 py-3 text-sm">
+            No hay página {requestedPage}: no hay más anuncios{items.length ? `, así que te enseñamos la última (la ${page})` : ""}.
+          </p>
+        ) : null}
         {items.length ? <h2 className="sr-only">Resultados</h2> : null}
         {items.length ? (
           <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">

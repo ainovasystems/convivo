@@ -13,6 +13,7 @@ import {
   photosSchema,
   listingTextErrors,
   publishErrors,
+  salvageDraft,
   toListingRow,
 } from "@/lib/listings/schema";
 import { createClient } from "@/lib/supabase/server";
@@ -93,22 +94,37 @@ export async function saveListing(id: string, input: unknown): Promise<SaveResul
   if (!ctx) return NOT_FOUND;
   if (ctx.listing.status === "closed") return { ok: false, message: "Un anuncio cerrado no se puede editar." };
 
-  const parsed = listingDraftSchema.safeParse(input);
-  if (!parsed.success) return { ok: false, errors: fieldErrors(parsed.error), message: "Revisa los campos marcados." };
+  const isDraft = ctx.listing.status === "draft";
+  // En borrador, un campo no válido (un número fuera de rango…) no impide guardar
+  // lo demás: se aparta ese campo, se guarda el resto y se dice cuál está mal.
+  // Un anuncio ya publicado no se guarda a medias: exige todos los datos bien.
+  const strict = listingDraftSchema.safeParse(input);
+  const salvaged = strict.success ? { data: strict.data, dropped: {} } : isDraft ? salvageDraft(input) : null;
+  if (!salvaged) {
+    return { ok: false, errors: strict.success ? {} : fieldErrors(strict.error), message: "Revisa los campos marcados." };
+  }
 
   // Datos personales: no se guarda ni en borrador (el borrador ya es texto del anuncio).
-  const personal = listingTextErrors(parsed.data);
-  if (Object.keys(personal).length) return { ok: false, errors: personal, message: "Quita los datos personales marcados." };
+  const personal = listingTextErrors(salvaged.data);
+  if (Object.keys(personal).length) return { ok: false, errors: { ...salvaged.dropped, ...personal }, message: "Quita los datos personales marcados." };
 
-  if (ctx.listing.status !== "draft") {
-    const errors = publishErrors(ctx.listing.kind as ListingKind, parsed.data);
+  if (!isDraft) {
+    const errors = publishErrors(ctx.listing.kind as ListingKind, salvaged.data);
     if (Object.keys(errors).length) return { ok: false, errors, message: "Faltan datos obligatorios." };
   }
 
-  const result = await persist(ctx, parsed.data);
+  const result = await persist(ctx, salvaged.data);
   if (result.ok) {
     revalidatePath(`/anuncios/${id}`);
     revalidatePath("/mis-anuncios");
+  }
+  const skipped = Object.keys(salvaged.dropped).length;
+  if (result.ok && skipped > 0) {
+    return {
+      ...result,
+      errors: salvaged.dropped,
+      message: `Guardado, salvo ${skipped === 1 ? "el campo marcado" : `los ${skipped} campos marcados`}: corrígelo${skipped === 1 ? "" : "s"} para que también se guarde${skipped === 1 ? "" : "n"}.`,
+    };
   }
   return result;
 }

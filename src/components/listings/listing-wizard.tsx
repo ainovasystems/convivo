@@ -10,7 +10,7 @@ import { SelectField, TextAreaField, TextField } from "@/components/ui/field";
 import { buttonClass } from "@/components/ui/submit-button";
 import {
   KIND_LABELS,
-  nextAcademicYear,
+  academicYearFor,
   PROVINCES,
   RENTAL_TERM_LABELS,
   RENTAL_TERMS,
@@ -144,21 +144,23 @@ export function ListingWizard({
     setServerErrors(r.errors ?? {});
     setSaveState(
       r.ok
-        ? { tone: "saved", text: "Guardado." }
+        ? // Guardado del todo, o guardado salvo algún campo no válido (lo dice el mensaje).
+          { tone: r.message ? "error" : "saved", text: r.message ?? "Guardado." }
         : { tone: "error", text: r.message ?? "No se ha podido guardar." },
     );
   }, []);
 
   // Autoguardado de borradores (con espera de 1 s tras dejar de escribir).
   useEffect(() => {
-    if (!isDraft || !dirty.current || !parsed.success) return;
+    // También con algún campo no válido: el servidor guarda lo demás y dice cuál falla.
+    if (!isDraft || !dirty.current) return;
     const t = setTimeout(() => {
       setSaveState({ tone: "saving", text: "Guardando…" });
       saveListing(listing.id, toDraftInput(values)).then(handleResult);
       dirty.current = false;
     }, 1000);
     return () => clearTimeout(t);
-  }, [values, isDraft, parsed.success, listing.id, handleResult]);
+  }, [values, isDraft, listing.id, handleResult]);
 
   function goTo(next: Step) {
     setStep(next);
@@ -194,13 +196,13 @@ export function ListingWizard({
   );
   const knownCity = findCity(values.city);
 
-  /** Periodo de alquiler. Al elegir "curso" se proponen las fechas del próximo curso. */
+  /** Periodo de alquiler. Al elegir "curso" se propone el fin del curso en marcha según la fecha de entrada. */
   function changeTerm(term: RentalTerm, startKey: "availableFrom" | "moveInDate") {
     dirty.current = true;
     setValues((v) => {
       if (term !== "academic_year") return { ...v, rentalTerm: term };
-      const course = nextAcademicYear();
-      return { ...v, rentalTerm: term, [startKey]: v[startKey] || course.from, availableUntil: v.availableUntil || course.until };
+      const course = academicYearFor(v[startKey]);
+      return { ...v, rentalTerm: term, [startKey]: v[startKey] || course.from, availableUntil: course.until };
     });
   }
   const periodFields = (startKey: "availableFrom" | "moveInDate") => (
