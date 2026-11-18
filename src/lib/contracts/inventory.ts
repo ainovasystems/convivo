@@ -57,7 +57,7 @@ export type InventoryItemEdit = z.infer<typeof inventoryItemEditSchema>;
 /** Código de la BD cuando se intenta confirmar un inventario que ha cambiado. */
 export const INVENTORY_STALE_CODE = "P0409";
 export const INVENTORY_STALE_MESSAGE =
-  "El inventario ha cambiado desde que lo abriste, así que no hemos guardado tu confirmación. Abajo tienes marcado lo que ha cambiado: revísalo y, si estás de acuerdo, vuelve a confirmar.";
+  "El inventario ha cambiado desde que lo abriste, así que no hemos guardado tu confirmación. Ya ves la versión actual, con lo que ha cambiado marcado: revísala y, si estás de acuerdo, vuelve a confirmar.";
 
 /**
  * Qué ha cambiado entre lo que tenía delante quien iba a confirmar y lo que hay

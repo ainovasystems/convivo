@@ -5,7 +5,7 @@
 > Fecha: 17 de noviembre de 2026. Navegador: Chromium (Playwright), en **escritorio** (1280 px) y **móvil** (375 px, táctil).
 > Cada hallazgo se comprobó en la web real. Donde se indica, se miró además la base de datos **solo en lectura** para confirmar lo que la pantalla decía.
 
-> **Estado a 17 de noviembre de 2026 (bloque «Arreglos de la auditoría 1»):** arreglados **B1, B2, I5, I6** y los menores **20, 24 y 25**. Cada uno lleva su nota «✅ Arreglado» más abajo. El resto sigue pendiente, repartido en los bloques 2, 3 y 4 de `docs/HOJA-DE-RUTA.md`.
+> **Estado a 17 de noviembre de 2026 (bloque «Arreglos de la auditoría 1»):** arreglados **B1, B2, I5, I6** y los menores **20, 24 y 25**. Cada uno lleva su nota «✅ Arreglado» más abajo. El resto sigue pendiente, repartido en los bloques 2, 3 y 4 de `docs/HOJA-DE-RUTA.md`. B1, B2 e I6 se repitieron a mano en la web de pruebas el 18 de noviembre con las cuentas de auditoría (contrato del piso de Madrid) y ya no ocurren.
 
 ## 1. Resumen
 
