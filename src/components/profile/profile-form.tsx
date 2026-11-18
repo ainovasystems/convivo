@@ -1,13 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState, useState } from "react";
+import { useActionState, useEffect, useRef, useState, useTransition, type FormEvent } from "react";
 
-import { updateProfile } from "@/app/perfil/editar/actions";
+import { removeAvatar, updateProfile } from "@/app/perfil/editar/actions";
+import { AvatarField } from "@/components/profile/avatar-uploader";
 import { FormAlert } from "@/components/ui/form-alert";
 import { SelectField, TextAreaField, TextField } from "@/components/ui/field";
-import { SubmitButton } from "@/components/ui/submit-button";
-import { initialFormState } from "@/lib/forms";
+import { buttonClass } from "@/components/ui/submit-button";
+import { initialFormState, SESSION_EXPIRED_MESSAGE } from "@/lib/forms";
 import {
   CLEANLINESS_LABELS,
   GUESTS,
@@ -28,6 +29,7 @@ import { profileFormDataToObject, profileSchema } from "@/lib/validation/profile
 
 export type ProfileFormValues = {
   id: string;
+  avatarPath: string | null;
   displayName: string;
   bio: string | null;
   city: string | null;
@@ -48,13 +50,74 @@ const scale = (labels: Record<number, string>) =>
 
 export function ProfileForm({ initial }: { initial: ProfileFormValues }) {
   const [state, action] = useActionState(updateProfile, initialFormState);
-  const { clientErrors, onSubmit } = useClientValidation(profileSchema, profileFormDataToObject);
-  const errors = { ...state.errors, ...clientErrors };
+  const [removeState, remove] = useActionState(removeAvatar, initialFormState);
+  const { clientErrors, onSubmit: validate } = useClientValidation(profileSchema, profileFormDataToObject);
   const [bioLive, setBioLive] = useState<string | null>(null);
+  const [avatarError, setAvatarError] = useState<string | null>(null);
+  const [blocked, setBlocked] = useState(false);
+  const [pending, startTransition] = useTransition();
+  const [savedKey, setSavedKey] = useState(0);
+  const avatarRef = useRef<HTMLDivElement>(null);
+  const errors = { ...state.errors, ...clientErrors };
+
+  useEffect(() => {
+    if (state.status === "success") setSavedKey((k) => k + 1);
+  }, [state]);
+
+  // El formulario se envía «a mano» (no con `action=`): así React no lo vacía al
+  // terminar, y si algo falla (la sesión caducada, un campo mal, la foto) lo que se
+  // había escrito sigue en la pantalla (auditoría I3).
+  function onSubmit(event: FormEvent<HTMLFormElement>) {
+    validate(event);
+    if (event.defaultPrevented) return;
+    event.preventDefault();
+    if (avatarError) {
+      // Foto elegida que no vale: no se envía nada (y no sale «Perfil guardado»).
+      setBlocked(true);
+      avatarRef.current?.scrollIntoView({ block: "center" });
+      return;
+    }
+    setBlocked(false);
+    const data = new FormData(event.currentTarget);
+    startTransition(() => action(data));
+  }
+
+  const alert = blocked
+    ? { status: "error" as const, message: "No se ha guardado: la foto elegida no vale. Cámbiala o pulsa «No cambiar la foto»." }
+    : state.message
+      ? state
+      : removeState;
+  const sessionExpired = !blocked && state.message === SESSION_EXPIRED_MESSAGE;
 
   return (
-    <form action={action} onSubmit={onSubmit} noValidate className="space-y-8">
-      <FormAlert state={state} />
+    <>
+    {/* Formulario aparte para «Quitar foto» (no se pueden anidar formularios). */}
+    <form id="remove-avatar" action={remove} className="hidden" />
+    <form onSubmit={onSubmit} noValidate className="space-y-8">
+      <FormAlert state={alert} />
+      {sessionExpired ? (
+        <p className="text-sm">
+          Lo que has escrito sigue aquí.{" "}
+          <a href="/entrar?next=/perfil/editar" target="_blank" rel="noreferrer" className="font-semibold text-brand underline">
+            Entra en otra pestaña
+          </a>{" "}
+          y vuelve a pulsar «Guardar perfil».
+        </p>
+      ) : null}
+
+      <div ref={avatarRef}>
+        <AvatarField
+          name={initial.displayName}
+          path={initial.avatarPath}
+          serverError={state.errors?.avatar}
+          onValidity={(e) => {
+            setAvatarError(e);
+            if (!e) setBlocked(false);
+          }}
+          savedKey={savedKey}
+          removeFormId="remove-avatar"
+        />
+      </div>
 
       <fieldset className="space-y-4">
         <legend className="text-lg font-semibold">Datos básicos</legend>
@@ -194,11 +257,14 @@ export function ProfileForm({ initial }: { initial: ProfileFormValues }) {
       </fieldset>
 
       <div className="flex flex-wrap items-center gap-4">
-        <SubmitButton pendingText="Guardando…">Guardar perfil</SubmitButton>
+        <button type="submit" className={buttonClass} disabled={pending} aria-disabled={pending}>
+          {pending ? "Guardando…" : "Guardar perfil"}
+        </button>
         <Link href={`/perfil/${initial.id}`} className="font-medium text-brand underline">
           Ver mi perfil público
         </Link>
       </div>
     </form>
+    </>
   );
 }

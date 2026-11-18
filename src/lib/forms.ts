@@ -11,3 +11,6 @@ export type FormState = {
 };
 
 export const initialFormState: FormState = { status: "idle" };
+
+/** Lo que responden las acciones cuando la sesión ha caducado a mitad de un formulario. */
+export const SESSION_EXPIRED_MESSAGE = "Tu sesión ha caducado. Vuelve a entrar.";

@@ -5,7 +5,7 @@ import { getPublicEnv, hasPublicEnv } from "@/lib/env";
 import type { Database } from "@/types/database.types";
 
 /** Rutas que exigen sesión. */
-const PROTECTED_PREFIXES = ["/perfil/editar", "/publicar", "/mis-", "/mensajes", "/admin", "/resenas", "/cuenta", "/contratos"];
+const PROTECTED_PREFIXES = ["/perfil/editar", "/publicar", "/mis-", "/mensajes", "/admin", "/resenas", "/cuenta", "/contratos", "/avisos"];
 const PROTECTED_EXACT = ["/perfil"];
 
 /** Rutas solo para visitantes sin sesión. */
@@ -73,7 +73,12 @@ export async function updateSession(request: NextRequest, extraRequestHeaders: R
 
   const { pathname, search } = request.nextUrl;
 
-  if (!user && isProtectedPath(pathname)) {
+  // Una Server Action (un formulario que se envía) no se redirige: si la sesión ha
+  // caducado mientras se escribía, redirigirla rompe el envío («Algo se ha torcido»)
+  // y se pierde lo escrito. Se deja pasar y la propia acción responde «Tu sesión ha
+  // caducado» (todas comprueban la sesión, y RLS protege los datos igualmente).
+  const isServerAction = request.method === "POST" && request.headers.has("next-action");
+  if (!user && isProtectedPath(pathname) && !isServerAction) {
     return redirectKeepingCookies(request, response, "/entrar", { next: pathname + search });
   }
 

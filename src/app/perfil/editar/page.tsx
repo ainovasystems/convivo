@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
-import { AvatarUploader } from "@/components/profile/avatar-uploader";
 import { ProfileForm } from "@/components/profile/profile-form";
 import { getCurrentUser } from "@/lib/auth";
 import { getProfile } from "@/lib/profile/queries";
@@ -32,12 +31,10 @@ export default async function EditProfilePage({
             : "Lo que pongas aquí es público. No incluyas teléfono, dirección ni datos sensibles."}
         </p>
       </div>
-      <section aria-label="Foto de perfil">
-        <AvatarUploader name={profile.display_name} path={profile.avatar_path} />
-      </section>
       <ProfileForm
         initial={{
           id: profile.id,
+          avatarPath: profile.avatar_path,
           displayName: profile.display_name,
           bio: profile.bio,
           city: profile.city,
