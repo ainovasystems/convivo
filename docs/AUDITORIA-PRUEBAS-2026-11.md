@@ -5,6 +5,8 @@
 > Fecha: 17 de noviembre de 2026. Navegador: Chromium (Playwright), en **escritorio** (1280 px) y **móvil** (375 px, táctil).
 > Cada hallazgo se comprobó en la web real. Donde se indica, se miró además la base de datos **solo en lectura** para confirmar lo que la pantalla decía.
 
+> **Bloque «Arreglos de la auditoría 2» (18 de noviembre de 2026):** arreglados **I1, I2, I3, I4, I7, I8, I9 e I15**, repetidos a mano en la web de pruebas. Quedan I10 a I14 (bloque 3) y los menores y dudas (bloque 4).
+>
 > **Estado a 17 de noviembre de 2026 (bloque «Arreglos de la auditoría 1»):** arreglados **B1, B2, I5, I6** y los menores **20, 24 y 25**. Cada uno lleva su nota «✅ Arreglado» más abajo. El resto sigue pendiente, repartido en los bloques 2, 3 y 4 de `docs/HOJA-DE-RUTA.md`. B1, B2 e I6 se repitieron a mano en la web de pruebas el 18 de noviembre con las cuentas de auditoría (contrato del piso de Madrid) y ya no ocurren.
 
 ## 1. Resumen
@@ -64,6 +66,8 @@ Direcciones que se citan en los pasos:
 
 ### I1 · Los avisos de la app solo están en «Reseñas», sin contador, sin enlace y sin fecha
 
+> ✅ **Arreglado (bloque 2).** Hay una pantalla **Avisos** con contador en la cabecera y en la barra inferior (la pestaña «Reseñas» pasó a ser «Avisos»), con fecha, enlace a la pantalla de cada aviso y accesos a Contratos, Reseñas, Estancias y Mis anuncios. Cada aviso deja de pedir acción cuando se hace lo que pedía, y los repetidos se sustituyen. Los avisos anteriores quedaron archivados.
+
 - **Pantalla:** `/mis-resenas`. Móvil y escritorio.
 - **Pasos:** la casera envía un contrato; el inquilino entra en la web.
 - **Esperaba:** un aviso visible («tienes un contrato para firmar») que le lleve al contrato.
@@ -72,6 +76,8 @@ Direcciones que se citan en los pasos:
 
 ### I2 · Subir un resguardo de fianza grande da la pantalla de error
 
+> ✅ **Arreglado (bloque 2).** La foto del resguardo se reduce en el navegador antes de subirla (como las de los anuncios). Un PDF de más de 2,5 MB o un fichero de otro tipo se dicen en la pantalla, sin perder lo escrito.
+
 - **Pantalla:** `/contratos/[id]`, paso «1. Depósito de la fianza». Escritorio (igual en móvil).
 - **Pasos:** rellenar fecha y número, adjuntar una foto de 7,7 MB y pulsar «Anotar el depósito».
 - **Esperaba:** «El archivo no puede pasar de 2,5 MB».
@@ -79,12 +85,16 @@ Direcciones que se citan en los pasos:
 
 ### I3 · Con la sesión caducada, guardar el perfil da la pantalla de error
 
+> ✅ **Arreglado (bloque 2).** Con la sesión caducada sale «Tu sesión ha caducado. Vuelve a entrar», con un enlace para entrar en otra pestaña, y lo escrito sigue en la pantalla.
+
 - **Pantalla:** `/perfil/editar`. Escritorio.
 - **Pasos:** escribir en «Sobre ti», dejar que caduque la sesión (o borrar las cookies) y pulsar «Guardar perfil».
 - **Esperaba:** «Tu sesión ha caducado. Vuelve a entrar», como hace el chat (que además conserva el texto).
 - **Pasó:** «Algo se ha torcido» y se pierde lo escrito.
 
 ### I4 · La búsqueda da error 500 si la página no existe
+
+> ✅ **Arreglado (bloque 2).** Una página que no existe enseña la última que sí, con el aviso «No hay página 99: no hay más anuncios».
 
 - **Pantalla:** `/anuncios?pagina=99` (también `?pagina=2` cuando solo hay una página). Sin sesión, móvil y escritorio.
 - **Esperaba:** la última página o «no hay más anuncios».
@@ -108,6 +118,8 @@ Direcciones que se citan en los pasos:
 
 ### I7 · La foto de perfil no se guarda con «Guardar perfil»
 
+> ✅ **Arreglado (bloque 2).** «Guardar perfil» guarda también la foto elegida. Con una foto no válida no se guarda nada y se explica por qué.
+
 - **Pantalla:** `/perfil/editar` (también en la bienvenida tras registrarse). Escritorio y móvil.
 - **Pasos:** elegir una foto (aparece la vista previa), bajar y pulsar «Guardar perfil».
 - **Esperaba:** que se guardara todo.
@@ -115,12 +127,16 @@ Direcciones que se citan en los pasos:
 
 ### I8 · El asistente deja de guardar sin avisar si hay un número fuera de rango
 
+> ✅ **Arreglado (bloque 2).** Un número fuera de rango ya no impide guardar lo demás: se guarda el resto y se dice «Guardado, salvo el campo marcado».
+
 - **Pantalla:** `/publicar/[id]?paso=datos`. Escritorio.
 - **Pasos:** rellenar título y descripción, poner un precio de `-50` (o una fianza enorme) y recargar.
 - **Esperaba:** conservar lo demás, o un aviso de «sin guardar».
 - **Pasó:** arriba sigue «Los cambios se guardan solos», pero no se guarda **nada** mientras haya un número inválido; al recargar, el borrador está vacío.
 
 ### I9 · Las horas del chat salen primero en hora UTC
+
+> ✅ **Arreglado (bloque 2).** El chat pinta la hora de España desde el servidor: ya no salta ni da el error de React.
 
 - **Pantalla:** `/mensajes/[id]`. Móvil y escritorio.
 - **Pasó:** el servidor envía «12:32» y, al terminar de cargar, cambia a «13:32». En cada conversación salta un error interno de React (n.º 418). Solo pasa en el chat: las horas de firmas, inventarios y fianza salen bien.
@@ -152,6 +168,8 @@ Direcciones que se citan en los pasos:
 - **Pasó:** dentro del texto firmado aparecen «[Revisar con el abogado si deben constar documento de identidad y domicilio de las partes]» y «[Revisar con el abogado si, según el caso, resulta aplicable la Ley de Arrendamientos Urbanos]». Es coherente con «borrador», pero un usuario del piloto firmaría eso tal cual.
 
 ### I15 · «Curso universitario» propone como fin el 30 de junio de 2028
+
+> ✅ **Arreglado (bloque 2).** «Curso universitario» propone el 30 de junio del curso en marcha según la fecha de entrada (entrando en diciembre de 2026, junio de 2027).
 
 - **Pantalla:** asistente, «Periodo de alquiler». Probado el 17 de noviembre de 2026 con entrada el 1 de diciembre de 2026.
 - **Esperaba:** 30 de junio de 2027 (el curso en marcha).
