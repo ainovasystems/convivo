@@ -3,17 +3,37 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-import { ChatIcon, PlusIcon, SearchIcon, StarIcon, UserIcon } from "@/components/brand/icons";
+import { BellIcon, ChatIcon, PlusIcon, SearchIcon, UserIcon } from "@/components/brand/icons";
 
 /** Barra de pestañas inferior (solo móvil), como en las apps nativas. */
-export function BottomNav({ loggedIn, unread, profileHref }: { loggedIn: boolean; unread: number; profileHref: string }) {
+export function BottomNav({
+  loggedIn,
+  unread,
+  notices,
+  profileHref,
+}: {
+  loggedIn: boolean;
+  /** Mensajes sin leer. */
+  unread: number;
+  /** Avisos sin atender. */
+  notices: number;
+  profileHref: string;
+}) {
   const pathname = usePathname();
   const items = [
     { href: "/anuncios", label: "Buscar", Icon: SearchIcon, match: ["/anuncios", "/"] },
-    { href: loggedIn ? "/mensajes" : "/entrar?next=/mensajes", label: "Mensajes", Icon: ChatIcon, match: ["/mensajes"], badge: unread },
+    { href: loggedIn ? "/mensajes" : "/entrar?next=/mensajes", label: "Mensajes", Icon: ChatIcon, match: ["/mensajes"], badge: unread, badgeLabel: " sin leer" },
     { href: "/publicar", label: "Publicar", Icon: PlusIcon, match: ["/publicar"], primary: true },
-    { href: loggedIn ? "/mis-resenas" : "/entrar?next=/mis-resenas", label: "Reseñas", Icon: StarIcon, match: ["/mis-resenas", "/resenas"] },
-    { href: profileHref, label: "Perfil", Icon: UserIcon, match: ["/perfil", "/entrar", "/registro", "/mis-anuncios", "/mis-estancias", "/cuenta", "/contratos"] },
+    // Avisos (con su contador) es también la puerta a contratos, reseñas y estancias.
+    {
+      href: loggedIn ? "/avisos" : "/entrar?next=/avisos",
+      label: "Avisos",
+      Icon: BellIcon,
+      match: ["/avisos", "/contratos", "/mis-resenas", "/resenas", "/mis-estancias"],
+      badge: notices,
+      badgeLabel: " sin atender",
+    },
+    { href: profileHref, label: "Perfil", Icon: UserIcon, match: ["/perfil", "/entrar", "/registro", "/mis-anuncios", "/cuenta"] },
   ];
 
   return (
@@ -22,7 +42,7 @@ export function BottomNav({ loggedIn, unread, profileHref }: { loggedIn: boolean
       className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur sm:hidden print:hidden"
     >
       <ul className="grid grid-cols-5">
-        {items.map(({ href, label, Icon, match, badge, primary }) => {
+        {items.map(({ href, label, Icon, match, badge, badgeLabel, primary }) => {
           const active = match.some((m) => (m === "/" ? pathname === "/" : pathname.startsWith(m)));
           return (
             <li key={label}>
@@ -41,7 +61,7 @@ export function BottomNav({ loggedIn, unread, profileHref }: { loggedIn: boolean
                     {badge ? (
                       <span className="absolute -right-2 -top-1 min-w-4 rounded-full bg-accent px-1 text-center text-[10px] font-bold leading-4 text-accent-foreground">
                         {badge > 99 ? "99+" : badge}
-                        <span className="sr-only"> sin leer</span>
+                        <span className="sr-only">{badgeLabel}</span>
                       </span>
                     ) : null}
                   </span>

@@ -105,14 +105,6 @@ export async function reportReview(_prev: FormState, formData: FormData): Promis
   };
 }
 
-export async function markNotificationsRead(): Promise<void> {
-  const user = await getCurrentUser();
-  if (!user) return;
-  const supabase = await createClient();
-  await supabase.from("notifications").update({ read_at: new Date().toISOString() }).is("read_at", null);
-  revalidatePath("/mis-resenas");
-}
-
 /** Borrar mi propia reseña con motivo (queda constancia). */
 export async function deleteMyReview(reviewId: string, reason: string): Promise<FormState> {
   const user = await getCurrentUser();

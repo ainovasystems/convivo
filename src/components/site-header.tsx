@@ -5,12 +5,13 @@ import { Logo } from "@/components/brand/logo";
 import { BottomNav } from "@/components/bottom-nav";
 import { getCurrentUser } from "@/lib/auth";
 import { getUnreadTotal } from "@/lib/conversations/queries";
+import { getNotificationCount } from "@/lib/notifications/queries";
 
 const linkClass = "rounded-full px-3 py-2 text-sm font-semibold text-foreground/80 hover:bg-brand-soft hover:text-brand";
 
 export async function SiteHeader() {
   const user = await getCurrentUser();
-  const unread = user ? await getUnreadTotal() : 0;
+  const [unread, notices] = user ? await Promise.all([getUnreadTotal(), getNotificationCount()]) : [0, 0];
 
   return (
     <>
@@ -42,6 +43,22 @@ export async function SiteHeader() {
                     </Link>
                   </li>
                   <li>
+                    <Link href="/avisos" className={linkClass + " inline-flex items-center gap-1.5"}>
+                      Avisos
+                      {notices ? (
+                        <span data-testid="avisos-contador" className="rounded-full bg-accent px-1.5 text-xs font-bold text-accent-foreground">
+                          {notices > 99 ? "99+" : notices}
+                          <span className="sr-only"> sin atender</span>
+                        </span>
+                      ) : null}
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/contratos" className={linkClass}>
+                      Contratos
+                    </Link>
+                  </li>
+                  <li className="hidden lg:block">
                     <Link href="/mis-resenas" className={linkClass}>
                       Reseñas
                     </Link>
@@ -93,7 +110,7 @@ export async function SiteHeader() {
           </div>
         </div>
       </header>
-      <BottomNav loggedIn={Boolean(user)} unread={unread} profileHref={user ? `/perfil/${user.id}` : "/entrar"} />
+      <BottomNav loggedIn={Boolean(user)} unread={unread} notices={notices} profileHref={user ? `/perfil/${user.id}` : "/entrar"} />
     </>
   );
 }

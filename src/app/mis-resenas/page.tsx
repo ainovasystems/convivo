@@ -2,11 +2,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
-import { markNotificationsRead } from "@/app/resenas/actions";
 import { Rating } from "@/components/ui/rating";
 import { getCurrentUser } from "@/lib/auth";
 import { formatDate } from "@/lib/reviews/labels";
-import { getMyNotifications, getMyReviewTasks, getMyWrittenReviews } from "@/lib/reviews/queries";
+import { getMyReviewTasks, getMyWrittenReviews } from "@/lib/reviews/queries";
 import { RELATIONSHIP_TITLES } from "@/lib/reviews/targets";
 
 export const metadata: Metadata = { title: "Mis reseñas", robots: { index: false } };
@@ -18,15 +17,9 @@ export default async function MyReviewsPage({
 }) {
   const user = await getCurrentUser();
   if (!user) redirect("/entrar?next=/mis-resenas");
-  const [{ open, upcoming }, written, notifications, sp] = await Promise.all([
-    getMyReviewTasks(user.id),
-    getMyWrittenReviews(user.id),
-    getMyNotifications(),
-    searchParams,
-  ]);
+  const [{ open, upcoming }, written, sp] = await Promise.all([getMyReviewTasks(user.id), getMyWrittenReviews(user.id), searchParams]);
   const now = new Date();
   const justSent = typeof sp.enviada === "string" ? written.find((w) => w.id === sp.enviada) : undefined;
-  const unread = notifications.filter((n) => !n.read_at);
 
   return (
     <div className="mx-auto max-w-3xl space-y-10 px-4 py-8 sm:py-12">
@@ -43,29 +36,6 @@ export default async function MyReviewsPage({
             ? "Tu reseña está enviada y ya es pública: la otra parte también había opinado."
             : `Tu reseña está enviada. Se publicará cuando la otra parte opine o el ${formatDate(justSent.published_at)}.`}
         </p>
-      ) : null}
-
-      {unread.length ? (
-        <section aria-labelledby="avisos" className="space-y-3">
-          <div className="flex items-baseline justify-between gap-2">
-            <h2 id="avisos" className="text-lg font-semibold">
-              Avisos
-            </h2>
-            <form action={markNotificationsRead}>
-              <button type="submit" className="text-sm font-medium text-brand underline">
-                Marcar como leídos
-              </button>
-            </form>
-          </div>
-          <ul className="space-y-2">
-            {unread.map((n) => (
-              <li key={n.id} className="rounded-full border border-border p-3 text-sm">
-                <p className="font-medium">{n.title}</p>
-                {n.body ? <p className="text-muted">{n.body}</p> : null}
-              </li>
-            ))}
-          </ul>
-        </section>
       ) : null}
 
       <section aria-labelledby="pendientes" className="space-y-3">

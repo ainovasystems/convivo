@@ -83,16 +83,6 @@ export async function getMyWrittenReviews(userId: string) {
   return data ?? [];
 }
 
-export async function getMyNotifications() {
-  const supabase = await createClient();
-  const { data } = await supabase
-    .from("notifications")
-    .select("id, title, body, url, read_at, created_at")
-    .order("created_at", { ascending: false })
-    .limit(30);
-  return data ?? [];
-}
-
 /** Datos para el formulario de reseña; null si no se puede reseñar. */
 export async function getReviewFormContext(userId: string, stayId: string, subjectId: string) {
   const { open } = await getMyReviewTasks(userId);

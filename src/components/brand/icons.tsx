@@ -72,3 +72,9 @@ export const PinIcon = ({ className = "size-5" }: P) => (
     <circle cx="12" cy="9.5" r="2.5" />
   </svg>
 );
+export const BellIcon = ({ className = "size-6" }: P) => (
+  <svg {...base} className={className}>
+    <path d="M6 9a6 6 0 1 1 12 0c0 5 2 6 2 7H4c0-1 2-2 2-7Z" />
+    <path d="M10 20a2 2 0 0 0 4 0" />
+  </svg>
+);

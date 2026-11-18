@@ -995,6 +995,7 @@ export type Database = {
           id: string;
           kind: string;
           read_at: string | null;
+          resolved_at: string | null;
           title: string;
           url: string | null;
           user_id: string;
@@ -1006,6 +1007,7 @@ export type Database = {
           id?: string;
           kind: string;
           read_at?: string | null;
+          resolved_at?: string | null;
           title: string;
           url?: string | null;
           user_id: string;
@@ -1016,6 +1018,7 @@ export type Database = {
           id?: string;
           kind?: string;
           read_at?: string | null;
+          resolved_at?: string | null;
           title?: string;
           url?: string | null;
           user_id?: string;
@@ -2111,6 +2114,22 @@ export type Database = {
         }[];
       };
       mark_conversation_read: { Args: { p_interest_id: string }; Returns: undefined };
+      my_notification_count: { Args: Record<PropertyKey, never>; Returns: number };
+      my_notifications: {
+        Args: { p_limit?: number };
+        Returns: {
+          id: string;
+          kind: string;
+          title: string;
+          body: string | null;
+          url: string | null;
+          created_at: string;
+          read_at: string | null;
+          resolved_at: string | null;
+          needs_action: boolean;
+          pending: boolean;
+        }[];
+      };
       my_unread_counts: {
         Args: Record<PropertyKey, never>;
         Returns: {
