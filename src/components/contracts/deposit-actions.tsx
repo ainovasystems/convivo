@@ -13,6 +13,7 @@ import {
 } from "@/app/contratos/[id]/fianza/actions";
 import { inputClass, TextField } from "@/components/ui/field";
 import { buttonClass } from "@/components/ui/submit-button";
+import { prepareReceipt } from "@/lib/contracts/receipt-upload";
 
 /** Ejecuta una acción de la fianza y refresca la página con lo que confirmó el servidor. */
 function useDepositAction() {
@@ -40,12 +41,28 @@ function Message({ result }: { result: DepositResult | null }) {
 /** El casero anota el depósito: fecha, número de resguardo y, opcional, el documento. */
 export function RecordDepositForm({ contractId, today }: { contractId: string; today: string }) {
   const { result, pending, run } = useDepositAction();
+  const [receiptError, setReceiptError] = useState<string | null>(null);
+  const [preparing, setPreparing] = useState(false);
+  const fileError = receiptError ?? result?.errors?.receipt;
   return (
     <form
       className="space-y-3"
-      onSubmit={(e) => {
+      onSubmit={async (e) => {
+        // Sin `action=`: lo escrito no se pierde si algo falla (auditoría I2).
         e.preventDefault();
         const data = new FormData(e.currentTarget);
+        const file = data.get("receipt");
+        data.delete("receipt");
+        if (file instanceof File && file.size > 0) {
+          // Las fotos se comprimen en el navegador, como las de los anuncios; un PDF
+          // no se puede comprimir, así que se comprueba su tamaño antes de enviarlo.
+          setPreparing(true);
+          const prepared = await prepareReceipt(file);
+          setPreparing(false);
+          if ("error" in prepared) return setReceiptError(prepared.error);
+          data.set("receipt", prepared.file);
+        }
+        setReceiptError(null);
         run(() => recordDeposit(contractId, data));
       }}
     >
@@ -61,21 +78,22 @@ export function RecordDepositForm({ contractId, today }: { contractId: string; t
           type="file"
           accept="application/pdf,image/jpeg,image/png,image/webp"
           className={inputClass}
-          aria-invalid={result?.errors?.receipt ? true : undefined}
-          aria-describedby={result?.errors?.receipt ? "receipt-error" : "receipt-hint"}
+          aria-invalid={fileError ? true : undefined}
+          aria-describedby={fileError ? "receipt-error" : "receipt-hint"}
+          onChange={() => setReceiptError(null)}
         />
-        {result?.errors?.receipt ? (
-          <p id="receipt-error" className="text-sm text-red-700">
-            {result.errors.receipt}
+        {fileError ? (
+          <p id="receipt-error" role="alert" className="text-sm text-red-700">
+            {fileError}
           </p>
         ) : (
           <p id="receipt-hint" className="text-sm text-muted">
-            PDF o imagen, hasta 2,5 MB. Solo lo ves tú: tu inquilino ve únicamente la fecha y el número.
+            Una foto (la reducimos antes de subirla) o un PDF de hasta 2,5 MB. Solo lo ves tú: tu inquilino ve únicamente la fecha y el número.
           </p>
         )}
       </div>
-      <button type="submit" className={buttonClass} disabled={pending}>
-        {pending ? "Guardando…" : "Anotar el depósito"}
+      <button type="submit" className={buttonClass} disabled={pending || preparing}>
+        {preparing ? "Preparando el resguardo…" : pending ? "Guardando…" : "Anotar el depósito"}
       </button>
       <Message result={result} />
     </form>
