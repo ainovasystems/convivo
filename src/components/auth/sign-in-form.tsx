@@ -68,6 +68,11 @@ function PasswordForm({ next }: { next: string }) {
         required
         error={errors.password}
       />
+      <p className="text-sm">
+        <Link href="/recuperar" className="inline-block py-2 font-medium text-brand underline">
+          ¿Olvidaste tu contraseña?
+        </Link>
+      </p>
       <SubmitButton pendingText="Entrando…">Entrar</SubmitButton>
       <p className="text-sm text-muted">
         ¿No tienes cuenta?{" "}

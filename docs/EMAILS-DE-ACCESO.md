@@ -22,7 +22,7 @@ El nombre que ve quien recibe el email (el remitente) no está en estas plantill
 
 ## Comprobación
 
-Después de guardar los cinco: crea una cuenta de prueba (confirmar cuenta), y pide un enlace mágico desde «Entrar». Los otros tres (cambio de contraseña, cambio de email y código de seguridad) la app todavía no los dispara por sí sola: se pueden mandar a mano desde **Authentication → Users**, en el menú de cada usuario. Cada email debe decir «Hommie», estar en español y llevar un botón que funcione. Si ves texto en inglés, esa plantilla no se guardó.
+Después de guardar los cinco: crea una cuenta de prueba (confirmar cuenta), pide un enlace mágico desde «Entrar» y pulsa «¿Olvidaste tu contraseña?» (cambio de contraseña). Los otros dos (cambio de email y código de seguridad) la app no los dispara: Hommie no permite cambiar el email de la cuenta (decisión 81). Se pueden mandar a mano desde **Authentication → Users**, en el menú de cada usuario. Cada email debe decir «Hommie», estar en español y llevar un botón que funcione. Si ves texto en inglés, esa plantilla no se guardó.
 
 ---
 
@@ -82,6 +82,8 @@ Tu enlace para entrar en Hommie
 Cambia tu contraseña de Hommie
 ```
 
+> **Cambiado el 19 de noviembre de 2026 (bloque «Recuperar contraseña»):** si ya habías pegado esta plantilla, vuelve a pegarla. El enlace ya no usa `{{ .ConfirmationURL }}`: va directo a Hommie (`{{ .SiteURL }}/auth/callback?token_hash=…`), para que funcione aunque se abra en otro móvil u otro navegador distinto del que pidió el cambio. Depende de que la **Site URL** del proyecto sea la dirección de la web (Authentication → URL Configuration).
+
 **Cuerpo (Message body):**
 
 ```html
@@ -89,9 +91,9 @@ Cambia tu contraseña de Hommie
   <div style="max-width:480px;margin:0 auto;background:#ffffff;border-radius:16px;padding:28px;color:#2b211a;line-height:1.5">
     <p style="margin:0 0 24px;font-weight:700;font-size:20px;color:#7b4b2a">Hommie</p>
     <h1 style="margin:0 0 12px;font-size:20px">Cambia tu contraseña</h1>
-    <p style="margin:0 0 12px">Hemos recibido una petición para cambiar la contraseña de tu cuenta de Hommie.</p>
-    <p style="margin:24px 0"><a href="{{ .ConfirmationURL }}" style="background:#7b4b2a;color:#ffffff;text-decoration:none;font-weight:700;padding:12px 24px;border-radius:999px;display:inline-block">Elegir una contraseña nueva</a></p>
-    <p style="margin:0 0 16px;font-size:13px;color:#6f5e50">Si el botón no funciona, copia y pega este enlace en tu navegador:<br><a href="{{ .ConfirmationURL }}" style="color:#7b4b2a;word-break:break-all">{{ .ConfirmationURL }}</a></p>
+    <p style="margin:0 0 12px">Hemos recibido una petición para cambiar la contraseña de tu cuenta de Hommie. El enlace sirve una sola vez y caduca pronto.</p>
+    <p style="margin:24px 0"><a href="{{ .SiteURL }}/auth/callback?token_hash={{ .TokenHash }}&type=recovery&next=%2Frecuperar%2Fnueva" style="background:#7b4b2a;color:#ffffff;text-decoration:none;font-weight:700;padding:12px 24px;border-radius:999px;display:inline-block">Elegir una contraseña nueva</a></p>
+    <p style="margin:0 0 16px;font-size:13px;color:#6f5e50">Si el botón no funciona, copia y pega este enlace en tu navegador:<br><a href="{{ .SiteURL }}/auth/callback?token_hash={{ .TokenHash }}&type=recovery&next=%2Frecuperar%2Fnueva" style="color:#7b4b2a;word-break:break-all">{{ .SiteURL }}/auth/callback?token_hash={{ .TokenHash }}&type=recovery&next=%2Frecuperar%2Fnueva</a></p>
     <p style="margin:16px 0 0;font-size:13px;color:#6f5e50">Si no has sido tú, ignora este mensaje: tu contraseña actual sigue funcionando.</p>
     <p style="margin:16px 0 0;font-size:12px;color:#6f5e50">Recibes este email porque tienes una cuenta en Hommie, o alguien la ha creado con tu dirección.</p>
   </div>

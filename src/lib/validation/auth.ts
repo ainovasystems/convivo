@@ -13,6 +13,26 @@ export const signInSchema = z.object({
 
 export const magicLinkSchema = z.object({ email });
 
+/** Reglas de la contraseña: las mismas al registrarse y al elegir una nueva. */
+const newPassword = z
+  .string({ error: "Elige una contraseña" })
+  .min(8, { error: "La contraseña debe tener al menos 8 caracteres" })
+  .max(72, { error: "La contraseña no puede pasar de 72 caracteres" });
+
+/** «¿Olvidaste tu contraseña?»: solo el email. */
+export const passwordResetRequestSchema = z.object({ email });
+
+/** Contraseña nueva, escrita dos veces. */
+export const newPasswordSchema = z
+  .object({
+    password: newPassword,
+    passwordConfirm: z.string({ error: "Repite la contraseña" }).min(1, { error: "Repite la contraseña" }),
+  })
+  .refine((v) => v.password === v.passwordConfirm, {
+    path: ["passwordConfirm"],
+    error: "Las dos contraseñas no coinciden",
+  });
+
 export const signUpSchema = z.object({
   displayName: z
     .string({ error: "Escribe tu nombre" })
@@ -20,10 +40,7 @@ export const signUpSchema = z.object({
     .min(2, { error: "Tu nombre debe tener al menos 2 caracteres" })
     .max(60, { error: "Tu nombre no puede pasar de 60 caracteres" }),
   email,
-  password: z
-    .string({ error: "Elige una contraseña" })
-    .min(8, { error: "La contraseña debe tener al menos 8 caracteres" })
-    .max(72, { error: "La contraseña no puede pasar de 72 caracteres" }),
+  password: newPassword,
   isAdult: z.literal("on", { error: "Para usar Hommie tienes que ser mayor de edad" }),
   acceptTerms: z.literal("on", { error: "Debes aceptar las condiciones para continuar" }),
 });

@@ -250,6 +250,12 @@ otp_expiry = 3600
 # subject = "You have been invited"
 # content_path = "./supabase/templates/invite.html"
 
+# Email de «recuperar la contraseña»: la misma plantilla que se pega en el panel
+# (docs/EMAILS-DE-ACCESO.md, apartado 3; un test comprueba que coinciden).
+[auth.email.template.recovery]
+subject = "Cambia tu contraseña de Hommie"
+content_path = "./supabase/templates/recovery.html"
+
 # Uncomment to customize notification email template
 # [auth.email.notification.password_changed]
 # enabled = true
