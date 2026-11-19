@@ -5,6 +5,8 @@
 > Fecha: 17 de noviembre de 2026. Navegador: Chromium (Playwright), en **escritorio** (1280 px) y **móvil** (375 px, táctil).
 > Cada hallazgo se comprobó en la web real. Donde se indica, se miró además la base de datos **solo en lectura** para confirmar lo que la pantalla decía.
 
+> **Bloque «Recuperar contraseña» (19 de noviembre de 2026):** arreglado **I12**. Quedan I10, I11, I13 e I14 (bloque 3) y los menores y dudas (bloque 4).
+>
 > **Bloque «Arreglos de la auditoría 2» (18 de noviembre de 2026):** arreglados **I1, I2, I3, I4, I7, I8, I9 e I15**, repetidos a mano en la web de pruebas. Quedan I10 a I14 (bloque 3) y los menores y dudas (bloque 4).
 >
 > **Estado a 17 de noviembre de 2026 (bloque «Arreglos de la auditoría 1»):** arreglados **B1, B2, I5, I6** y los menores **20, 24 y 25**. Cada uno lleva su nota «✅ Arreglado» más abajo. El resto sigue pendiente, repartido en los bloques 2, 3 y 4 de `docs/HOJA-DE-RUTA.md`. B1, B2 e I6 se repitieron a mano en la web de pruebas el 18 de noviembre con las cuentas de auditoría (contrato del piso de Madrid) y ya no ocurren.
@@ -153,6 +155,8 @@ Direcciones que se citan en los pasos:
 - **Pasó:** no hay botón para hacerlo en «Reseñas que he escrito» ni en la propia reseña.
 
 ### I12 · No hay forma de recuperar ni cambiar la contraseña
+
+> ✅ **Arreglado (bloque «Recuperar contraseña», 19 de noviembre de 2026).** En `/entrar`, junto a la contraseña, «¿Olvidaste tu contraseña?» lleva a `/recuperar`: se escribe el email, la respuesta es siempre la misma exista o no la cuenta, llega un email en español y su enlace abre `/recuperar/nueva`, donde se elige la contraseña (dos veces, mismas reglas que el registro) y se entra directamente. Un enlace caducado o ya usado lleva a «Pide otro enlace». Sirve también a quien solo entraba con enlace por email. **No** hay cambio de contraseña ni de email dentro de `/cuenta` (decisión 81). Probado en local de principio a fin con el buzón Mailpit; en la web de pruebas falta que el usuario pegue la plantilla nueva del email en Supabase.
 
 - **Pantalla:** `/entrar`. Solo existe «Con enlace por email». Ya estaba anotado en ideas aparcadas; se sube aquí porque, antes del piloto, quien olvide la contraseña no tiene salida clara.
 

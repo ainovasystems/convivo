@@ -1,6 +1,6 @@
 # Hommie · Contexto del proyecto (para planificar)
 
-> Documento para el chat de planificación del proyecto. Estado a **17 de noviembre de 2026** (cierre de «Herramientas de revisión: skills de Supabase y gitleaks»).
+> Documento para el chat de planificación del proyecto. Estado a **19 de noviembre de 2026** (cierre de «Recuperar contraseña»).
 > **El nombre definitivo es Hommie (dominio hommie.es)**; «Convivo» era provisional. La web ya dice Hommie en todo lo que ve el usuario; la búsqueda en TMview está hecha y hommie.es está comprado (el registrador aún no lo ha entregado); el riesgo de confusión con «homming» sigue como pregunta al abogado (ver `docs/HOJA-DE-RUTA.md`). El detalle técnico completo está en `CLAUDE.md` (raíz del repositorio).
 > Qué toca ahora y qué falta: `docs/HOJA-DE-RUTA.md`. Cómo trabajamos: `docs/COMO-TRABAJAMOS.md`.
 
@@ -33,7 +33,7 @@ Plataforma web en español (España) para **vivienda compartida**: un «LinkedIn
 - **Web de pruebas:** https://convivo-six.vercel.app (Vercel, funciones en París).
 - **Base de datos:** Supabase, proyecto «Convivo pruebas», en Europa. No hay todavía un proyecto de producción.
 - **Código:** GitHub `ainovasystems/convivo`, rama `claude/new-session-734nfk`, con unos 100 commits. **Cada cambio pasa solo las comprobaciones en GitHub** (pestaña Actions).
-- **Pruebas automáticas:** 554 de lógica y base de datos, y 87 de recorrido completo en el navegador (móvil y escritorio; otras 7 se saltan a propósito). Todas pasan, en local y en GitHub.
+- **Pruebas automáticas:** 570 de lógica y base de datos, y 102 de recorrido completo en el navegador (móvil y escritorio; otras 8 se saltan a propósito). Todas pasan, en local y en GitHub.
 - **Datos de ejemplo:** 8 usuarios `@convivo.test` con la contraseña `convivo-dev-1234`, y anuncios en Lugo, A Coruña, Madrid y Barcelona.
 
 ## 3. Qué puede hacer hoy un usuario
@@ -41,6 +41,7 @@ Plataforma web en español (España) para **vivienda compartida**: un «LinkedIn
 **Cuenta y perfil**
 
 - Registrarse (declarando 18 años o más y aceptando las condiciones) y entrar con contraseña o enlace mágico.
+- **Recuperar la contraseña** desde «¿Olvidaste tu contraseña?» en la pantalla de entrar: recibe un email con un enlace, elige la contraseña nueva y entra. Sirve también para ponerse una contraseña si solo entraba con enlace mágico. No se puede cambiar la contraseña ni el email desde «Cuenta».
 - Completar el perfil con foto.
 - Descargar sus datos y borrar su cuenta.
 
@@ -155,11 +156,12 @@ Plataforma web en español (España) para **vivienda compartida**: un «LinkedIn
 9. **Firmar el contrato confirma la estancia.** Se firma el texto exacto. La firma es electrónica simple; la avanzada, con un proveedor como Signaturit o DocuSign, queda para más adelante.
 10. **El inventario confirmado por los dos queda bloqueado**: es la prueba para devolver la fianza.
 10b. **Fianza sin tocar dinero:** Hommie solo deja constancia (estados, fechas, avisos y un paquete de pruebas). Si el casero no responde: avisos, reloj y paquete de pruebas; nunca una carta de requerimiento ni un mediador. La entrega de llaves **nunca** se da por confirmada: solo la confirma el casero. La liquidación de salida solo documenta (sin mediar ni proponer cifras) y queda cerrada al confirmarla las dos partes.
+10c. **Contraseña y email de la cuenta:** la contraseña solo se cambia desde «¿Olvidaste tu contraseña?» (con un enlace enviado al email); no hay cambio de contraseña dentro de «Cuenta». **El email de la cuenta no se puede cambiar.** Al pedir el enlace, la respuesta es la misma exista o no la cuenta. Todos los emails salen de `info@hommie.es`.
 11. **Datos en Europa** (Vercel en París, Supabase en Europa). Solo cookies técnicas, así que no hay banner de cookies.
 12. **Indexación:** la web de pruebas no se indexa (una variable la enciende en producción); perfiles y anuncios «busco» no se indexan; las páginas de ciudad son solo las del piloto.
 13. **Identidad visual:** blanco y crema, marrón nogal #7b4b2a y acento miel #f4b740, tipografía Plus Jakarta Sans, botones en píldora y estilo startup (Glovo, Too Good To Go, BlaBlaCar). El modo oscuro está desactivado.
 
-Las 70 decisiones técnicas están numeradas en `CLAUDE.md` → «Decisiones tomadas».
+Las 83 decisiones técnicas están numeradas en `CLAUDE.md` → «Decisiones tomadas».
 
 **Renombrado (noviembre de 2026):** todo lo que ve el usuario dice Hommie. Los nombres técnicos internos (repositorio, variables, el proyecto «Convivo pruebas») no cambian. Las páginas legales siguen en borrador; `/terminos` ya no permite «solo chicas/chicos». Las plantillas de los emails de acceso de Supabase (en español, con la marca) están en `docs/EMAILS-DE-ACCESO.md` y hay que pegarlas a mano en el panel.
 
