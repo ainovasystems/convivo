@@ -1,6 +1,6 @@
 # Hommie · Contexto del proyecto (para planificar)
 
-> Documento para el chat de planificación del proyecto. Estado a **19 de noviembre de 2026** (cierre de «Recuperar contraseña»).
+> Documento para el chat de planificación del proyecto. Estado a **19 de noviembre de 2026** (cierre de «Arreglos de la auditoría 3»).
 > **El nombre definitivo es Hommie (dominio hommie.es)**; «Convivo» era provisional. La web ya dice Hommie en todo lo que ve el usuario; la búsqueda en TMview está hecha y hommie.es está comprado (el registrador aún no lo ha entregado); el riesgo de confusión con «homming» sigue como pregunta al abogado (ver `docs/HOJA-DE-RUTA.md`). El detalle técnico completo está en `CLAUDE.md` (raíz del repositorio).
 > Qué toca ahora y qué falta: `docs/HOJA-DE-RUTA.md`. Cómo trabajamos: `docs/COMO-TRABAJAMOS.md`.
 
@@ -17,7 +17,7 @@ Plataforma web en español (España) para **vivienda compartida**: un «LinkedIn
   - **Firmar el contrato en Hommie confirma la estancia**: cada contrato genera reseñas verificadas.
 - **Reglas de las reseñas**, que impone la base de datos y no solo la web:
   - **Doble ciego:** una reseña no es pública hasta que la otra parte reseña o pasan 14 días.
-  - **Inmutables:** no se editan. Solo se borran con motivo, y queda constancia.
+  - **Inmutables:** nadie las edita ni las borra por su cuenta. Quien la escribió puede **solicitar su retirada** con un motivo; decide un admin y, si se retira, queda constancia.
 
 ## 2. Estado en una frase
 
@@ -118,6 +118,7 @@ Plataforma web en español (España) para **vivienda compartida**: un «LinkedIn
 - **La web de pruebas no se indexa**: `noindex` en todo y `robots.txt` que bloquea todo. Se enciende con una sola variable (`INDEXING_ENABLED`) en producción el día del lanzamiento. Los perfiles de personas y los anuncios «busco» no se indexan nunca.
 - **Arreglos de la auditoría 1 (hecho):** ya no se puede confirmar un inventario sin haber visto un cambio de la otra parte; los importes con céntimos se ven exactos en todas partes; se puede corregir un elemento del inventario sin quitarlo; la entrega de llaves recién declarada sale como «pendiente de confirmar» durante 7 días; las acciones definitivas piden confirmación, y el registro de firmas enseña el nombre del contrato. Quedan los bloques 2, 3 y 4 (ver `HOJA-DE-RUTA.md`).
 - **Arreglos de la auditoría 2 (hecho):** pantalla «Avisos» con contador (en el móvil ocupa la pestaña que antes era «Reseñas») y acceso a Contratos; el resguardo de la fianza admite fotos de móvil; guardar el perfil guarda también la foto y no pierde lo escrito si la sesión caduca; la búsqueda, el asistente de publicar, la hora del chat y el «curso universitario» ya no fallan. Quedan los bloques 3 y 4.
+- **Arreglos de la auditoría 3 (hecho):** el registro responde lo mismo exista o no la cuenta (ya no se puede saber si un email está registrado) y lleva a «Entrar» y a «¿Olvidaste tu contraseña?»; «Solicitar retirada» de una reseña propia, que decide un admin y se comunica en la app y por email (el autor ya no puede borrarla por su cuenta); el formulario de denuncias solo acepta enlaces de Hommie. Quedan el bloque 4 (menores y dudas) e I14, que espera al abogado.
 - `docs/AUDITORIA-PRUEBAS-2026-11.md`: auditoría exploratoria de la web de pruebas (17 de noviembre de 2026), recorriéndola como un usuario real en móvil y escritorio. 2 fallos bloqueantes (se puede confirmar un inventario sin haber visto un cambio; los importes con céntimos se enseñan redondeados en la liquidación), 15 importantes y 27 menores, más dudas de producto y preguntas legales. Sirve para decidir qué arreglar antes del piloto.
 - `docs/REVISION-FASE-7.md` lista los problemas de diseño, accesibilidad y rendimiento (con capturas en móvil) para decidir el bloque 7b.
 

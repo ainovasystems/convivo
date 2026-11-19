@@ -2,7 +2,7 @@
 
 > **Fuente única de «qué toca ahora».** Solo se trabaja en el bloque marcado como **SIGUIENTE**. Lo que surja por el camino va a «Ideas aparcadas», no se hace en ese momento.
 > La actualiza Claude Code al cerrar cada bloque y se vuelve a subir al proyecto de Claude.
-> Última actualización: **19 de noviembre de 2026** (cierre de «Recuperar contraseña», hallazgo I12 de la auditoría).
+> Última actualización: **19 de noviembre de 2026** (cierre de «Arreglos de la auditoría 3»: I10, I11 e I13).
 > Lo que falta antes de abrir, con responsable y estado: `docs/CHECKLIST-LANZAMIENTO.md`.
 
 ## Hecho
@@ -29,14 +29,15 @@
 | Arreglos de la auditoría 1 · lo que queda fijado (inventario y fianza) | **B1**: solo se confirma el inventario que se ha visto (si la otra parte lo cambió, no se guarda la confirmación, se avisa y se marca lo nuevo; protegido también en la base de datos). **B2**: importes siempre exactos y con coma decimal en pantalla, PDF, devolución y avisos. **I5**: «Corregir» un elemento del inventario sin quitarlo. **I6**: «el casero no la ha confirmado» y el paquete de pruebas esperan 7 días desde que se registró la declaración de llaves. **Menores 20, 24 y 25**: nombre del contrato en el registro de firmas, confirmación previa en las acciones definitivas, cronología con fecha e importe de cada devolución y con lo que había antes de reabrir la liquidación |
 | Arreglos de la auditoría 2 · que nadie se pierda ni vea «Algo se ha torcido» | **I1**: pantalla «Avisos» con contador en la cabecera y en la barra inferior (sustituye a la pestaña «Reseñas»), fecha, enlace a cada pantalla, accesos a Contratos y Reseñas, avisos que se dan por atendidos solos y sin repetidos. **I2**: el resguardo de la fianza se comprime en el navegador. **I3**: sesión caducada al guardar el perfil, sin perder lo escrito. **I4**: página de búsqueda inexistente. **I7**: «Guardar perfil» guarda la foto. **I8**: el asistente guarda lo válido. **I9**: hora del chat. **I15**: fin del curso en marcha. Regla nueva: la migración se aplica antes de publicar el código |
 | Recuperar contraseña (I12) | En «Entrar», junto a la contraseña, «¿Olvidaste tu contraseña?»: se pide el enlace con el email (misma respuesta exista o no la cuenta; 5 envíos por email y 60 por IP a la hora), llega un email en español y su enlace abre la pantalla para elegir la contraseña nueva (dos veces, mismas reglas que el registro). Al guardarla se entra directamente y se cierran las demás sesiones. Enlace caducado o usado: mensaje claro y «pide otro». Sirve a quien solo entraba con enlace por email. Sin cambio de contraseña ni de email dentro de la cuenta. Remitente de todos los emails: `info@hommie.es` |
+| Arreglos de la auditoría 3 · acceso, denuncias y reseñas | **I10**: el registro responde siempre lo mismo, exista o no la cuenta, y lleva a «Entrar» y a «¿Olvidaste tu contraseña?». **I11**: «Solicitar retirada» de una reseña propia, con motivo obligatorio; no se borra al pedirlo, la decide un admin junto al resto de casos y el autor recibe la decisión en la app y por email; `/terminos` §4 actualizado; el autor ya no puede borrar su reseña por su cuenta. **I13**: `/denunciar` solo acepta enlaces de Hommie, con mensaje claro y comprobación en el servidor |
 | Fase 7a · SEO técnico y auditoría | Páginas de ciudad (`/habitaciones/lugo`, `/pisos/lugo`…), `sitemap.xml`, `robots.txt`, datos estructurados, tarjetas para compartir, indexación apagada con una variable, y `docs/REVISION-FASE-7.md` (Lighthouse, axe y 52 capturas en móvil) |
 
 ## SIGUIENTE (en este orden, decidido en la planificación)
 
-Antes del piloto quedan dos bloques de arreglos de la auditoría (`docs/AUDITORIA-PRUEBAS-2026-11.md`; los bloques 1 y 2 ya están hechos):
+Antes del piloto queda un bloque de arreglos de la auditoría (`docs/AUDITORIA-PRUEBAS-2026-11.md`; los bloques 1, 2 y 3 ya están hechos):
 
-1. **Arreglos de la auditoría 3 · acceso, denuncias y lo que prometen los textos:** **I10** (el registro dice si un email tiene cuenta), **I11** (las condiciones prometen borrar una reseña propia), **I13** (denuncias con enlaces que no son de Hommie) e **I14** (notas internas en el contrato firmado: necesita antes al abogado, porque toca el texto de las plantillas). **I12** (recuperar la contraseña) ya está hecho, en su propio bloque.
-2. **Arreglos de la auditoría 4 · menores y dudas:** los 24 menores que quedan (§5 del informe, todos menos el 20, el 24 y el 25) y las 10 dudas de producto (§6), que hay que decidir antes en la planificación.
+1. **Arreglos de la auditoría 4 · menores y dudas:** los 24 menores que quedan (§5 del informe, todos menos el 20, el 24 y el 25) y las 10 dudas de producto (§6), que hay que decidir antes en la planificación.
+2. **I14** (notas internas «[Revisar con el abogado…]» dentro del contrato que se firma): **espera al abogado**, porque toca el texto de las plantillas. No se hace hasta tener su respuesta.
 3. **Piloto** en una ciudad (Galicia, que es donde hay contrato de habitación): montar producción con `docs/DEPLOY.md`, completar `docs/CHECKLIST-LANZAMIENTO.md`, objetivos y captación.
 
 Después del piloto: contratos · fase 3 / **Fase B de pagos** con socio regulado, y app nativa (Expo / React Native) reutilizando la misma base de datos.
@@ -55,7 +56,7 @@ Después del piloto: contratos · fase 3 / **Fase B de pagos** con socio regulad
 | **hommie.es**: comprado; esperar a que el registrador lo entregue y entonces apuntarlo a Vercel y verificarlo en Resend | Marca y emails | Antes de abrir |
 | Cuando haya dominio: variable `siteurl` = `https://<dominio>` y, **solo en producción**, `INDEXING_ENABLED=true` (pasos en `CLAUDE.md` → «SEO técnico e indexación») | Que Google indexe la web. En la web de pruebas **no** se enciende | El día del lanzamiento |
 | Dar de alta el sitemap en Google Search Console | Que Google encuentre las páginas de ciudad | Tras encender la indexación |
-| Nombrar admins (SQL en `CLAUDE.md`) | Moderación | Antes del piloto |
+| Nombrar admins (SQL en `CLAUDE.md`). **En «Convivo pruebas» no hay ninguno**: hace falta al menos uno para probar la decisión de una solicitud de retirada de reseña (y el resto de `/admin`) | Moderación | Antes del piloto (ahora, si se quiere probar el bloque 3 entero) |
 | Montar producción siguiendo `docs/DEPLOY.md` (Supabase Pro en la UE, Vercel Pro, Resend, Sentry en la UE). De Sentry ya está la alerta de error nuevo; cuando exista producción faltan el monitor de `/api/salud` y el del cron `review-windows` | Producción | Antes del piloto |
 | **Pasada manual (A8):** probar con teclado y con lector de pantalla (VoiceOver o TalkBack) las 5 pantallas clave: inicio, búsqueda, ficha, perfil y chat (30-60 min) | Accesibilidad real: axe no lo detecta todo | Antes del piloto |
 
@@ -107,7 +108,13 @@ Después del piloto: contratos · fase 3 / **Fase B de pagos** con socio regulad
 
 25. (m) Notas «[Revisar con el abogado…]» dentro del texto que se firma; fianza muy por encima de la legal llamada «fianza»; ocultación cautelar de una reseña sin avisar a su autor (art. 17 DSA); `/privacidad` y `/cuenta` no mencionan contratos, inventarios, resguardo ni liquidación ni que se conservan; nombre de la firma guardado tal como se teclea; fecha de llaves declarada con retraso y el texto «el casero no la ha confirmado»; `/terminos` habla de suspender cuentas de menores y aún no existe.
 
+**Nuevas (bloque «Arreglos de la auditoría 3»)**
+
+26. (n) **Retirada de una reseña propia:** quien la escribió ya no puede borrarla; solo puede **solicitar su retirada** con un motivo, y decide un admin. ¿Cumple así el **derecho de supresión** (art. 17 RGPD) y, en su caso, el de oposición? ¿Con qué **criterio** puede el admin aceptarla o rechazarla (p. ej. interés legítimo de quien fue reseñado y de los futuros usuarios en conservar una reseña veraz, frente al derecho del autor)? ¿Hay un **plazo máximo** para responder (un mes, art. 12.3 RGPD) y hay que informar al autor de que puede reclamar ante la AEPD? Si se retira, hoy queda constancia de que existió (autor, fecha y motivo, sin texto ni nota): ¿es correcto conservar eso?
+
 ## Ideas aparcadas (no hacer sin decidirlo antes en la planificación)
+
+- **Del bloque «Arreglos de la auditoría 3»:** plazo interno y aviso en `/admin` para las solicitudes de retirada que llevan días sin decidir (hoy no tienen plazo, a diferencia de las notificaciones DSA de 72 h); email también para la decisión de las denuncias normales entre usuarios (hoy solo aviso en la app; por email solo va la de la solicitud de retirada y las del canal público); el motivo que escribe el admin al retirar una reseña a petición de su autor se ve en la constancia pública («Retirada a petición de quien la escribió: …»): valorar un texto público fijo; avisar por email a quien intenta registrarse con un email que ya tiene cuenta («ya tienes cuenta, entra o recupera la contraseña»), como hacen otros servicios; comprobar también en la base de datos el dominio del enlace de una notificación (hoy lo hace el servidor de la web; llamando directamente a la API se podría registrar un enlace ajeno, que solo molesta a moderación); pasar el contador de registros por email a no distinguir tampoco por el límite (hoy 3 por email y hora, igual exista o no la cuenta).
 
 - **Revisar las migraciones existentes con la skill de Supabase** (solo lectura: Claude Code las repasa con `supabase` y `supabase-postgres-best-practices` y entrega un informe de hallazgos, sin cambiar nada; lo que salga se decide después como bloque aparte).
 - **Skills de Vercel** (`react-best-practices`, `next-best-practices`): aparcadas. Si algún día se instalan, con commit fijado y revisadas antes, y dejando fuera lo de Cache Components de Next 16 (el proyecto está en 15.5, decisión 1).

@@ -5,6 +5,8 @@
 > Fecha: 17 de noviembre de 2026. Navegador: Chromium (Playwright), en **escritorio** (1280 px) y **móvil** (375 px, táctil).
 > Cada hallazgo se comprobó en la web real. Donde se indica, se miró además la base de datos **solo en lectura** para confirmar lo que la pantalla decía.
 
+> **Bloque «Arreglos de la auditoría 3» (19 de noviembre de 2026):** arreglados **I10, I11 e I13**. De los importantes solo queda **I14** (notas internas en el contrato: espera al abogado), más los menores y dudas (bloque 4).
+>
 > **Bloque «Recuperar contraseña» (19 de noviembre de 2026):** arreglado **I12**. Quedan I10, I11, I13 e I14 (bloque 3) y los menores y dudas (bloque 4).
 >
 > **Bloque «Arreglos de la auditoría 2» (18 de noviembre de 2026):** arreglados **I1, I2, I3, I4, I7, I8, I9 e I15**, repetidos a mano en la web de pruebas. Quedan I10 a I14 (bloque 3) y los menores y dudas (bloque 4).
@@ -145,11 +147,15 @@ Direcciones que se citan en los pasos:
 
 ### I10 · El registro dice si un email ya tiene cuenta
 
+> ✅ **Arreglado (bloque 3, 19 de noviembre de 2026).** El registro responde siempre lo mismo, tenga o no cuenta ese email: «Te hemos enviado un email para continuar. Abre el enlace para confirmar tu cuenta.», y debajo «¿Ya tenías cuenta con ese email? Entonces no te llegará nada: entra desde aquí o pulsa ¿Olvidaste tu contraseña?». Comprobado contra «Convivo pruebas» con «Confirm email» activado: Supabase ya no devuelve ningún error para un email con cuenta (y no le envía nada), así que no hay diferencia que mostrar. Sigue el límite de 3 registros por email y hora.
+
 - **Pantalla:** `/registro`.
 - **Pasos:** registrarse con `ana@convivo.test`.
 - **Pasó:** «Ya existe una cuenta con ese email. Prueba a entrar.» El acceso y el enlace mágico sí dan mensajes genéricos. Puede cambiar al activar «Confirm email» en Supabase: volver a comprobarlo entonces.
 
 ### I11 · Las condiciones prometen borrar una reseña propia, y no hay dónde
+
+> ✅ **Arreglado (bloque 3, 19 de noviembre de 2026).** En «Reseñas que he escrito» y en la propia reseña (para quien la escribió) hay «Solicitar retirada», con motivo obligatorio. La reseña **no** se borra al pedirlo: la solicitud llega a `/admin` junto al resto de denuncias, un admin la rechaza o retira la reseña, y quien la escribió recibe la decisión con aviso en la app y por email. `/terminos` §4 dice ahora «puedes solicitar la retirada de una reseña tuya indicando el motivo». La base de datos ya no deja que el autor borre su reseña por su cuenta.
 
 - **Pantalla:** `/terminos` §4 («Puedes eliminar una reseña tuya indicando el motivo») frente a `/mis-resenas`.
 - **Pasó:** no hay botón para hacerlo en «Reseñas que he escrito» ni en la propia reseña.
@@ -161,6 +167,8 @@ Direcciones que se citan en los pasos:
 - **Pantalla:** `/entrar`. Solo existe «Con enlace por email». Ya estaba anotado en ideas aparcadas; se sube aquí porque, antes del piloto, quien olvide la contraseña no tiene salida clara.
 
 ### I13 · El formulario de denuncia acepta enlaces que no son de Hommie
+
+> ✅ **Arreglado (bloque 3, 19 de noviembre de 2026).** `/denunciar` solo admite enlaces de `hommie.es`, `www.hommie.es` y del dominio de la propia web (la de pruebas). Con otro enlace: «Ese enlace no es de Hommie…»; con un texto que no es un enlace: «Eso no es un enlace…». Se avisa al salir del campo y el servidor lo vuelve a comprobar: no se registra nada ni se da referencia.
 
 - **Pantalla:** `/denunciar`, sin cuenta.
 - **Pasos:** poner `https://www.google.com/` como enlace y rellenar el resto.
