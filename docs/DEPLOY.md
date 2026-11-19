@@ -48,9 +48,10 @@
 - [ ] Authentication → **Sign In / Providers** → Email: activa **Confirm email**. Es obligatorio: así nadie se registra con un email ajeno.
 - [ ] Authentication → **URL Configuration**:
   - **Site URL:** `https://hommie.es`
+  - La **Site URL** tiene que ser exactamente la dirección de la web: el email de «cambio de contraseña» construye su enlace con ella.
   - **Redirect URLs:** añade `https://hommie.es/auth/callback`. Si vas a usar también la versión con www, añade `https://www.hommie.es/auth/callback`.
 - [ ] Authentication → **Emails → SMTP Settings**: activa el SMTP propio con **Resend** (paso 3). El de Supabase solo manda unos pocos emails a la hora y solo al equipo.
-- [ ] Authentication → **Emails → Templates**: los emails de confirmar cuenta, enlace mágico y cambio de contraseña vienen **en inglés**. Tradúcelos al español; está en el checklist.
+- [ ] Authentication → **Emails → Templates**: los emails de confirmar cuenta, enlace mágico y cambio de contraseña vienen **en inglés**. Pega los de `docs/EMAILS-DE-ACCESO.md` (ya en español). El de **cambio de contraseña (Reset Password)** es imprescindible: sin esa plantilla, «¿Olvidaste tu contraseña?» solo funciona si el email se abre en el mismo navegador que lo pidió.
 
 ### 1.4 Las claves que necesitarás en Vercel
 En Supabase → **Project Settings → API Keys** y **Data API**:
@@ -88,7 +89,7 @@ El código acepta **dos nombres** para cada una. El de la izquierda manda si exi
 | `secretkey` | `SUPABASE_SERVICE_ROLE_KEY` | Secret key | **Secreta.** Nunca con `NEXT_PUBLIC_` delante |
 | `siteurl` | `NEXT_PUBLIC_SITE_URL` | `https://hommie.es` | Sin barra al final |
 | `resendkey` | `RESEND_API_KEY` | Clave de Resend (paso 3) | Secreta |
-| `emailfrom` | `EMAIL_FROM` | `Hommie <no-responder@hommie.es>` | El dominio debe estar verificado en Resend |
+| `emailfrom` | `EMAIL_FROM` | `Hommie <info@hommie.es>` | El dominio debe estar verificado en Resend |
 | — | `CRON_SECRET` | Un valor aleatorio largo | **Con este nombre exacto**: si no, Vercel no lo envía a la tarea diaria |
 | `signalsecret` | `SIGNAL_SECRET` | Un valor aleatorio largo | **No lo cambies nunca** después de abrir |
 | `sentrydsn` | `NEXT_PUBLIC_SENTRY_DSN` | DSN de Sentry (paso 4) | Opcional. Vacío = Sentry apagado |
@@ -113,7 +114,7 @@ El código acepta **dos nombres** para cada una. El de la izquierda manda si exi
 - [ ] **Domains → Add Domain** → `hommie.es`. Resend te da varios registros DNS (SPF, DKIM y, a veces, MX para las devoluciones). Créalos en el panel del dominio **tal cual te los da Resend**, y espera a que aparezca «Verified».
 - [ ] Añade también un registro **DMARC**, si Resend no lo pide. Es un TXT en `_dmarc.hommie.es` con un valor como `v=DMARC1; p=none; rua=mailto:<tu email>`. Mejora la entrega y protege la marca.
 - [ ] **API Keys → Create API Key**, con permiso **Sending access** y limitada al dominio `hommie.es`. Pégala en Vercel como `resendkey` (paso 2.2).
-- [ ] Para los emails de Supabase (confirmar cuenta, enlace mágico): Supabase → Authentication → **SMTP Settings**. Copia de la documentación de Resend («SMTP») el servidor, el puerto, el usuario y usa como contraseña una clave de Resend. Remitente: `no-responder@hommie.es`.
+- [ ] Para los emails de Supabase (confirmar cuenta, enlace mágico, cambio de contraseña): Supabase → Authentication → **SMTP Settings**. Copia de la documentación de Resend («SMTP») el servidor, el puerto, el usuario y usa como contraseña una clave de Resend. Remitente: `info@hommie.es` (el mismo para todos los emails).
 - [ ] Prueba: regístrate con otro email y comprueba que llega, y que no cae en spam.
 
 ---
@@ -203,3 +204,5 @@ Anota aquí cada migración que pegues en el SQL Editor de producción, en orden
 | Fecha | Fichero | Quién | Resultado |
 |---|---|---|---|
 | _(instalación)_ | `instalar-base-de-datos.sql` (hasta `20261117000100_deposit_settlement.sql`) | | |
+
+> Si producción se instala después del 19 de noviembre de 2026, `instalar-base-de-datos.sql` ya incluye hasta `20261121000100_password_reset_rate_limit.sql` (límite de envíos de «recuperar contraseña»): no hay que pegarla aparte.

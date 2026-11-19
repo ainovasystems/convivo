@@ -11,7 +11,7 @@ export interface Mailer {
   send(message: EmailMessage): Promise<void>;
 }
 
-const DEFAULT_FROM = "Hommie <no-responder@hommie.es>";
+const DEFAULT_FROM = "Hommie <info@hommie.es>";
 
 /** Resend (https://resend.com): RESEND_API_KEY y EMAIL_FROM con dominio verificado. */
 export class ResendMailer implements Mailer {
