@@ -331,17 +331,28 @@ describe("regla c) inmutables; solo se borran con motivo", () => {
     );
   });
 
-  it("delete_review deja constancia (fecha y motivo) pero no el contenido", async () => {
+  it("delete_review (solo admin) deja constancia (fecha y motivo) pero no el contenido", async () => {
     const { w, review } = await publishedPair();
+    const admin = (await sysInsert<{ id: string }>(
+      db,
+      `insert into auth.users (id, email, created_at) values (gen_random_uuid(), 'admin-constancia@example.com', now()) returning id`,
+    )).id;
+    await db.query("insert into public.admin_users (user_id) values ($1)", [admin]);
 
     await expect(
       as(db, w.stranger, (tx) => tx.query("select public.delete_review($1, $2)", [review.id, "No me gusta nada"])),
     ).rejects.toThrow(/no encontrada/);
+    // El autor tampoco: las reseñas son inmutables y solo las retira un admin (auditoría I11).
     await expect(
-      as(db, w.guest, (tx) => tx.query("select public.delete_review($1, $2)", [review.id, "corto"])),
+      as(db, w.guest, (tx) =>
+        tx.query("select public.delete_review($1, $2)", [review.id, "Me equivoqué de persona al escribirla"]),
+      ),
+    ).rejects.toThrow(/solicitar su retirada/);
+    await expect(
+      as(db, admin, (tx) => tx.query("select public.delete_review($1, $2)", [review.id, "corto"])),
     ).rejects.toThrow(/motivo/);
 
-    await as(db, w.guest, (tx) =>
+    await as(db, admin, (tx) =>
       tx.query("select public.delete_review($1, $2)", [review.id, "Me equivoqué de persona al escribirla"]),
     );
 
@@ -357,7 +368,7 @@ describe("regla c) inmutables; solo se borran con motivo", () => {
     expect(rows[0].deletion_reason).toBe("Me equivoqué de persona al escribirla");
 
     await expect(
-      as(db, w.guest, (tx) => tx.query("select public.delete_review($1, $2)", [review.id, "Segundo intento de borrado"])),
+      as(db, admin, (tx) => tx.query("select public.delete_review($1, $2)", [review.id, "Segundo intento de borrado"])),
     ).rejects.toThrow(/no encontrada/);
   });
 

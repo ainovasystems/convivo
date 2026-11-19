@@ -119,7 +119,7 @@ describe("marcas anti-fraude", () => {
 });
 
 describe("registro de moderación", () => {
-  it("registra descartar denuncias y eliminar reseñas como admin, pero no que el autor borre la suya", async () => {
+  it("registra descartar denuncias y eliminar reseñas como admin; el autor ya no puede borrar la suya", async () => {
     const w = await createWorld(db);
     const admin = await makeAdmin("Admin Reseñas");
     const r1 = await writeReview(db, { stay: w.stay, author: w.guest, subjectUser: w.host, criteria: CRITERIA.tenant_to_landlord });
@@ -131,7 +131,9 @@ describe("registro de moderación", () => {
       tx.query("update public.reports set status = 'dismissed', resolved_by = $2, resolved_at = now(), resolution_note = 'No es ofensiva' where id = $1", [report, admin]),
     );
     await as(db, admin, (tx) => tx.query("select public.delete_review($1, 'Moderación: contiene insultos')", [r1.id]));
-    await as(db, w.host, (tx) => tx.query("select public.delete_review($1, 'Me equivoqué de persona')", [r2.id]));
+    await expect(
+      as(db, w.host, (tx) => tx.query("select public.delete_review($1, 'Me equivoqué de persona')", [r2.id])),
+    ).rejects.toThrow(/solicitar su retirada/);
 
     const { rows } = await db.query<{ action: string; target_id: string; actor_id: string }>(
       "select action, target_id, actor_id from public.moderation_log where target_id = any($1) order by id",

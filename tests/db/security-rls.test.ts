@@ -248,7 +248,7 @@ describe("reseñas", () => {
     );
   });
 
-  it("delete_review y admin_review_flags no sirven a quien no es autor ni admin", async () => {
+  it("delete_review y admin_review_flags no sirven a quien no es admin", async () => {
     const w = await createWorld(db);
     const r = await writeReview(db, { stay: w.stay, author: w.guest, subjectUser: w.host, criteria: CRITERIA.tenant_to_landlord });
     // El reseñado no puede borrar la reseña que le molesta.

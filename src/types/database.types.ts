@@ -2267,7 +2267,8 @@ export type Database = {
         | "discrimination"
         | "personal_data"
         | "false_information"
-        | "other";
+        | "other"
+        | "author_withdrawal";
       report_status: "open" | "resolved" | "dismissed";
       review_relationship:
         | "tenant_to_listing"
@@ -2410,6 +2411,7 @@ export const Constants = {
         "personal_data",
         "false_information",
         "other",
+        "author_withdrawal",
       ],
       report_status: ["open", "resolved", "dismissed"],
       review_relationship: [
