@@ -34,8 +34,59 @@ export function parseNoticeTarget(url: string, reviewId?: string | null) {
   return { type: "other" as const, id: null };
 }
 
+/** Dominios de Hommie que siempre valen. A ellos se suma el de la web que atiende la petición (la de pruebas). */
+export const HOMMIE_HOSTS = ["hommie.es", "www.hommie.es"] as const;
+
+/** Dominios admitidos: los de Hommie y el de la propia web (p. ej. la de pruebas o localhost). */
+export function noticeAllowedHosts(siteUrl?: string | null): string[] {
+  const hosts = new Set<string>(HOMMIE_HOSTS);
+  try {
+    if (siteUrl) hosts.add(new URL(siteUrl).host.toLowerCase());
+  } catch {
+    // Sin URL de la web válida, solo valen los dominios de Hommie.
+  }
+  return [...hosts];
+}
+
+export const NOTICE_URL_MISSING = "Pega el enlace del contenido";
+export const NOTICE_URL_NOT_A_LINK =
+  "Eso no es un enlace. Copia la dirección completa de la página de Hommie que quieres notificar (empieza por https://).";
+export const noticeUrlForeignMessage = (host: string) =>
+  `Ese enlace no es de Hommie. Aquí solo se pueden notificar anuncios, perfiles y reseñas de Hommie: copia la dirección de su página (empieza por https://${host}/).`;
+
+/**
+ * Comprueba el enlace de una notificación (auditoría I13): tiene que ser un
+ * enlace http(s) a un dominio de Hommie. Se usa en el formulario y, la que
+ * manda, en el servidor. Devuelve el enlace normalizado o el mensaje de error.
+ */
+export function checkNoticeUrl(input: string, allowedHosts: readonly string[]): { ok: true; url: string } | { ok: false; error: string } {
+  const text = input.trim();
+  if (!text) return { ok: false, error: NOTICE_URL_MISSING };
+  if (text.length > 500) return { ok: false, error: "Enlace demasiado largo" };
+  if (/\s/.test(text)) return { ok: false, error: NOTICE_URL_NOT_A_LINK };
+  // Se admite sin «https://» si empieza por un dominio (hommie.es/anuncios/…).
+  const withScheme = /^https?:\/\//i.test(text) ? text : /^(localhost|[a-z0-9-]+(\.[a-z0-9-]+)+)(:\d+)?(\/|$)/i.test(text) ? `https://${text}` : null;
+  if (!withScheme) return { ok: false, error: NOTICE_URL_NOT_A_LINK };
+  let url: URL;
+  try {
+    url = new URL(withScheme);
+  } catch {
+    return { ok: false, error: NOTICE_URL_NOT_A_LINK };
+  }
+  if (!allowedHosts.includes(url.host.toLowerCase()) || url.username || url.password) {
+    return { ok: false, error: noticeUrlForeignMessage(allowedHosts.find((h) => !HOMMIE_HOSTS.includes(h as never)) ?? HOMMIE_HOSTS[0]) };
+  }
+  return { ok: true, url: text === withScheme ? text : withScheme };
+}
+
+/** Para los enlaces internos «Notificar…», que llegan como ruta (/anuncios/…): la dirección completa. */
+export function absoluteNoticeUrl(url: string, siteUrl: string) {
+  return url.startsWith("/") && !url.startsWith("//") ? `${siteUrl.replace(/\/$/, "")}${url}` : url;
+}
+
 export const noticeSchema = z.object({
-  url: z.string().trim().min(5, { error: "Pega el enlace del contenido" }).max(500, { error: "Enlace demasiado largo" }),
+  // El enlace se comprueba aparte con checkNoticeUrl (depende del dominio de la web).
+  url: z.string().trim().min(1, { error: NOTICE_URL_MISSING }).max(500, { error: "Enlace demasiado largo" }),
   reviewId: z.string().trim().optional(),
   reason: z.enum(Object.keys(NOTICE_REASONS) as [NoticeReason, ...NoticeReason[]], { error: "Elige un motivo" }),
   explanation: z

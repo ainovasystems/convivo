@@ -3,6 +3,8 @@ import Link from "next/link";
 
 import { NoticeForm } from "@/components/moderation/notice-form";
 import { getCurrentUser } from "@/lib/auth";
+import { absoluteNoticeUrl, noticeAllowedHosts } from "@/lib/moderation/notices";
+import { getSiteUrl } from "@/lib/site-url";
 
 export const metadata: Metadata = {
   title: "Notificar contenido ilegal",
@@ -14,7 +16,7 @@ export default async function NoticePage({
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
-  const [params, user] = await Promise.all([searchParams, getCurrentUser()]);
+  const [params, user, site] = await Promise.all([searchParams, getCurrentUser(), getSiteUrl()]);
   const first = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v) ?? "";
 
   return (
@@ -35,7 +37,12 @@ export default async function NoticePage({
           Si alguien está en peligro, llama al <strong>112</strong>. Este formulario no es un servicio de emergencias.
         </p>
       </div>
-      <NoticeForm url={first(params.url)} reviewId={first(params.resena)} email={user?.email ?? ""} />
+      <NoticeForm
+        url={absoluteNoticeUrl(first(params.url), site)}
+        reviewId={first(params.resena)}
+        email={user?.email ?? ""}
+        allowedHosts={noticeAllowedHosts(site)}
+      />
       <p className="text-sm text-muted">
         Trataremos tus datos solo para gestionar la notificación. Más información en la{" "}
         <Link href="/privacidad" className="font-semibold text-brand underline">

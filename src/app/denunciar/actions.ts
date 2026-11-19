@@ -5,7 +5,7 @@ import { createHmac, randomBytes } from "node:crypto";
 import { getMailer } from "@/lib/email/mailer";
 import { noticeReceivedEmail } from "@/lib/email/templates";
 import type { FormState } from "@/lib/forms";
-import { noticeSchema, parseNoticeTarget } from "@/lib/moderation/notices";
+import { checkNoticeUrl, noticeAllowedHosts, noticeSchema, parseNoticeTarget } from "@/lib/moderation/notices";
 import { getClientIp, getSignalSecret } from "@/lib/signals";
 import { getSiteUrl } from "@/lib/site-url";
 import { createClient } from "@/lib/supabase/server";
@@ -21,9 +21,17 @@ export async function submitNotice(_prev: FormState, formData: FormData): Promis
   const raw = Object.fromEntries(["url", "reviewId", "reason", "explanation", "name", "email", "goodFaith"].map((k) => [k, formData.get(k) ?? undefined]));
   const parsed = noticeSchema.safeParse(raw);
   const values = { url: String(raw.url ?? ""), name: String(raw.name ?? ""), email: String(raw.email ?? "") };
-  if (!parsed.success) return { status: "error", errors: fieldErrors(parsed.error), values };
+  // Solo enlaces de Hommie (auditoría I13). Se comprueba aquí, en el servidor,
+  // aunque el formulario ya lo haya avisado.
+  const site = await getSiteUrl();
+  const link = checkNoticeUrl(values.url, noticeAllowedHosts(site));
+  if (!parsed.success || !link.ok) {
+    const errors = parsed.success ? {} : fieldErrors(parsed.error);
+    if (!link.ok) errors.url = link.error;
+    return { status: "error", message: "Revisa los campos marcados: la notificación no se ha enviado.", errors, values };
+  }
 
-  const d = parsed.data;
+  const d = { ...parsed.data, url: link.url };
   const target = parseNoticeTarget(d.url, d.reviewId);
   const supabase = await createClient();
   const { data: reference, error } = await supabase.rpc("submit_legal_notice", {
@@ -49,7 +57,7 @@ export async function submitNotice(_prev: FormState, formData: FormData): Promis
 
   // Acuse de recibo por email (art. 16.4). Un fallo de email no anula el registro.
   try {
-    await getMailer().send({ to: d.email, ...noticeReceivedEmail({ name: d.name, reference, url: `${await getSiteUrl()}/denunciar` }) });
+    await getMailer().send({ to: d.email, ...noticeReceivedEmail({ name: d.name, reference, url: `${site}/denunciar` }) });
   } catch (e) {
     console.error("[email] acuse de notificación", e);
   }
