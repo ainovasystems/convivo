@@ -45,6 +45,16 @@ describe("límite de intentos de acceso", () => {
     expect(await allowed("magic_link", "ip-m", "magia@x.es")).toBe(false);
   });
 
+  it("recuperar contraseña: 5 por email y 60 por IP a la hora, sin mezclarse con el enlace mágico", async () => {
+    for (let i = 0; i < 5; i++) expect(await allowed("password_reset", `ip-r${i}`, "olvido@x.es")).toBe(true);
+    expect(await allowed("password_reset", "ip-r9", "olvido@x.es")).toBe(false);
+    // El enlace mágico lleva su propia cuenta.
+    expect(await allowed("magic_link", "ip-r9", "olvido@x.es")).toBe(true);
+    for (let i = 0; i < 60; i++) expect(await allowed("password_reset", "ip-campus", `alumno-${i}@x.es`)).toBe(true);
+    expect(await allowed("password_reset", "ip-campus", "otro-alumno@x.es")).toBe(false);
+    expect(await allowed("password_reset", "ip-otra", "otro-alumno@x.es")).toBe(true);
+  });
+
   it("los intentos antiguos caducan", async () => {
     for (let i = 0; i < 8; i++) await failLogin("ip-v", "vieja@x.es");
     expect(await allowed("login_failed", "ip-v", "vieja@x.es")).toBe(false);

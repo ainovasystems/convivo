@@ -3,7 +3,7 @@ import "server-only";
 import { getSignalSecret, getClientIp, hashSignal } from "@/lib/signals";
 import { createClient } from "@/lib/supabase/server";
 
-export type AuthAttemptKind = "login_failed" | "signup" | "magic_link";
+export type AuthAttemptKind = "login_failed" | "signup" | "magic_link" | "password_reset";
 
 /** Email normalizado para la huella: sin espacios, en minúsculas y en forma NFKC. */
 export function normalizeEmail(email: string) {
