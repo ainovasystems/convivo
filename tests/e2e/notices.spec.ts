@@ -42,7 +42,8 @@ test.describe("canal público de denuncias (DSA)", () => {
     const anon = await (await browser.newContext()).newPage();
     await anon.goto(`/anuncios/${listing!.id}`);
     await anon.getByRole("link", { name: /Notificar este anuncio/ }).click();
-    await expect(anon.getByLabel("Enlace al contenido")).toHaveValue(`/anuncios/${listing!.id}`);
+    // El enlace llega ya completo, con el dominio de la web (solo se admiten enlaces de Hommie).
+    await expect(anon.getByLabel("Enlace al contenido")).toHaveValue(new RegExp(`^https?://[^/]+/anuncios/${listing!.id}$`));
     await anon.getByLabel("Motivo").selectOption("fraud");
     await anon.getByLabel("Qué es ilegal y por qué").fill("Me pidieron la fianza por Western Union antes de ver la habitación.");
     await anon.getByLabel("Tu nombre").fill("Rosa Notificante");
