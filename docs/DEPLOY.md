@@ -205,4 +205,4 @@ Anota aquí cada migración que pegues en el SQL Editor de producción, en orden
 |---|---|---|---|
 | _(instalación)_ | `instalar-base-de-datos.sql` (hasta `20261117000100_deposit_settlement.sql`) | | |
 
-> Si producción se instala después del 19 de noviembre de 2026, `instalar-base-de-datos.sql` ya incluye hasta `20261122000100_review_withdrawal_requests.sql` (solicitud de retirada de una reseña propia; antes, `20261121000100_password_reset_rate_limit.sql`): no hay que pegarlas aparte.
+> Si producción se instala después del 19 de noviembre de 2026, `instalar-base-de-datos.sql` ya incluye hasta `20261122000200_review_withdrawal_notice_texts.sql` (con `20261122000100_review_withdrawal_requests.sql`: solicitud de retirada de una reseña propia; antes, `20261121000100_password_reset_rate_limit.sql`): no hay que pegarlas aparte.

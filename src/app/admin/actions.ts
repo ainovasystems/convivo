@@ -79,18 +79,21 @@ export async function removeReview(_prev: FormState, formData: FormData): Promis
   });
   if (!parsed.success) return { status: "error", message: parsed.error.issues[0]?.message };
 
-  // Si entre las denuncias abiertas está la solicitud del propio autor, la
-  // reseña se retira «a petición» y él recibe la decisión de su solicitud.
+  // ¿Hay una solicitud de retirada abierta del propio autor? Si el admin está
+  // decidiendo ESA solicitud, la reseña se retira «a petición»; si actúa por la
+  // denuncia de otra persona, es moderación. En los dos casos la solicitud se
+  // cierra y el autor recibe la decisión.
   const { data: requests } = await ctx.supabase
     .from("reports")
-    .select("reporter_id")
+    .select("id, reporter_id")
     .eq("target_review_id", parsed.data.reviewId)
     .eq("reason", WITHDRAWAL_REASON)
     .eq("status", "open")
     .limit(1);
   const requester = requests?.[0]?.reporter_id ?? null;
+  const onRequest = requests?.[0]?.id === parsed.data.reportId;
 
-  const reason = `${requester ? "Retirada a petición de quien la escribió" : "Moderación"}: ${parsed.data.note}`.slice(0, 500);
+  const reason = `${onRequest ? "Retirada a petición de quien la escribió" : "Moderación"}: ${parsed.data.note}`.slice(0, 500);
   const { error } = await ctx.supabase.rpc("delete_review", {
     p_review_id: parsed.data.reviewId,
     p_reason: reason.length >= 10 ? reason : `${reason} (moderación)`,
@@ -190,6 +193,13 @@ export async function decideNotice(_prev: FormState, formData: FormData): Promis
     });
     if (error) return { status: "error", message: error.message };
     if (r) affected = { userId: r.author_id, what: "una reseña tuya" };
+    // Cierra las denuncias abiertas sobre esa reseña (también una solicitud de
+    // retirada de su autor, que así no queda pendiente sobre algo ya retirado).
+    await ctx.supabase
+      .from("reports")
+      .update({ status: "resolved", resolved_by: ctx.user.id, resolved_at: new Date().toISOString(), resolution_note: note.slice(0, 1000) })
+      .eq("target_review_id", notice.target_id)
+      .eq("status", "open");
   }
 
   const { error } = await ctx.supabase.rpc("admin_decide_legal_notice", { p_notice_id: noticeId, p_decision: decision, p_note: note });

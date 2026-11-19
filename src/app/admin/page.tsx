@@ -133,7 +133,7 @@ export default async function AdminPage() {
                         ? WITHDRAWAL_REASON_LABEL
                         : (REPORT_REASONS[r.reason as keyof typeof REPORT_REASONS] ?? r.reason)}
                     </strong>
-                    {r.reason === WITHDRAWAL_REASON ? " · la reseña sigue visible hasta que decidas" : ""}
+                    {r.reason === WITHDRAWAL_REASON ? " · la reseña no cambia hasta que decidas" : ""}
                     {r.reason === "personal_data" ? " · reseña oculta cautelarmente" : ""}
                   </p>
                   <p className="text-muted">

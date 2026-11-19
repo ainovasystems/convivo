@@ -222,7 +222,7 @@ test.describe("solicitar la retirada de una reseña propia (I11)", () => {
     await expect(guest.getByText(text)).toHaveCount(0);
     await expect(gone.getByText("Solicitar retirada")).toHaveCount(0);
     await guest.goto("/avisos");
-    await expect(guest.getByText("Hemos retirado tu reseña, como solicitaste")).toBeVisible();
+    await expect(guest.getByText("Hemos retirado tu reseña", { exact: true })).toBeVisible();
     await expect(guest.getByText("Hemos eliminado una de tus reseñas")).toHaveCount(0);
     if (process.env.MAILPIT_URL) await expect.poll(mailpitSubjects).toContainEqual("Hemos retirado tu reseña en Hommie");
   });

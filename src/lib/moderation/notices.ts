@@ -76,7 +76,8 @@ export function checkNoticeUrl(input: string, allowedHosts: readonly string[]): 
   if (!allowedHosts.includes(url.host.toLowerCase()) || url.username || url.password) {
     return { ok: false, error: noticeUrlForeignMessage(allowedHosts.find((h) => !HOMMIE_HOSTS.includes(h as never)) ?? HOMMIE_HOSTS[0]) };
   }
-  return { ok: true, url: text === withScheme ? text : withScheme };
+  // Se guarda el enlace ya interpretado, no el texto tal como se tecleó.
+  return { ok: true, url: url.href };
 }
 
 /** Para los enlaces internos «Notificar…», que llegan como ruta (/anuncios/…): la dirección completa. */

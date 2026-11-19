@@ -108,7 +108,7 @@ describe("solicitud de retirada de una reseña propia", () => {
       .toMatchObject({ deleted_at: null, body: expect.any(String) });
     const n = await notifications(w.guest);
     expect(n).toEqual([
-      expect.objectContaining({ kind: "report_decision", title: "No hemos retirado tu reseña", url: "/mis-resenas" }),
+      expect.objectContaining({ kind: "report_decision", title: "No hemos retirado tu reseña", url: `/mis-resenas?retirada=${review.id}` }),
     ]);
     expect(n[0].body).toContain("La reseña es veraz y útil");
     // Rechazada una, puede volver a pedirlo.
@@ -132,13 +132,28 @@ describe("solicitud de retirada de una reseña propia", () => {
 
     const n = await notifications(w.guest);
     expect(n).toHaveLength(1);
-    expect(n[0]).toMatchObject({ kind: "report_decision", title: "Hemos retirado tu reseña, como solicitaste", url: "/mis-resenas" });
+    expect(n[0]).toMatchObject({ kind: "report_decision", title: "Hemos retirado tu reseña", url: `/mis-resenas?retirada=${review.id}` });
     expect(n[0].body).toContain("Se equivocó de persona");
 
     const log = await db.query<{ action: string }>("select action from public.moderation_log where target_id = any($1) order by id", [[id, review.id]]);
     expect(log.rows.map((x) => x.action)).toEqual(["review_deleted", "report_resolved"]);
     // Ya retirada, no se puede volver a pedir.
     await expect(request(w.guest, review.id)).rejects.toThrow(/que hayas escrito tú/);
+  });
+
+  it("la decisión sobre una reseña no da por atendido el aviso de otra", async () => {
+    const w = await createWorld(db);
+    const admin = await makeAdmin("Admin Dos Reseñas");
+    const a = await writeReview(db, { stay: w.stay, author: w.guest, subjectUser: w.host, criteria: CRITERIA.tenant_to_landlord });
+    const b = await writeReview(db, { stay: w.stay, author: w.guest, subjectListing: w.listing, criteria: CRITERIA.tenant_to_listing });
+    for (const r of [a, b]) {
+      const id = await request(w.guest, r.id);
+      await as(db, admin, (tx) =>
+        tx.query("update public.reports set status = 'dismissed', resolved_by = $2, resolved_at = now(), resolution_note = 'Es veraz' where id = $1", [id, admin]),
+      );
+    }
+    const open = await db.query("select 1 from public.notifications where user_id = $1 and kind = 'report_decision' and resolved_at is null", [w.guest]);
+    expect(open.rows).toHaveLength(2);
   });
 
   it("mantiene el límite de 10 denuncias al día", async () => {
