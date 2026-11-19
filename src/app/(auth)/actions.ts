@@ -19,6 +19,7 @@ import {
   newPasswordSchema,
   passwordResetRequestSchema,
   safeNextPath,
+  SIGN_UP_SENT_MESSAGE,
   signInSchema,
   signUpSchema,
   TERMS_VERSION,
@@ -184,28 +185,31 @@ export async function signUp(_prev: FormState, formData: FormData): Promise<Form
     },
   });
 
+  // Respuesta única, exista o no la cuenta (auditoría I10). Con «Confirm email»
+  // activado Supabase ya responde igual en los dos casos (y no envía nada a
+  // quien ya tenía cuenta); sin él devuelve `user_already_exists`, que tampoco
+  // se enseña. El límite de envíos de email solo salta con emails nuevos, así
+  // que tampoco se distingue.
+  const sent: FormState = { status: "success", message: SIGN_UP_SENT_MESSAGE };
   if (error) {
-    if (error.code === "user_already_exists") {
-      return { status: "error", values: keep(formData, "email", "displayName"), message: "Ya existe una cuenta con ese email. Prueba a entrar." };
-    }
+    if (error.code === "user_already_exists" || error.code === "email_exists") return sent;
     if (error.code === "weak_password") {
       return { status: "error", values: keep(formData, "email", "displayName"), errors: { password: "Esa contraseña es demasiado débil. Prueba con otra más larga." } };
     }
     if (error.status === 429) {
-      return { status: "error", values: keep(formData, "email", "displayName"), message: TOO_MANY_ATTEMPTS };
+      console.error("signUp", error.status, error.code);
+      return sent;
     }
+    console.error("signUp", error.status, error.code);
     return { status: "error", values: keep(formData, "email", "displayName"), message: "No hemos podido crear la cuenta. Inténtalo de nuevo." };
   }
 
-  // Con la confirmación de email desactivada (local) ya hay sesión.
+  // Con la confirmación de email desactivada (solo en local) ya hay sesión.
   if (data.session) {
     await recordSignal();
     redirect("/perfil/editar?bienvenida=1");
   }
-  return {
-    status: "success",
-    message: `Te hemos enviado un email a ${parsed.data.email}. Abre el enlace para confirmar tu cuenta.`,
-  };
+  return sent;
 }
 
 export async function signOut(): Promise<void> {

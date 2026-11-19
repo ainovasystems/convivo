@@ -46,7 +46,16 @@ export const signUpSchema = z.object({
 });
 
 /** Versión de las condiciones que se acepta al registrarse (cámbiala al modificarlas). */
-export const TERMS_VERSION = "2026-11-18-borrador";
+export const TERMS_VERSION = "2026-11-19-borrador";
+
+/**
+ * Respuesta ÚNICA del registro, tenga o no ya una cuenta ese email (auditoría
+ * I10): por el registro no se puede saber si un email existe. Quien ya tenía
+ * cuenta no recibe email, así que el mensaje le lleva a entrar o a recuperar
+ * la contraseña (el formulario pone los enlaces).
+ */
+export const SIGN_UP_SENT_MESSAGE = "Te hemos enviado un email para continuar. Abre el enlace para confirmar tu cuenta.";
+export const SIGN_UP_EXISTING_HINT = "¿Ya tenías cuenta con ese email? Entonces no te llegará nada:";
 
 export type SignInInput = z.infer<typeof signInSchema>;
 export type SignUpInput = z.infer<typeof signUpSchema>;

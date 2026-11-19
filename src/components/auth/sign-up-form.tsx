@@ -9,15 +9,31 @@ import { TextField } from "@/components/ui/field";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { initialFormState } from "@/lib/forms";
 import { useClientValidation } from "@/lib/use-client-validation";
-import { signUpSchema } from "@/lib/validation/auth";
+import { SIGN_UP_EXISTING_HINT, signUpSchema } from "@/lib/validation/auth";
 
 export function SignUpForm() {
   const [state, action] = useActionState(signUp, initialFormState);
   const { clientErrors, onSubmit } = useClientValidation(signUpSchema);
   const errors = { ...state.errors, ...clientErrors };
 
+  // Mismo mensaje tenga o no cuenta ese email: quien ya la tenía sale por «Entrar» o por recuperar la contraseña.
   if (state.status === "success") {
-    return <FormAlert state={state} />;
+    return (
+      <div className="space-y-4">
+        <FormAlert state={state} />
+        <p className="text-sm text-muted">
+          {SIGN_UP_EXISTING_HINT}{" "}
+          <Link href="/entrar" className="font-medium text-brand underline">
+            entra desde aquí
+          </Link>{" "}
+          o pulsa{" "}
+          <Link href="/recuperar" className="font-medium text-brand underline">
+            ¿Olvidaste tu contraseña?
+          </Link>
+        </p>
+        <p className="text-sm text-muted">Si no lo ves en unos minutos, mira en la carpeta de spam.</p>
+      </div>
+    );
   }
 
   return (
