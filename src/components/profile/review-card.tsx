@@ -1,12 +1,18 @@
 import Link from "next/link";
 
 import { Avatar } from "@/components/profile/avatar";
-import { ReportForm, RespondForm } from "@/components/reviews/review-interactions";
+import { ReportForm, RespondForm, WithdrawalRequestForm } from "@/components/reviews/review-interactions";
 import { Rating } from "@/components/ui/rating";
 import type { ReceivedReview } from "@/lib/profile/queries";
 import { CRITERIA_LABELS, formatDate } from "@/lib/reviews/labels";
 
-type Viewer = { viewerId: string | null; respondentId: string; path: string };
+type Viewer = {
+  viewerId: string | null;
+  respondentId: string;
+  path: string;
+  /** Fecha (ya formateada) de mi solicitud de retirada abierta, por reseña. Solo para las mías. */
+  withdrawalPending?: Record<string, string>;
+};
 
 export function ReviewCard({ review, viewer }: { review: ReceivedReview; viewer?: Viewer }) {
   if (review.deleted_at) {
@@ -64,7 +70,11 @@ export function ReviewCard({ review, viewer }: { review: ReceivedReview; viewer?
             {viewer.viewerId === viewer.respondentId && !review.response ? (
               <RespondForm reviewId={review.id} path={viewer.path} />
             ) : null}
-            {viewer.viewerId !== review.author?.id ? <ReportForm reviewId={review.id} path={viewer.path} /> : null}
+            {viewer.viewerId !== review.author?.id ? (
+              <ReportForm reviewId={review.id} path={viewer.path} />
+            ) : (
+              <WithdrawalRequestForm reviewId={review.id} pendingSince={viewer.withdrawalPending?.[review.id] ?? null} />
+            )}
           </div>
         ) : (
           // Sin cuenta también se puede notificar una reseña ilegal (DSA art. 16).

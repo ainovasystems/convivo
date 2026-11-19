@@ -3,14 +3,14 @@
 import { useRouter } from "next/navigation";
 import { useActionState, useEffect, useState } from "react";
 
-import { reportReview, respondToReview } from "@/app/resenas/actions";
+import { reportReview, requestReviewWithdrawal, respondToReview } from "@/app/resenas/actions";
 import { SelectField, TextAreaField } from "@/components/ui/field";
 import { FormAlert } from "@/components/ui/form-alert";
 import { SensitiveDataNotice } from "@/components/moderation/sensitive-data-notice";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { initialFormState, type FormState } from "@/lib/forms";
 import { personalDataError, PERSONAL_DATA_HINT } from "@/lib/moderation/personal-data";
-import { REPORT_REASONS } from "@/lib/reviews/schema";
+import { REPORT_REASONS, withdrawalRequestSchema } from "@/lib/reviews/schema";
 
 export function RespondForm({ reviewId, path }: { reviewId: string; path: string }) {
   const [submitted, setSubmitted] = useState("");
@@ -77,6 +77,60 @@ export function ReportForm({ reviewId, path }: { reviewId: string; path: string 
         />
         <TextAreaField id={`details-${reviewId}`} name="details" label="Detalles (opcional)" rows={2} maxLength={1000} />
         <SubmitButton pendingText="Enviando…">Enviar denuncia</SubmitButton>
+      </form>
+    </details>
+  );
+}
+
+/**
+ * «Solicitar retirada» de una reseña propia. No la borra: envía la solicitud a
+ * moderación. `pendingSince` (texto ya formateado) indica que hay una abierta.
+ */
+export function WithdrawalRequestForm({ reviewId, pendingSince }: { reviewId: string; pendingSince?: string | null }) {
+  const [live, setLive] = useState<string | null>(null);
+  const [state, action] = useActionState(requestReviewWithdrawal, initialFormState);
+  const router = useRouter();
+  useEffect(() => {
+    if (state.status === "success") router.refresh();
+  }, [state, router]);
+
+  if (state.status === "success") return <FormAlert state={state} />;
+  if (pendingSince) {
+    return (
+      <p className="text-sm text-muted" role="status">
+        Retirada solicitada el {pendingSince}. Pendiente de revisión: mientras tanto, la reseña sigue como estaba.
+      </p>
+    );
+  }
+  return (
+    <details className="text-sm">
+      <summary className="cursor-pointer text-muted underline">Solicitar retirada</summary>
+      <form
+        action={action}
+        noValidate
+        onSubmit={(e) => {
+          const parsed = withdrawalRequestSchema.safeParse({ reviewId, reason: new FormData(e.currentTarget).get("reason") });
+          const message = parsed.success ? null : (parsed.error.issues[0]?.message ?? null);
+          setLive(message);
+          if (message) e.preventDefault();
+        }}
+        className="mt-3 space-y-3"
+      >
+        <input type="hidden" name="reviewId" value={reviewId} />
+        <FormAlert state={state} />
+        <TextAreaField
+          id={`withdrawal-${reviewId}`}
+          name="reason"
+          label="¿Por qué quieres retirarla?"
+          rows={3}
+          maxLength={1000}
+          required
+          defaultValue={state.values?.reason}
+          onChange={() => setLive(null)}
+          hint="La reseña no se borra al enviar: una persona del equipo revisará tu solicitud y te avisará de la decisión. Mínimo 10 caracteres."
+          error={live ?? state.errors?.reason}
+        />
+        <SubmitButton pendingText="Enviando…">Enviar solicitud</SubmitButton>
       </form>
     </details>
   );

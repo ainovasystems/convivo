@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 
 import { Avatar } from "@/components/profile/avatar";
 import { ReviewCard } from "@/components/profile/review-card";
+import { getWithdrawalPendingFor } from "@/lib/reviews/queries";
 import { Chip } from "@/components/ui/chip";
 import { Rating } from "@/components/ui/rating";
 import { getCurrentUser } from "@/lib/auth";
@@ -49,6 +50,7 @@ export default async function ProfilePage({ params }: Props) {
     getCurrentUser(),
   ]);
 
+  const withdrawalPending = await getWithdrawalPendingFor(viewer?.id, reviews);
   const overall = overallRating(stats);
   const chips = habitChips(profile.habits);
   const isOwn = viewer?.id === profile.id;
@@ -200,7 +202,7 @@ export default async function ProfilePage({ params }: Props) {
               {groupReviews.length ? (
                 <ul className="space-y-3">
                   {groupReviews.map((r) => (
-                    <ReviewCard key={r.id} review={r} viewer={{ viewerId: viewer?.id ?? null, respondentId: profile.id, path: `/perfil/${profile.id}` }} />
+                    <ReviewCard key={r.id} review={r} viewer={{ viewerId: viewer?.id ?? null, respondentId: profile.id, path: `/perfil/${profile.id}`, withdrawalPending }} />
                   ))}
                 </ul>
               ) : (

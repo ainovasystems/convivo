@@ -7,6 +7,7 @@ import { InterestForm } from "@/components/conversations/interest-form";
 import { Gallery } from "@/components/listings/gallery";
 import { Avatar } from "@/components/profile/avatar";
 import { ReviewCard } from "@/components/profile/review-card";
+import { getWithdrawalPendingFor } from "@/lib/reviews/queries";
 import { Chip } from "@/components/ui/chip";
 import { Rating } from "@/components/ui/rating";
 import { getCurrentUser } from "@/lib/auth";
@@ -73,6 +74,7 @@ export default async function ListingPage({ params, searchParams }: Props) {
     viewer && viewer.id !== detail.listing.owner_id ? await getMyInterestForListing(id, viewer.id) : null;
 
   const { listing: l, address, stats, reviews, ownerStats } = detail;
+  const withdrawalPending = await getWithdrawalPendingFor(viewer?.id, reviews);
   const isOwner = viewer?.id === l.owner_id;
   const owner = l.owner;
   const ownerRating = overallRating(ownerStats);
@@ -250,7 +252,7 @@ export default async function ListingPage({ params, searchParams }: Props) {
               {reviews.length ? (
                 <ul className="space-y-3">
                   {reviews.map((r) => (
-                    <ReviewCard key={r.id} review={r} viewer={{ viewerId: viewer?.id ?? null, respondentId: l.owner_id, path: `/anuncios/${l.id}` }} />
+                    <ReviewCard key={r.id} review={r} viewer={{ viewerId: viewer?.id ?? null, respondentId: l.owner_id, path: `/anuncios/${l.id}`, withdrawalPending }} />
                   ))}
                 </ul>
               ) : (

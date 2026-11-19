@@ -2,11 +2,18 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { z } from "zod";
-
 import { getCurrentUser } from "@/lib/auth";
 import type { FormState } from "@/lib/forms";
-import { reportReviewSchema, responseSchema, reviewFormDataToObject, reviewSchema } from "@/lib/reviews/schema";
+import {
+  reportReviewSchema,
+  responseSchema,
+  reviewFormDataToObject,
+  reviewSchema,
+  WITHDRAWAL_PENDING_MESSAGE,
+  WITHDRAWAL_REASON,
+  WITHDRAWAL_SENT_MESSAGE,
+  withdrawalRequestSchema,
+} from "@/lib/reviews/schema";
 import { recordSignal } from "@/lib/signals";
 import { createClient } from "@/lib/supabase/server";
 import { fieldErrors } from "@/lib/validation/profile";
@@ -105,14 +112,30 @@ export async function reportReview(_prev: FormState, formData: FormData): Promis
   };
 }
 
-/** Borrar mi propia reseña con motivo (queda constancia). */
-export async function deleteMyReview(reviewId: string, reason: string): Promise<FormState> {
+/**
+ * Solicitar la retirada de una reseña propia (auditoría I11). No la borra: crea
+ * una denuncia con el motivo `author_withdrawal`, que decide un admin. La base
+ * de datos comprueba que la reseña sea de quien lo pide y que haya motivo.
+ */
+export async function requestReviewWithdrawal(_prev: FormState, formData: FormData): Promise<FormState> {
   const user = await getCurrentUser();
   if (!user) return SESSION_EXPIRED;
-  if (!z.uuid().safeParse(reviewId).success) return { status: "error", message: "Reseña no válida." };
+  const parsed = withdrawalRequestSchema.safeParse({ reviewId: formData.get("reviewId"), reason: formData.get("reason") });
+  if (!parsed.success) {
+    return { status: "error", errors: fieldErrors(parsed.error), values: { reason: String(formData.get("reason") ?? "").slice(0, 1000) } };
+  }
+
   const supabase = await createClient();
-  const { error } = await supabase.rpc("delete_review", { p_review_id: reviewId, p_reason: reason });
-  if (error) return { status: "error", message: dbErrorMessage(error) };
-  revalidatePath("/mis-resenas");
-  return { status: "success" };
+  const { error } = await supabase.from("reports").insert({
+    reporter_id: user.id,
+    target_review_id: parsed.data.reviewId,
+    reason: WITHDRAWAL_REASON,
+    details: parsed.data.reason,
+  });
+  if (error) {
+    const message = error.message.includes("reports_one_open_per_review") ? WITHDRAWAL_PENDING_MESSAGE : dbErrorMessage(error);
+    return { status: "error", message, values: { reason: parsed.data.reason } };
+  }
+  // Sin revalidatePath: el cliente muestra ya la confirmación y hace router.refresh().
+  return { status: "success", message: WITHDRAWAL_SENT_MESSAGE };
 }

@@ -69,7 +69,7 @@ export default function TermsPage() {
           </li>
           <li>La persona reseñada puede responder una vez, públicamente. Su respuesta sigue las mismas normas.</li>
           <li>
-            Si borras tu cuenta, tus reseñas se conservan, desvinculadas de tu cuenta: aparecen como «Usuario eliminado». Puedes eliminar una reseña tuya indicando el motivo; queda
+            Si borras tu cuenta, tus reseñas se conservan, desvinculadas de tu cuenta: aparecen como «Usuario eliminado». Puedes solicitar la retirada de una reseña tuya indicando el motivo: la revisa una persona del equipo y, si se retira, queda
             constancia de que existió.
           </li>
         </ul>

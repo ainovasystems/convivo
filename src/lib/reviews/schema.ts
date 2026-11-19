@@ -82,6 +82,26 @@ export const REPORT_REASONS = {
   other: "Otro motivo",
 } as const;
 
+/**
+ * Solicitud de retirada de una reseña propia (auditoría I11). No es un motivo
+ * de denuncia que se pueda elegir: lo pone la acción `requestReviewWithdrawal`
+ * y la base de datos comprueba que la reseña sea de quien lo pide.
+ */
+export const WITHDRAWAL_REASON = "author_withdrawal" as const;
+export const WITHDRAWAL_REASON_LABEL = "Solicitud de retirada de quien escribió la reseña";
+export const WITHDRAWAL_SENT_MESSAGE =
+  "Solicitud enviada. La reseña sigue como estaba hasta que la revisemos; te avisaremos de la decisión aquí y por email.";
+export const WITHDRAWAL_PENDING_MESSAGE = "Ya has solicitado la retirada de esta reseña. La estamos revisando.";
+
+export const withdrawalRequestSchema = z.object({
+  reviewId: z.uuid(),
+  reason: z
+    .string({ error: "Explica por qué quieres retirarla" })
+    .trim()
+    .min(10, { error: "Explica por qué quieres retirarla (mínimo 10 caracteres)" })
+    .max(1000, { error: "Máximo 1000 caracteres" }),
+});
+
 export const reportReviewSchema = z.object({
   reviewId: z.uuid(),
   reason: z.enum(Object.keys(REPORT_REASONS) as [keyof typeof REPORT_REASONS, ...Array<keyof typeof REPORT_REASONS>], {

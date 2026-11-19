@@ -8,7 +8,16 @@ import { FormAlert } from "@/components/ui/form-alert";
 import { inputClass } from "@/components/ui/field";
 import { initialFormState } from "@/lib/forms";
 
-export function ModerationForms({ reportId, reviewId }: { reportId: string; reviewId: string | null }) {
+export function ModerationForms({
+  reportId,
+  reviewId,
+  withdrawal = false,
+}: {
+  reportId: string;
+  reviewId: string | null;
+  /** Solicitud de retirada del propio autor: cambian los textos, no las acciones. */
+  withdrawal?: boolean;
+}) {
   const [dismissState, dismiss] = useActionState(dismissReport, initialFormState);
   const [removeState, remove] = useActionState(removeReview, initialFormState);
   const state = removeState.message ? removeState : dismissState;
@@ -25,16 +34,16 @@ export function ModerationForms({ reportId, reviewId }: { reportId: string; revi
         <input type="hidden" name="reportId" value={reportId} />
         {reviewId ? <input type="hidden" name="reviewId" value={reviewId} /> : null}
         <label htmlFor={`note-${reportId}`} className="block text-sm font-medium">
-          Nota de la decisión
+          {withdrawal ? "Motivo de la decisión (se le enviará a quien lo solicita)" : "Nota de la decisión"}
         </label>
         <input id={`note-${reportId}`} name="note" className={inputClass} placeholder="Motivo de la decisión" required />
         <div className="flex flex-wrap gap-2">
           <button formAction={dismiss} className="rounded-full border border-border px-3 py-1.5 text-sm font-medium">
-            Descartar denuncia
+            {withdrawal ? "Rechazar solicitud" : "Descartar denuncia"}
           </button>
           {reviewId ? (
             <button formAction={remove} className="rounded-full bg-red-700 px-3 py-1.5 text-sm font-medium text-white">
-              Eliminar reseña
+              {withdrawal ? "Retirar reseña" : "Eliminar reseña"}
             </button>
           ) : null}
         </div>

@@ -173,6 +173,24 @@ export function contentRemovedEmail(p: { name: string; what: string; note: strin
   };
 }
 
+/** Decisión sobre la solicitud de retirada de una reseña propia (auditoría I11). */
+export function withdrawalDecisionEmail(p: { name: string; accepted: boolean; note: string; url: string }): Rendered {
+  const subject = p.accepted ? "Hemos retirado tu reseña en Hommie" : "No hemos retirado tu reseña en Hommie";
+  const paragraphs = [
+    `Hola, ${escapeHtml(p.name)}:`,
+    p.accepted
+      ? "Hemos revisado tu solicitud y <strong>hemos retirado la reseña</strong>. Queda constancia de que existió, sin su texto ni su nota."
+      : "Hemos revisado tu solicitud de retirada y <strong>la reseña sigue como estaba</strong>.",
+    `Motivo: ${escapeHtml(p.note)}`,
+    "La decisión la ha tomado una persona del equipo, no un sistema automático. Si no estás de acuerdo, responde a este email explicando por qué y la revisaremos de nuevo.",
+  ];
+  return {
+    subject,
+    html: layout("Tu solicitud de retirada", paragraphs, { label: "Ver mis reseñas", url: p.url }),
+    text: `${paragraphs.map(strip).join("\n\n")}\n\nVer mis reseñas: ${p.url}`,
+  };
+}
+
 /** Contrato pendiente de firma para el inquilino. */
 export function contractToSignEmail(p: { name: string; landlordName: string; listingTitle: string; url: string }): Rendered {
   const subject = `${p.landlordName} te ha enviado un contrato para firmar`;

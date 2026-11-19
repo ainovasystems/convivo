@@ -2,10 +2,11 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
+import { WithdrawalRequestForm } from "@/components/reviews/review-interactions";
 import { Rating } from "@/components/ui/rating";
 import { getCurrentUser } from "@/lib/auth";
 import { formatDate } from "@/lib/reviews/labels";
-import { getMyReviewTasks, getMyWrittenReviews } from "@/lib/reviews/queries";
+import { getMyReviewTasks, getMyWithdrawalRequests, getMyWrittenReviews } from "@/lib/reviews/queries";
 import { RELATIONSHIP_TITLES } from "@/lib/reviews/targets";
 
 export const metadata: Metadata = { title: "Mis reseñas", robots: { index: false } };
@@ -17,7 +18,12 @@ export default async function MyReviewsPage({
 }) {
   const user = await getCurrentUser();
   if (!user) redirect("/entrar?next=/mis-resenas");
-  const [{ open, upcoming }, written, sp] = await Promise.all([getMyReviewTasks(user.id), getMyWrittenReviews(user.id), searchParams]);
+  const [{ open, upcoming }, written, withdrawals, sp] = await Promise.all([
+    getMyReviewTasks(user.id),
+    getMyWrittenReviews(user.id),
+    getMyWithdrawalRequests(user.id),
+    searchParams,
+  ]);
   const now = new Date();
   const justSent = typeof sp.enviada === "string" ? written.find((w) => w.id === sp.enviada) : undefined;
 
@@ -84,6 +90,7 @@ export default async function MyReviewsPage({
             {written.map((w) => {
               const published = new Date(w.published_at) <= now;
               const subject = w.subject_user?.display_name ?? w.subject_listing?.title ?? "—";
+              const withdrawal = withdrawals.get(w.id);
               return (
                 <li key={w.id} className="space-y-2 rounded-2xl border border-border bg-background p-4">
                   <div className="flex flex-wrap items-baseline justify-between gap-2">
@@ -100,7 +107,20 @@ export default async function MyReviewsPage({
                     <p className="text-sm text-muted">
                       Eliminada el {formatDate(w.deleted_at)}. Motivo: «{w.deletion_reason}»
                     </p>
-                  ) : null}
+                  ) : (
+                    <>
+                      {withdrawal?.status === "dismissed" ? (
+                        <p className="text-sm text-muted">
+                          Pediste retirarla el {formatDate(withdrawal.created_at)} y no la hemos retirado
+                          {withdrawal.resolution_note ? <>. Motivo: «{withdrawal.resolution_note}»</> : "."}
+                        </p>
+                      ) : null}
+                      <WithdrawalRequestForm
+                        reviewId={w.id}
+                        pendingSince={withdrawal?.status === "open" ? formatDate(withdrawal.created_at) : null}
+                      />
+                    </>
+                  )}
                 </li>
               );
             })}

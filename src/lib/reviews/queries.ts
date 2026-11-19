@@ -1,5 +1,7 @@
 import "server-only";
 
+import { formatDate } from "@/lib/reviews/labels";
+import { WITHDRAWAL_REASON } from "@/lib/reviews/schema";
 import { RELATIONSHIP_TITLES, reviewTargets, type ReviewTarget } from "@/lib/reviews/targets";
 import { createClient } from "@/lib/supabase/server";
 
@@ -81,6 +83,44 @@ export async function getMyWrittenReviews(userId: string) {
     .order("created_at", { ascending: false });
   if (error) throw error;
   return data ?? [];
+}
+
+export type WithdrawalRequest = {
+  status: "open" | "resolved" | "dismissed";
+  created_at: string;
+  resolved_at: string | null;
+  resolution_note: string | null;
+};
+
+/**
+ * Mis solicitudes de retirada, la más reciente de cada reseña. RLS solo
+ * devuelve las denuncias de quien consulta.
+ */
+export async function getMyWithdrawalRequests(userId: string): Promise<Map<string, WithdrawalRequest>> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("reports")
+    .select("target_review_id, status, created_at, resolved_at, resolution_note")
+    .eq("reporter_id", userId)
+    .eq("reason", WITHDRAWAL_REASON)
+    .not("target_review_id", "is", null)
+    .order("created_at", { ascending: false });
+  if (error) throw error;
+  const latest = new Map<string, WithdrawalRequest>();
+  for (const r of data ?? []) {
+    if (r.target_review_id && !latest.has(r.target_review_id)) latest.set(r.target_review_id, r);
+  }
+  return latest;
+}
+
+/** Para las tarjetas de reseña: fecha de mi solicitud abierta, por reseña. Solo consulta si alguna es mía. */
+export async function getWithdrawalPendingFor(viewerId: string | null | undefined, reviews: Array<{ author?: { id: string } | null }>) {
+  if (!viewerId || !reviews.some((r) => r.author?.id === viewerId)) return {};
+  const pending: Record<string, string> = {};
+  for (const [reviewId, w] of await getMyWithdrawalRequests(viewerId)) {
+    if (w.status === "open") pending[reviewId] = formatDate(w.created_at);
+  }
+  return pending;
 }
 
 /** Datos para el formulario de reseña; null si no se puede reseñar. */

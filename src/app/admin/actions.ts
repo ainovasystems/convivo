@@ -5,8 +5,9 @@ import { z } from "zod";
 import { getCurrentUser } from "@/lib/auth";
 import { getMailer } from "@/lib/email/mailer";
 import { emailUser } from "@/lib/email/notify";
-import { contentRemovedEmail, noticeDecisionEmail } from "@/lib/email/templates";
+import { contentRemovedEmail, noticeDecisionEmail, withdrawalDecisionEmail } from "@/lib/email/templates";
 import type { FormState } from "@/lib/forms";
+import { WITHDRAWAL_REASON } from "@/lib/reviews/schema";
 import { getSiteUrl } from "@/lib/site-url";
 import { createClient } from "@/lib/supabase/server";
 
@@ -22,6 +23,17 @@ async function requireAdmin() {
   const { data: isAdmin } = await supabase.rpc("am_i_admin");
   return isAdmin ? { user, supabase } : null;
 }
+type AdminContext = NonNullable<Awaited<ReturnType<typeof requireAdmin>>>;
+
+/**
+ * Email con la decisión a quien pidió retirar su propia reseña (el aviso de la
+ * app lo pone la base de datos al cerrar la solicitud). Nunca lanza.
+ */
+async function emailWithdrawalDecision(ctx: AdminContext, authorId: string, accepted: boolean, note: string) {
+  const { data: p } = await ctx.supabase.from("profiles").select("display_name").eq("id", authorId).maybeSingle();
+  const url = `${await getSiteUrl()}/mis-resenas`;
+  await emailUser(authorId, () => withdrawalDecisionEmail({ name: p?.display_name ?? "", accepted, note, url }));
+}
 
 const resolveSchema = z.object({
   reportId: z.uuid(),
@@ -34,7 +46,7 @@ export async function dismissReport(_prev: FormState, formData: FormData): Promi
   const parsed = resolveSchema.safeParse({ reportId: formData.get("reportId"), note: formData.get("note") });
   if (!parsed.success) return { status: "error", message: parsed.error.issues[0]?.message };
 
-  const { error } = await ctx.supabase
+  const { data: closed, error } = await ctx.supabase
     .from("reports")
     .update({
       status: "dismissed",
@@ -43,8 +55,14 @@ export async function dismissReport(_prev: FormState, formData: FormData): Promi
       resolution_note: parsed.data.note,
     })
     .eq("id", parsed.data.reportId)
-    .eq("status", "open");
+    .eq("status", "open")
+    .select("reason, reporter_id");
   if (error) return { status: "error", message: "No se ha podido descartar la denuncia." };
+  const withdrawal = closed?.find((r) => r.reason === WITHDRAWAL_REASON);
+  if (withdrawal) {
+    await emailWithdrawalDecision(ctx, withdrawal.reporter_id, false, parsed.data.note);
+    return { status: "success", message: "Solicitud rechazada y comunicada. La reseña sigue como estaba." };
+  }
   return { status: "success", message: "Denuncia descartada." };
 }
 
@@ -61,7 +79,18 @@ export async function removeReview(_prev: FormState, formData: FormData): Promis
   });
   if (!parsed.success) return { status: "error", message: parsed.error.issues[0]?.message };
 
-  const reason = `Moderación: ${parsed.data.note}`.slice(0, 500);
+  // Si entre las denuncias abiertas está la solicitud del propio autor, la
+  // reseña se retira «a petición» y él recibe la decisión de su solicitud.
+  const { data: requests } = await ctx.supabase
+    .from("reports")
+    .select("reporter_id")
+    .eq("target_review_id", parsed.data.reviewId)
+    .eq("reason", WITHDRAWAL_REASON)
+    .eq("status", "open")
+    .limit(1);
+  const requester = requests?.[0]?.reporter_id ?? null;
+
+  const reason = `${requester ? "Retirada a petición de quien la escribió" : "Moderación"}: ${parsed.data.note}`.slice(0, 500);
   const { error } = await ctx.supabase.rpc("delete_review", {
     p_review_id: parsed.data.reviewId,
     p_reason: reason.length >= 10 ? reason : `${reason} (moderación)`,
@@ -78,6 +107,10 @@ export async function removeReview(_prev: FormState, formData: FormData): Promis
     })
     .eq("target_review_id", parsed.data.reviewId)
     .eq("status", "open");
+  if (requester) {
+    await emailWithdrawalDecision(ctx, requester, true, parsed.data.note);
+    return { status: "success", message: "Reseña retirada y decisión comunicada a quien la escribió." };
+  }
   return { status: "success", message: "Reseña eliminada y denuncias cerradas." };
 }
 

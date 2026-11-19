@@ -8,7 +8,7 @@ import { ModerationForms } from "@/components/reviews/moderation-forms";
 import { getCurrentUser } from "@/lib/auth";
 import { NOTICE_REASONS, type NoticeReason } from "@/lib/moderation/notices";
 import { formatDate } from "@/lib/reviews/labels";
-import { REPORT_REASONS } from "@/lib/reviews/schema";
+import { REPORT_REASONS, WITHDRAWAL_REASON, WITHDRAWAL_REASON_LABEL } from "@/lib/reviews/schema";
 import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = { title: "Moderación", robots: { index: false } };
@@ -128,7 +128,12 @@ export default async function AdminPage() {
               <li key={r.id} className="space-y-3 rounded-2xl border border-border bg-background p-4">
                 <div className="flex flex-wrap items-baseline justify-between gap-2 text-sm">
                   <p>
-                    <strong>{REPORT_REASONS[r.reason as keyof typeof REPORT_REASONS] ?? r.reason}</strong>
+                    <strong>
+                      {r.reason === WITHDRAWAL_REASON
+                        ? WITHDRAWAL_REASON_LABEL
+                        : (REPORT_REASONS[r.reason as keyof typeof REPORT_REASONS] ?? r.reason)}
+                    </strong>
+                    {r.reason === WITHDRAWAL_REASON ? " · la reseña sigue visible hasta que decidas" : ""}
                     {r.reason === "personal_data" ? " · reseña oculta cautelarmente" : ""}
                   </p>
                   <p className="text-muted">
@@ -151,7 +156,11 @@ export default async function AdminPage() {
                     {r.target_message_id ? "mensaje" : null}
                   </p>
                 )}
-                <ModerationForms reportId={r.id} reviewId={r.review && !r.review.deleted_at ? r.review.id : null} />
+                <ModerationForms
+                  reportId={r.id}
+                  reviewId={r.review && !r.review.deleted_at ? r.review.id : null}
+                  withdrawal={r.reason === WITHDRAWAL_REASON}
+                />
               </li>
             ))}
           </ul>
